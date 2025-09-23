@@ -1,0 +1,61 @@
+/* Fondo similar a Tailwind bg-background */
+.bg-custom {
+    background-color: #020817;
+    /* gris claro similar a Tailwind bg-gray-100 */
+}
+
+/* Card con máximo ancho y sombras grandes */
+.custom-card {
+    background-color: #020817;
+    max-width: 400px;
+    border-radius: 0.75rem;
+    border-color: #d0d3dd;
+}
+
+/* Títulos y descripción */
+.title {
+    color: #f9fafb;
+    font-size: 1.5rem;
+    /* text-2xl */
+}
+
+.form-label {
+    color: #f9fafb;
+}
+/* Títulos y descripción */
+
+
+
+.description {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+/* Input con padding y alineación de icono */
+.input-custom {
+    border-radius: 0.5rem;
+    /* rounded-md */
+    overflow: hidden;
+}
+
+.input-custom .input-group-text {
+    background-color: #f9fafb;
+    border: none;
+    color: #9ca3af;
+    /* gris claro de iconos */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+}
+
+.input-custom input {
+
+    border: none;
+    flex: 1;
+}
+
+.input-custom input:focus {
+    box-shadow: none;
+    outline: none;
+}
