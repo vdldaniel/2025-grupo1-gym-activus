@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-09-2025 a las 19:49:15
+-- Tiempo de generación: 24-09-2025 a las 20:41:15
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `activus_db`
 --
+CREATE DATABASE IF NOT EXISTS `activus_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `activus_db`;
 
 -- --------------------------------------------------------
 
@@ -27,6 +29,7 @@ SET time_zone = "+00:00";
 -- Estructura de tabla para la tabla `asistencia`
 --
 
+DROP TABLE IF EXISTS `asistencia`;
 CREATE TABLE `asistencia` (
   `ID_Asistencia` int(11) NOT NULL,
   `ID_Socio` int(11) NOT NULL,
@@ -50,6 +53,7 @@ INSERT INTO `asistencia` (`ID_Asistencia`, `ID_Socio`, `ID_Clase_Programada`, `F
 -- Estructura de tabla para la tabla `certificado`
 --
 
+DROP TABLE IF EXISTS `certificado`;
 CREATE TABLE `certificado` (
   `ID_Certificado` int(11) NOT NULL,
   `ID_Usuario` int(11) DEFAULT NULL,
@@ -66,6 +70,7 @@ CREATE TABLE `certificado` (
 -- Estructura de tabla para la tabla `clase`
 --
 
+DROP TABLE IF EXISTS `clase`;
 CREATE TABLE `clase` (
   `ID_Clase` int(11) NOT NULL,
   `ID_Profesor` int(11) DEFAULT NULL,
@@ -85,6 +90,7 @@ INSERT INTO `clase` (`ID_Clase`, `ID_Profesor`, `ID_Usuario`, `Nombre_Clase`, `C
 --
 -- Disparadores `clase`
 --
+DROP TRIGGER IF EXISTS `trg_clase_profesor_ins`;
 DELIMITER $$
 CREATE TRIGGER `trg_clase_profesor_ins` BEFORE INSERT ON `clase` FOR EACH ROW BEGIN
   IF NEW.ID_Profesor IS NULL THEN
@@ -104,6 +110,7 @@ CREATE TRIGGER `trg_clase_profesor_ins` BEFORE INSERT ON `clase` FOR EACH ROW BE
 END
 $$
 DELIMITER ;
+DROP TRIGGER IF EXISTS `trg_clase_profesor_upd`;
 DELIMITER $$
 CREATE TRIGGER `trg_clase_profesor_upd` BEFORE UPDATE ON `clase` FOR EACH ROW BEGIN
   IF NEW.ID_Profesor IS NULL THEN
@@ -130,6 +137,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `clase_programada`
 --
 
+DROP TABLE IF EXISTS `clase_programada`;
 CREATE TABLE `clase_programada` (
   `ID_Clase_Programada` int(11) NOT NULL,
   `ID_Clase` int(11) DEFAULT NULL,
@@ -153,6 +161,7 @@ INSERT INTO `clase_programada` (`ID_Clase_Programada`, `ID_Clase`, `ID_Sala`, `F
 -- Estructura de tabla para la tabla `configuracion_gym`
 --
 
+DROP TABLE IF EXISTS `configuracion_gym`;
 CREATE TABLE `configuracion_gym` (
   `ID_Configuracion_Gym` int(11) NOT NULL,
   `ID_Usuario` int(11) DEFAULT NULL,
@@ -160,7 +169,8 @@ CREATE TABLE `configuracion_gym` (
   `Nombre_Gym` varchar(100) DEFAULT NULL,
   `Logo_PNG` varchar(255) DEFAULT NULL,
   `Color_Fondo` varchar(50) DEFAULT NULL,
-  `Color_Elemento` varchar(50) DEFAULT NULL
+  `Color_Elemento` varchar(50) DEFAULT NULL,
+  `ID_Admin` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -169,6 +179,7 @@ CREATE TABLE `configuracion_gym` (
 -- Estructura de tabla para la tabla `ejercicio`
 --
 
+DROP TABLE IF EXISTS `ejercicio`;
 CREATE TABLE `ejercicio` (
   `ID_Ejercicio` int(11) NOT NULL,
   `Nombre_Ejercicio` varchar(100) NOT NULL,
@@ -197,6 +208,7 @@ INSERT INTO `ejercicio` (`ID_Ejercicio`, `Nombre_Ejercicio`, `Descripcion`, `Tip
 -- Estructura de tabla para la tabla `ejercicio_equipo`
 --
 
+DROP TABLE IF EXISTS `ejercicio_equipo`;
 CREATE TABLE `ejercicio_equipo` (
   `ID_Ejercicio` int(11) NOT NULL,
   `ID_Equipo` int(11) NOT NULL
@@ -222,6 +234,7 @@ INSERT INTO `ejercicio_equipo` (`ID_Ejercicio`, `ID_Equipo`) VALUES
 -- Estructura de tabla para la tabla `ejercicio_musculo`
 --
 
+DROP TABLE IF EXISTS `ejercicio_musculo`;
 CREATE TABLE `ejercicio_musculo` (
   `ID_Ejercicio` int(11) NOT NULL,
   `ID_Musculo` int(11) NOT NULL
@@ -249,6 +262,7 @@ INSERT INTO `ejercicio_musculo` (`ID_Ejercicio`, `ID_Musculo`) VALUES
 -- Estructura de tabla para la tabla `equipo`
 --
 
+DROP TABLE IF EXISTS `equipo`;
 CREATE TABLE `equipo` (
   `ID_Equipo` int(11) NOT NULL,
   `Nombre_Equipo` varchar(100) NOT NULL
@@ -273,6 +287,7 @@ INSERT INTO `equipo` (`ID_Equipo`, `Nombre_Equipo`) VALUES
 -- Estructura de tabla para la tabla `estado_membresia_socio`
 --
 
+DROP TABLE IF EXISTS `estado_membresia_socio`;
 CREATE TABLE `estado_membresia_socio` (
   `ID_Estado_Membresia_Socio` int(11) NOT NULL,
   `Nombre_Estado_Membresia_Socio` varchar(50) NOT NULL
@@ -293,6 +308,7 @@ INSERT INTO `estado_membresia_socio` (`ID_Estado_Membresia_Socio`, `Nombre_Estad
 -- Estructura de tabla para la tabla `estado_usuario`
 --
 
+DROP TABLE IF EXISTS `estado_usuario`;
 CREATE TABLE `estado_usuario` (
   `ID_Estado_Usuario` int(11) NOT NULL,
   `Nombre_Estado_Usuario` varchar(50) NOT NULL
@@ -313,6 +329,7 @@ INSERT INTO `estado_usuario` (`ID_Estado_Usuario`, `Nombre_Estado_Usuario`) VALU
 -- Estructura de tabla para la tabla `horario_funcionamiento`
 --
 
+DROP TABLE IF EXISTS `horario_funcionamiento`;
 CREATE TABLE `horario_funcionamiento` (
   `ID_Horario_Funcionamiento` int(11) NOT NULL,
   `ID_Configuracion_Gym` int(11) DEFAULT NULL,
@@ -328,6 +345,7 @@ CREATE TABLE `horario_funcionamiento` (
 -- Estructura de tabla para la tabla `membresia_socio`
 --
 
+DROP TABLE IF EXISTS `membresia_socio`;
 CREATE TABLE `membresia_socio` (
   `ID_Membresia_Socio` int(11) NOT NULL,
   `ID_Usuario` int(11) DEFAULT NULL,
@@ -354,6 +372,7 @@ INSERT INTO `membresia_socio` (`ID_Membresia_Socio`, `ID_Usuario`, `ID_Tipo_Memb
 -- Estructura de tabla para la tabla `musculo`
 --
 
+DROP TABLE IF EXISTS `musculo`;
 CREATE TABLE `musculo` (
   `ID_Musculo` int(11) NOT NULL,
   `Nombre_Musculo` varchar(100) NOT NULL
@@ -379,6 +398,7 @@ INSERT INTO `musculo` (`ID_Musculo`, `Nombre_Musculo`) VALUES
 -- Estructura de tabla para la tabla `nivel_dificultad`
 --
 
+DROP TABLE IF EXISTS `nivel_dificultad`;
 CREATE TABLE `nivel_dificultad` (
   `ID_Nivel_Dificultad` int(11) NOT NULL,
   `Nombre_Nivel_Dificultad` varchar(50) NOT NULL
@@ -399,6 +419,7 @@ INSERT INTO `nivel_dificultad` (`ID_Nivel_Dificultad`, `Nombre_Nivel_Dificultad`
 -- Estructura de tabla para la tabla `pago`
 --
 
+DROP TABLE IF EXISTS `pago`;
 CREATE TABLE `pago` (
   `ID_Pago` int(11) NOT NULL,
   `ID_Membresia_Socio` int(11) DEFAULT NULL,
@@ -420,12 +441,33 @@ INSERT INTO `pago` (`ID_Pago`, `ID_Membresia_Socio`, `ID_Usuario`, `ID_Usuario_R
 (9, 4, 9, 0, '2025-09-01', '23:53:41', 10000.00),
 (10, 5, 10, 0, '2025-09-01', '23:53:41', 27000.00);
 
+--
+-- Disparadores `pago`
+--
+DROP TRIGGER IF EXISTS `trg_pago_admin_ins`;
+DELIMITER $$
+CREATE TRIGGER `trg_pago_admin_ins` BEFORE INSERT ON `pago` FOR EACH ROW BEGIN
+  IF NOT EXISTS (
+      SELECT 1
+      FROM Usuario_Rol ur
+      JOIN Rol r ON ur.ID_Rol = r.ID_Rol
+      WHERE ur.ID_Usuario = NEW.ID_Usuario_Registro
+      AND r.Nombre = 'Administrativo'
+  ) THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'El ID_Usuario_Registro debe ser un Usuario con rol Administrativo';
+  END IF;
+END
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
 -- Estructura de tabla para la tabla `permiso`
 --
 
+DROP TABLE IF EXISTS `permiso`;
 CREATE TABLE `permiso` (
   `ID_Permiso` int(11) NOT NULL,
   `Nombre_Permiso` varchar(100) NOT NULL
@@ -449,6 +491,7 @@ INSERT INTO `permiso` (`ID_Permiso`, `Nombre_Permiso`) VALUES
 -- Estructura de tabla para la tabla `reserva`
 --
 
+DROP TABLE IF EXISTS `reserva`;
 CREATE TABLE `reserva` (
   `ID_Reserva` int(11) NOT NULL,
   `ID_Clase_Programada` int(11) NOT NULL,
@@ -468,6 +511,22 @@ INSERT INTO `reserva` (`ID_Reserva`, `ID_Clase_Programada`, `ID_Socio`, `Fecha_R
 --
 -- Disparadores `reserva`
 --
+DROP TRIGGER IF EXISTS `trg_reserva_unica`;
+DELIMITER $$
+CREATE TRIGGER `trg_reserva_unica` BEFORE INSERT ON `reserva` FOR EACH ROW BEGIN
+  IF EXISTS (
+      SELECT 1
+      FROM Reserva r
+      WHERE r.ID_Socio = NEW.ID_Socio
+      AND r.ID_Clase_Programada = NEW.ID_Clase_Programada
+  ) THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'El socio ya tiene una reserva para esta clase';
+  END IF;
+END
+$$
+DELIMITER ;
+DROP TRIGGER IF EXISTS `trg_validar_capacidad_reserva`;
 DELIMITER $$
 CREATE TRIGGER `trg_validar_capacidad_reserva` BEFORE INSERT ON `reserva` FOR EACH ROW BEGIN
     DECLARE cupo_actual INT;
@@ -501,6 +560,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `rol`
 --
 
+DROP TABLE IF EXISTS `rol`;
 CREATE TABLE `rol` (
   `ID_Rol` int(11) NOT NULL,
   `Nombre_Rol` varchar(50) NOT NULL
@@ -522,6 +582,7 @@ INSERT INTO `rol` (`ID_Rol`, `Nombre_Rol`) VALUES
 -- Estructura de tabla para la tabla `rol_permiso`
 --
 
+DROP TABLE IF EXISTS `rol_permiso`;
 CREATE TABLE `rol_permiso` (
   `ID_Rol` int(11) NOT NULL,
   `ID_Permiso` int(11) NOT NULL
@@ -533,6 +594,7 @@ CREATE TABLE `rol_permiso` (
 -- Estructura de tabla para la tabla `rutina`
 --
 
+DROP TABLE IF EXISTS `rutina`;
 CREATE TABLE `rutina` (
   `ID_Rutina` int(11) NOT NULL,
   `ID_Usuario` int(11) DEFAULT NULL,
@@ -540,7 +602,8 @@ CREATE TABLE `rutina` (
   `Nombre_Rutina` varchar(100) DEFAULT NULL,
   `Duracion_Aprox` int(11) DEFAULT NULL,
   `Cant_Dias_Semana` int(11) DEFAULT NULL,
-  `Descripcion` text DEFAULT NULL
+  `Descripcion` text DEFAULT NULL,
+  `ID_Profesor` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -549,6 +612,7 @@ CREATE TABLE `rutina` (
 -- Estructura de tabla para la tabla `rutina_ejercicio`
 --
 
+DROP TABLE IF EXISTS `rutina_ejercicio`;
 CREATE TABLE `rutina_ejercicio` (
   `ID_Rutina` int(11) NOT NULL,
   `ID_Ejercicio` int(11) NOT NULL,
@@ -562,6 +626,7 @@ CREATE TABLE `rutina_ejercicio` (
 -- Estructura de tabla para la tabla `sala`
 --
 
+DROP TABLE IF EXISTS `sala`;
 CREATE TABLE `sala` (
   `ID_Sala` int(11) NOT NULL,
   `Nombre_Sala` varchar(100) NOT NULL
@@ -582,6 +647,7 @@ INSERT INTO `sala` (`ID_Sala`, `Nombre_Sala`) VALUES
 -- Estructura de tabla para la tabla `socio`
 --
 
+DROP TABLE IF EXISTS `socio`;
 CREATE TABLE `socio` (
   `ID_Usuario` int(11) NOT NULL,
   `Fecha_Nacimiento` date DEFAULT NULL,
@@ -608,6 +674,7 @@ INSERT INTO `socio` (`ID_Usuario`, `Fecha_Nacimiento`, `Fecha_Alta`, `Hora_Alta`
 -- Estructura de tabla para la tabla `tipo_membresia`
 --
 
+DROP TABLE IF EXISTS `tipo_membresia`;
 CREATE TABLE `tipo_membresia` (
   `ID_Tipo_Membresia` int(11) NOT NULL,
   `Nombre_Tipo_Membresia` varchar(50) NOT NULL,
@@ -631,6 +698,7 @@ INSERT INTO `tipo_membresia` (`ID_Tipo_Membresia`, `Nombre_Tipo_Membresia`, `Dur
 -- Estructura de tabla para la tabla `tutor`
 --
 
+DROP TABLE IF EXISTS `tutor`;
 CREATE TABLE `tutor` (
   `ID_Tutor` int(11) NOT NULL,
   `ID_Socio` int(11) NOT NULL,
@@ -655,6 +723,7 @@ INSERT INTO `tutor` (`ID_Tutor`, `ID_Socio`, `Nombre`, `Apellido`, `DNI`, `Telef
 -- Estructura de tabla para la tabla `usuario`
 --
 
+DROP TABLE IF EXISTS `usuario`;
 CREATE TABLE `usuario` (
   `ID_Usuario` int(11) NOT NULL,
   `ID_Estado_Usuario` int(11) DEFAULT NULL,
@@ -692,6 +761,7 @@ INSERT INTO `usuario` (`ID_Usuario`, `ID_Estado_Usuario`, `Nombre`, `Apellido`, 
 -- Estructura de tabla para la tabla `usuario_rol`
 --
 
+DROP TABLE IF EXISTS `usuario_rol`;
 CREATE TABLE `usuario_rol` (
   `ID_Usuario` int(11) NOT NULL,
   `ID_Rol` int(11) NOT NULL
@@ -754,7 +824,8 @@ ALTER TABLE `clase_programada`
 --
 ALTER TABLE `configuracion_gym`
   ADD PRIMARY KEY (`ID_Configuracion_Gym`),
-  ADD KEY `ID_Usuario` (`ID_Usuario`);
+  ADD KEY `ID_Usuario` (`ID_Usuario`),
+  ADD KEY `fk_config_admin` (`ID_Admin`);
 
 --
 -- Indices de la tabla `ejercicio`
@@ -842,8 +913,8 @@ ALTER TABLE `permiso`
 --
 ALTER TABLE `reserva`
   ADD PRIMARY KEY (`ID_Reserva`),
-  ADD KEY `ID_Clase_Programada` (`ID_Clase_Programada`),
-  ADD KEY `fk_reserva_socio` (`ID_Socio`);
+  ADD KEY `fk_reserva_socio_usuario` (`ID_Socio`),
+  ADD KEY `fk_reserva_clase_prog` (`ID_Clase_Programada`);
 
 --
 -- Indices de la tabla `rol`
@@ -864,7 +935,8 @@ ALTER TABLE `rol_permiso`
 ALTER TABLE `rutina`
   ADD PRIMARY KEY (`ID_Rutina`),
   ADD KEY `ID_Usuario` (`ID_Usuario`),
-  ADD KEY `ID_Nivel_Dificultad` (`ID_Nivel_Dificultad`);
+  ADD KEY `ID_Nivel_Dificultad` (`ID_Nivel_Dificultad`),
+  ADD KEY `fk_rutina_profesor` (`ID_Profesor`);
 
 --
 -- Indices de la tabla `rutina_ejercicio`
@@ -922,7 +994,7 @@ ALTER TABLE `usuario_rol`
 -- AUTO_INCREMENT de la tabla `asistencia`
 --
 ALTER TABLE `asistencia`
-  MODIFY `ID_Asistencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID_Asistencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `certificado`
@@ -1074,7 +1146,8 @@ ALTER TABLE `clase_programada`
 -- Filtros para la tabla `configuracion_gym`
 --
 ALTER TABLE `configuracion_gym`
-  ADD CONSTRAINT `configuracion_gym_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`);
+  ADD CONSTRAINT `configuracion_gym_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`),
+  ADD CONSTRAINT `fk_config_admin` FOREIGN KEY (`ID_Admin`) REFERENCES `usuario` (`ID_Usuario`);
 
 --
 -- Filtros para la tabla `ejercicio_equipo`
@@ -1118,7 +1191,9 @@ ALTER TABLE `pago`
 -- Filtros para la tabla `reserva`
 --
 ALTER TABLE `reserva`
+  ADD CONSTRAINT `fk_reserva_clase_prog` FOREIGN KEY (`ID_Clase_Programada`) REFERENCES `clase_programada` (`ID_Clase_Programada`),
   ADD CONSTRAINT `fk_reserva_socio` FOREIGN KEY (`ID_Socio`) REFERENCES `socio` (`ID_Usuario`),
+  ADD CONSTRAINT `fk_reserva_socio_usuario` FOREIGN KEY (`ID_Socio`) REFERENCES `usuario` (`ID_Usuario`),
   ADD CONSTRAINT `reserva_ibfk_1` FOREIGN KEY (`ID_Clase_Programada`) REFERENCES `clase_programada` (`ID_Clase_Programada`),
   ADD CONSTRAINT `reserva_ibfk_2` FOREIGN KEY (`ID_Socio`) REFERENCES `usuario` (`ID_Usuario`);
 
@@ -1133,6 +1208,7 @@ ALTER TABLE `rol_permiso`
 -- Filtros para la tabla `rutina`
 --
 ALTER TABLE `rutina`
+  ADD CONSTRAINT `fk_rutina_profesor` FOREIGN KEY (`ID_Profesor`) REFERENCES `usuario` (`ID_Usuario`),
   ADD CONSTRAINT `rutina_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`),
   ADD CONSTRAINT `rutina_ibfk_2` FOREIGN KEY (`ID_Nivel_Dificultad`) REFERENCES `nivel_dificultad` (`ID_Nivel_Dificultad`);
 
