@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-09-2025 a las 05:10:47
+-- Tiempo de generación: 24-09-2025 a las 13:23:01
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -676,14 +676,14 @@ INSERT INTO `usuario_rol` (`ID_Usuario`, `ID_Rol`) VALUES
 --
 ALTER TABLE `asistencia`
   ADD PRIMARY KEY (`ID_Asistencia`),
-  ADD KEY `ID_Usuario` (`ID_Usuario`);
+  ADD KEY `fk_asistencia_usuario` (`ID_Usuario`);
 
 --
 -- Indices de la tabla `certificado`
 --
 ALTER TABLE `certificado`
   ADD PRIMARY KEY (`ID_Certificado`),
-  ADD KEY `ID_Usuario` (`ID_Usuario`);
+  ADD KEY `fk_certificado_usuario` (`ID_Usuario`);
 
 --
 -- Indices de la tabla `clase`
@@ -757,9 +757,9 @@ ALTER TABLE `horario_funcionamiento`
 --
 ALTER TABLE `membresia_socio`
   ADD PRIMARY KEY (`ID_Membresia_Socio`),
-  ADD KEY `ID_Usuario` (`ID_Usuario`),
   ADD KEY `ID_Tipo_Membresia` (`ID_Tipo_Membresia`),
-  ADD KEY `ID_Estado_Membresia_Socio` (`ID_Estado_Membresia_Socio`);
+  ADD KEY `ID_Estado_Membresia_Socio` (`ID_Estado_Membresia_Socio`),
+  ADD KEY `fk_membresia_socio_usuario` (`ID_Usuario`);
 
 --
 -- Indices de la tabla `musculo`
@@ -779,8 +779,8 @@ ALTER TABLE `nivel_dificultad`
 ALTER TABLE `pago`
   ADD PRIMARY KEY (`ID_Pago`),
   ADD KEY `ID_Membresia_Socio` (`ID_Membresia_Socio`),
-  ADD KEY `ID_Usuario` (`ID_Usuario`),
-  ADD KEY `fk_pago_usuario_registro` (`ID_Usuario_Registro`);
+  ADD KEY `fk_pago_usuario_registro` (`ID_Usuario_Registro`),
+  ADD KEY `fk_pago_usuario` (`ID_Usuario`);
 
 --
 -- Indices de la tabla `permiso`
@@ -794,7 +794,7 @@ ALTER TABLE `permiso`
 ALTER TABLE `reserva`
   ADD PRIMARY KEY (`ID_Reserva`),
   ADD KEY `ID_Clase_Programada` (`ID_Clase_Programada`),
-  ADD KEY `ID_Usuario` (`ID_Usuario`);
+  ADD KEY `fk_reserva_usuario` (`ID_Usuario`);
 
 --
 -- Indices de la tabla `rol`
@@ -847,7 +847,7 @@ ALTER TABLE `tipo_membresia`
 --
 ALTER TABLE `tutor`
   ADD PRIMARY KEY (`ID_Tutor`),
-  ADD KEY `ID_Socio` (`ID_Socio`);
+  ADD KEY `fk_tutor_socio` (`ID_Socio`);
 
 --
 -- Indices de la tabla `usuario`
@@ -1009,13 +1009,15 @@ ALTER TABLE `usuario`
 -- Filtros para la tabla `asistencia`
 --
 ALTER TABLE `asistencia`
-  ADD CONSTRAINT `asistencia_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`);
+  ADD CONSTRAINT `asistencia_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`),
+  ADD CONSTRAINT `fk_asistencia_usuario` FOREIGN KEY (`ID_Usuario`) REFERENCES `socio` (`ID_Usuario`);
 
 --
 -- Filtros para la tabla `certificado`
 --
 ALTER TABLE `certificado`
-  ADD CONSTRAINT `certificado_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`);
+  ADD CONSTRAINT `certificado_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`),
+  ADD CONSTRAINT `fk_certificado_usuario` FOREIGN KEY (`ID_Usuario`) REFERENCES `socio` (`ID_Usuario`);
 
 --
 -- Filtros para la tabla `clase`
@@ -1060,6 +1062,7 @@ ALTER TABLE `horario_funcionamiento`
 -- Filtros para la tabla `membresia_socio`
 --
 ALTER TABLE `membresia_socio`
+  ADD CONSTRAINT `fk_membresia_socio_usuario` FOREIGN KEY (`ID_Usuario`) REFERENCES `socio` (`ID_Usuario`),
   ADD CONSTRAINT `membresia_socio_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`),
   ADD CONSTRAINT `membresia_socio_ibfk_2` FOREIGN KEY (`ID_Tipo_Membresia`) REFERENCES `tipo_membresia` (`ID_Tipo_Membresia`),
   ADD CONSTRAINT `membresia_socio_ibfk_3` FOREIGN KEY (`ID_Estado_Membresia_Socio`) REFERENCES `estado_membresia_socio` (`ID_Estado_Membresia_Socio`);
@@ -1068,6 +1071,7 @@ ALTER TABLE `membresia_socio`
 -- Filtros para la tabla `pago`
 --
 ALTER TABLE `pago`
+  ADD CONSTRAINT `fk_pago_usuario` FOREIGN KEY (`ID_Usuario`) REFERENCES `socio` (`ID_Usuario`),
   ADD CONSTRAINT `fk_pago_usuario_registro` FOREIGN KEY (`ID_Usuario_Registro`) REFERENCES `usuario` (`ID_Usuario`),
   ADD CONSTRAINT `pago_ibfk_1` FOREIGN KEY (`ID_Membresia_Socio`) REFERENCES `membresia_socio` (`ID_Membresia_Socio`),
   ADD CONSTRAINT `pago_ibfk_2` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`);
@@ -1076,6 +1080,7 @@ ALTER TABLE `pago`
 -- Filtros para la tabla `reserva`
 --
 ALTER TABLE `reserva`
+  ADD CONSTRAINT `fk_reserva_usuario` FOREIGN KEY (`ID_Usuario`) REFERENCES `socio` (`ID_Usuario`),
   ADD CONSTRAINT `reserva_ibfk_1` FOREIGN KEY (`ID_Clase_Programada`) REFERENCES `clase_programada` (`ID_Clase_Programada`),
   ADD CONSTRAINT `reserva_ibfk_2` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`);
 
@@ -1110,6 +1115,7 @@ ALTER TABLE `socio`
 -- Filtros para la tabla `tutor`
 --
 ALTER TABLE `tutor`
+  ADD CONSTRAINT `fk_tutor_socio` FOREIGN KEY (`ID_Socio`) REFERENCES `socio` (`ID_Usuario`),
   ADD CONSTRAINT `tutor_ibfk_1` FOREIGN KEY (`ID_Socio`) REFERENCES `socio` (`ID_Usuario`);
 
 --
