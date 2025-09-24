@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-09-2025 a las 13:23:01
+-- Tiempo de generación: 24-09-2025 a las 19:49:15
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -29,7 +29,8 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `asistencia` (
   `ID_Asistencia` int(11) NOT NULL,
-  `ID_Usuario` int(11) DEFAULT NULL,
+  `ID_Socio` int(11) NOT NULL,
+  `ID_Clase_Programada` int(11) DEFAULT NULL,
   `Fecha` date DEFAULT NULL,
   `Hora` time DEFAULT NULL,
   `Resultado` varchar(50) DEFAULT NULL
@@ -39,9 +40,9 @@ CREATE TABLE `asistencia` (
 -- Volcado de datos para la tabla `asistencia`
 --
 
-INSERT INTO `asistencia` (`ID_Asistencia`, `ID_Usuario`, `Fecha`, `Hora`, `Resultado`) VALUES
-(1, 6, '2025-09-25', '18:05:00', 'Permitido'),
-(2, 8, '2025-09-25', '18:10:00', 'Denegado');
+INSERT INTO `asistencia` (`ID_Asistencia`, `ID_Socio`, `ID_Clase_Programada`, `Fecha`, `Hora`, `Resultado`) VALUES
+(1, 6, NULL, '2025-09-25', '18:05:00', 'Permitido'),
+(2, 8, NULL, '2025-09-25', '18:10:00', 'Denegado');
 
 -- --------------------------------------------------------
 
@@ -54,6 +55,8 @@ CREATE TABLE `certificado` (
   `ID_Usuario` int(11) DEFAULT NULL,
   `Imagen_Certificado` varchar(255) DEFAULT NULL,
   `Aprobado` tinyint(1) DEFAULT NULL,
+  `Fecha_Emision` date NOT NULL,
+  `Fecha_Vencimiento` date DEFAULT NULL,
   `Fecha` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -65,6 +68,7 @@ CREATE TABLE `certificado` (
 
 CREATE TABLE `clase` (
   `ID_Clase` int(11) NOT NULL,
+  `ID_Profesor` int(11) DEFAULT NULL,
   `ID_Usuario` int(11) DEFAULT NULL,
   `Nombre_Clase` varchar(100) DEFAULT NULL,
   `Capacidad_Maxima` int(11) DEFAULT NULL
@@ -74,9 +78,51 @@ CREATE TABLE `clase` (
 -- Volcado de datos para la tabla `clase`
 --
 
-INSERT INTO `clase` (`ID_Clase`, `ID_Usuario`, `Nombre_Clase`, `Capacidad_Maxima`) VALUES
-(1, 3, 'Zumba', 25),
-(2, 5, 'Spinning', 20);
+INSERT INTO `clase` (`ID_Clase`, `ID_Profesor`, `ID_Usuario`, `Nombre_Clase`, `Capacidad_Maxima`) VALUES
+(1, 1, 3, 'Zumba', 25),
+(2, 2, 5, 'Spinning', 20);
+
+--
+-- Disparadores `clase`
+--
+DELIMITER $$
+CREATE TRIGGER `trg_clase_profesor_ins` BEFORE INSERT ON `clase` FOR EACH ROW BEGIN
+  IF NEW.ID_Profesor IS NULL THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ID_Profesor obligatorio';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM Usuario_Rol ur
+    JOIN Rol r ON r.ID_Rol = ur.ID_Rol
+    WHERE ur.ID_Usuario = NEW.ID_Profesor
+      AND r.Nombre = 'Profesor'
+  ) THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'El ID_Profesor debe ser un Usuario con rol Profesor';
+  END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `trg_clase_profesor_upd` BEFORE UPDATE ON `clase` FOR EACH ROW BEGIN
+  IF NEW.ID_Profesor IS NULL THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ID_Profesor obligatorio';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM Usuario_Rol ur
+    JOIN Rol r ON r.ID_Rol = ur.ID_Rol
+    WHERE ur.ID_Usuario = NEW.ID_Profesor
+      AND r.Nombre = 'Profesor'
+  ) THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'El ID_Profesor debe ser un Usuario con rol Profesor';
+  END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -358,7 +404,7 @@ CREATE TABLE `pago` (
   `ID_Membresia_Socio` int(11) DEFAULT NULL,
   `ID_Usuario` int(11) DEFAULT NULL,
   `ID_Usuario_Registro` int(11) NOT NULL,
-  `Fecha_Pago` date DEFAULT NULL,
+  `Fecha_Pago` date NOT NULL DEFAULT curdate(),
   `Hora_Pago` time NOT NULL DEFAULT curtime(),
   `Monto` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -406,17 +452,18 @@ INSERT INTO `permiso` (`ID_Permiso`, `Nombre_Permiso`) VALUES
 CREATE TABLE `reserva` (
   `ID_Reserva` int(11) NOT NULL,
   `ID_Clase_Programada` int(11) NOT NULL,
-  `ID_Usuario` int(11) NOT NULL,
-  `Fecha_Reserva` date DEFAULT curdate()
+  `ID_Socio` int(11) NOT NULL,
+  `Fecha_Reserva` date DEFAULT curdate(),
+  `Estado_Reserva` enum('Pendiente','Confirmada','Cancelada') NOT NULL DEFAULT 'Pendiente'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `reserva`
 --
 
-INSERT INTO `reserva` (`ID_Reserva`, `ID_Clase_Programada`, `ID_Usuario`, `Fecha_Reserva`) VALUES
-(1, 1, 6, '2025-09-23'),
-(2, 2, 7, '2025-09-23');
+INSERT INTO `reserva` (`ID_Reserva`, `ID_Clase_Programada`, `ID_Socio`, `Fecha_Reserva`, `Estado_Reserva`) VALUES
+(1, 1, 6, '2025-09-23', 'Pendiente'),
+(2, 2, 7, '2025-09-23', 'Pendiente');
 
 --
 -- Disparadores `reserva`
@@ -537,21 +584,23 @@ INSERT INTO `sala` (`ID_Sala`, `Nombre_Sala`) VALUES
 
 CREATE TABLE `socio` (
   `ID_Usuario` int(11) NOT NULL,
-  `Fecha_Nacimiento` date DEFAULT NULL
+  `Fecha_Nacimiento` date DEFAULT NULL,
+  `Fecha_Alta` date NOT NULL DEFAULT curdate(),
+  `Hora_Alta` time NOT NULL DEFAULT curtime()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `socio`
 --
 
-INSERT INTO `socio` (`ID_Usuario`, `Fecha_Nacimiento`) VALUES
-(6, '2000-01-01'),
-(7, '2000-02-02'),
-(8, '2000-03-03'),
-(9, '2000-04-04'),
-(10, '2000-05-05'),
-(11, '2010-05-15'),
-(12, '2015-03-15');
+INSERT INTO `socio` (`ID_Usuario`, `Fecha_Nacimiento`, `Fecha_Alta`, `Hora_Alta`) VALUES
+(6, '2000-01-01', '2025-09-24', '10:24:10'),
+(7, '2000-02-02', '2025-09-24', '10:24:10'),
+(8, '2000-03-03', '2025-09-24', '10:24:10'),
+(9, '2000-04-04', '2025-09-24', '10:24:10'),
+(10, '2000-05-05', '2025-09-24', '10:24:10'),
+(11, '2010-05-15', '2025-09-24', '10:24:10'),
+(12, '2015-03-15', '2025-09-24', '10:24:10');
 
 -- --------------------------------------------------------
 
@@ -676,7 +725,8 @@ INSERT INTO `usuario_rol` (`ID_Usuario`, `ID_Rol`) VALUES
 --
 ALTER TABLE `asistencia`
   ADD PRIMARY KEY (`ID_Asistencia`),
-  ADD KEY `fk_asistencia_usuario` (`ID_Usuario`);
+  ADD KEY `fk_asistencia_clase` (`ID_Clase_Programada`),
+  ADD KEY `fk_asistencia_socio` (`ID_Socio`);
 
 --
 -- Indices de la tabla `certificado`
@@ -689,8 +739,7 @@ ALTER TABLE `certificado`
 -- Indices de la tabla `clase`
 --
 ALTER TABLE `clase`
-  ADD PRIMARY KEY (`ID_Clase`),
-  ADD KEY `ID_Usuario` (`ID_Usuario`);
+  ADD PRIMARY KEY (`ID_Clase`);
 
 --
 -- Indices de la tabla `clase_programada`
@@ -794,7 +843,7 @@ ALTER TABLE `permiso`
 ALTER TABLE `reserva`
   ADD PRIMARY KEY (`ID_Reserva`),
   ADD KEY `ID_Clase_Programada` (`ID_Clase_Programada`),
-  ADD KEY `fk_reserva_usuario` (`ID_Usuario`);
+  ADD KEY `fk_reserva_socio` (`ID_Socio`);
 
 --
 -- Indices de la tabla `rol`
@@ -996,12 +1045,6 @@ ALTER TABLE `tutor`
   MODIFY `ID_Tutor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de la tabla `usuario`
---
-ALTER TABLE `usuario`
-  MODIFY `ID_Usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
 -- Restricciones para tablas volcadas
 --
 
@@ -1009,8 +1052,9 @@ ALTER TABLE `usuario`
 -- Filtros para la tabla `asistencia`
 --
 ALTER TABLE `asistencia`
-  ADD CONSTRAINT `asistencia_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`),
-  ADD CONSTRAINT `fk_asistencia_usuario` FOREIGN KEY (`ID_Usuario`) REFERENCES `socio` (`ID_Usuario`);
+  ADD CONSTRAINT `asistencia_ibfk_1` FOREIGN KEY (`ID_Socio`) REFERENCES `usuario` (`ID_Usuario`),
+  ADD CONSTRAINT `fk_asistencia_clase` FOREIGN KEY (`ID_Clase_Programada`) REFERENCES `clase_programada` (`ID_Clase_Programada`),
+  ADD CONSTRAINT `fk_asistencia_socio` FOREIGN KEY (`ID_Socio`) REFERENCES `socio` (`ID_Usuario`);
 
 --
 -- Filtros para la tabla `certificado`
@@ -1018,12 +1062,6 @@ ALTER TABLE `asistencia`
 ALTER TABLE `certificado`
   ADD CONSTRAINT `certificado_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`),
   ADD CONSTRAINT `fk_certificado_usuario` FOREIGN KEY (`ID_Usuario`) REFERENCES `socio` (`ID_Usuario`);
-
---
--- Filtros para la tabla `clase`
---
-ALTER TABLE `clase`
-  ADD CONSTRAINT `clase_ibfk_1` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`);
 
 --
 -- Filtros para la tabla `clase_programada`
@@ -1080,9 +1118,9 @@ ALTER TABLE `pago`
 -- Filtros para la tabla `reserva`
 --
 ALTER TABLE `reserva`
-  ADD CONSTRAINT `fk_reserva_usuario` FOREIGN KEY (`ID_Usuario`) REFERENCES `socio` (`ID_Usuario`),
+  ADD CONSTRAINT `fk_reserva_socio` FOREIGN KEY (`ID_Socio`) REFERENCES `socio` (`ID_Usuario`),
   ADD CONSTRAINT `reserva_ibfk_1` FOREIGN KEY (`ID_Clase_Programada`) REFERENCES `clase_programada` (`ID_Clase_Programada`),
-  ADD CONSTRAINT `reserva_ibfk_2` FOREIGN KEY (`ID_Usuario`) REFERENCES `usuario` (`ID_Usuario`);
+  ADD CONSTRAINT `reserva_ibfk_2` FOREIGN KEY (`ID_Socio`) REFERENCES `usuario` (`ID_Usuario`);
 
 --
 -- Filtros para la tabla `rol_permiso`
