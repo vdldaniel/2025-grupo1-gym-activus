@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +11,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="../../assets/css/settings.css">
 </head>
+
 <body>
   <div class="d-flex">
     <!-- Menu lateral -->
@@ -25,7 +26,7 @@
             <i data-lucide="settings"></i> Configuración
           </a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a href="#" class="nav-link text-white">
             <i data-lucide="calendar"></i> Horarios
           </a>
@@ -39,16 +40,23 @@
           <a href="#" class="nav-link text-white">
             <i data-lucide="palette"></i> Apariencia
           </a>
-        </li>
+        </li> -->
       </ul>
     </aside>
 
     <!-- Contenido principal -->
     <main class="flex-grow-1 p-4">
-      <div class="container">
-        <h1 class="text-white">Configuración</h1>
-        <p class="text-gray">Ubicación y horarios de funcionamiento de tu gimnasio</p>
+      <header class="bg-card p-4 ">
+        <div class="d-flex align-items-center gap-3">
+          <i data-lucide="settings" class="h-8 w-8 text-primary"></i>
+          <div>
+            <h1 class="h3 mb-0">Configuración</h1>
+            <small class="text-gray">Ubicación y horarios de funcionamiento de tu gimnasio</small>
+          </div>
+        </div>
+      </header>
 
+      <div class="container">
         <!-- Ubicación -->
         <div class="card-dark">
           <h2 class="section-title"><i data-lucide="map-pin"></i> Ubicación</h2>
@@ -56,11 +64,13 @@
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label text-white">Nombre del Gimnasio</label>
-              <input type="text" id="gymName" class="form-control dark-input" value="Gym" placeholder="Nombre de tu gimnasio">
+              <input type="text" id="gymName" class="form-control dark-input"
+                placeholder="Nombre de tu gimnasio">
             </div>
             <div class="col-md-6">
               <label class="form-label text-white">Ubicación</label>
-              <input type="text" id="gymLocation" class="form-control dark-input" placeholder="Ubicación de tu gimnasio">
+              <input type="text" id="gymLocation" class="form-control dark-input"
+                placeholder="Ubicación de tu gimnasio">
             </div>
           </div>
         </div>
@@ -69,7 +79,7 @@
         <div class="card-dark mt-4">
           <h2 class="section-title"><i data-lucide="clock"></i> Horarios de Funcionamiento</h2>
           <p class="text-gray">Configura los horarios de apertura y cierre para cada día</p>
-          <div id="scheduleContainer"></div>
+          <div  id="scheduleContainer"></div>
         </div>
 
         <!-- Feriados -->
@@ -83,10 +93,11 @@
             </div>
             <div class="col-md-4">
               <label class="form-label text-white">Nombre del Feriado</label>
-              <input type="text" id="holidayName" class="form-control dark-input" placeholder="Ej: Día de la Independencia">
+              <input type="text" id="holidayName" class="form-control dark-input"
+                placeholder="Ej: Día de la Independencia">
             </div>
             <div class="col-md-4 d-flex align-items-end">
-              <button class="btn btn-primary w-100" onclick="addHoliday()">Agregar</button>
+              <button class="btn btn-primary" onclick="addHoliday()">Agregar</button>
             </div>
           </div>
           <hr class="border-gray">
@@ -102,7 +113,8 @@
           <button class="btn btn-primary">Guardar Configuración</button>
         </div>
       </div>
-    </main>
+  </div>
+  </main>
   </div>
 
   <script src="../../assets/js/settings.js"></script>
@@ -110,4 +122,5 @@
     lucide.createIcons(); // Renderiza iconos al cargar
   </script>
 </body>
+
 </html>
