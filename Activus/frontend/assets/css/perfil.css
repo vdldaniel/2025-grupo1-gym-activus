@@ -12,6 +12,10 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.bg-hed{
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 .card-header {
     background-color: #020817;
     border-bottom: 1px solid #334155;
