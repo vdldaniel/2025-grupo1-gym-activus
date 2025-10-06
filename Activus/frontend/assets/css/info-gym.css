@@ -44,3 +44,13 @@ body {
 .sidebar .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
+
+/* boton editar */
+.btn-outline-light {
+    border-color: #475569;
+    color: #f1f5f9;
+}
+
+.btn-outline-light:hover {
+    background-color: #475569;
+}
