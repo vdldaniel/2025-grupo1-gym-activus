@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Información del Gimnasio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../assets/css/info-gym.css" rel="stylesheet">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+
+<body>
+    <div class="d-flex min-vh-100">
+        <!-- Menu lateral -->
+        <aside class="sidebar p-3">
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <i data-lucide="dumbbell" class="text-primary"></i>
+                <h2 class="text-white h5 mb-0">Gym</h2>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="info-gym.html" class="nav-link text-white">
+                        <i data-lucide="info"></i> Información Gimnasio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="perfil-admin.html" class="nav-link text-white">
+                        <i data-lucide="user"></i> Mi Perfil - Administrativo
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        <!-- Main Content -->
+        <main class="flex-grow-1">
+            
+            <div class="container-lg py-5">
+
+                <div class="row g-4">
+
+                    <!-- Información del Gimnasio -->
+                    <div class="col-lg-7">
+                        <div class="card-dark p-4">
+                            <h2 class="section-title mb-2"><i data-lucide="dumbbell"></i> Información general y horarios
+                            </h2>
+                            <!-- <p class="text-gray mb-4">Información general y horarios</p> -->
+
+                            <div class="mb-3">
+                                <h5 class="text-white">🏋️ Nombre:</h5>
+                                <p id="gymName" class="text-gray">Gym Fitness Club</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <h5 class="text-white">📍 Ubicación:</h5>
+                                <p id="gymLocation" class="text-gray">Av. Corrientes 1234, Buenos Aires, Argentina</p>
+                            </div>
+
+                            <div class="mb-3">
+                                <h5 class="text-white">🕒 Horarios:</h5>
+                                <ul id="scheduleList" class="list-unstyled text-gray"></ul>
+                            </div>
+
+                            <div>
+                                <h5 class="text-white">📅 Feriados:</h5>
+                                <ul id="holidayList" class="list-unstyled text-gray"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mapa -->
+                    <div class="col-lg-5">
+                        <div class="card-dark p-3">
+                            <h5 class="text-white mb-3"><i data-lucide="map-pin"></i> Mapa del Gimnasio</h5>
+                            <div id="map" style="height: 350px; border-radius: 12px;"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+
+    </div>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="../../assets/js/info-gym.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Perfil - Gym</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/perfil.css">
+</head>
+
+<body>
+
+    <div class="d-flex min-vh-100">
+        <!-- Menu lateral -->
+        <aside class="sidebar p-3">
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <i data-lucide="dumbbell" class="text-primary"></i>
+                <h2 class="text-white h5 mb-0">Gym</h2>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="perfil-profe.html" class="nav-link text-white">
+                        <i data-lucide="user"></i> Mi Perfil - Profesor
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="editar-perfil-profe.html" class="nav-link text-white">
+                        <i data-lucide="edit"></i> Mi Perfil - Editar
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Contenido principal -->
+        <main class="flex-grow-1">
+            <header class="bg-hed p-4">
+                <div class="d-flex align-items-center gap-3">
+                    <i data-lucide="user" class="h-8 w-8 text-primary"></i>
+                    <div class="flex-grow-1">
+                        <h1 class="text-light h3 mb-0">Mi Perfil</h1>
+                        <small class="text-muted">Visualiza tu información personal</small>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-4 container">
+                <div class="row g-4">
+                    <!-- Información Personal -->
+                    <div class="col-lg-8">
+                        <div class="card bg-card text-light shadow-sm position-relative">
+
+                            <!-- Botón Editar en esquina superior derecha -->
+                            <a href="editar-perfil-profe.html"
+                                class="btn btn-outline-primary btn-sm position-absolute top-0 end-0 m-2">
+                                <i data-lucide="edit" class="me-1"></i>Editar
+                            </a>
+
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <p class="mb-1 text-muted small">Nombre</p>
+                                        <p class="fw-semibold">Profesor</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1 text-muted small">Apellido</p>
+                                        <p class="fw-semibold">Gym</p>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <p class="mb-1 text-muted small">Fecha Nacimiento</p>
+                                    <p class="fw-semibold">10/01/1990</p>
+                                </div>
+
+                                <div class="mt-3">
+                                    <p class="mb-1 text-muted small">Correo Electrónico</p>
+                                    <p class="fw-semibold">profesor@gym.com</p>
+                                </div>
+
+                                <div class="mt-3">
+                                    <p class="mb-1 text-muted small">Teléfono</p>
+                                    <p class="fw-semibold">+54 11 1234-5678</p>
+                                </div>
+
+                                <div class="mt-3">
+                                    <p class="mb-1 text-muted small">Dirección</p>
+                                    <p class="fw-semibold">Av. Corrientes 1234, Buenos Aires, Argentina</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Resumen y Configuración -->
+                    <div class="col-lg-4 d-flex flex-column gap-3">
+                        <div class="card bg-card text-light shadow-sm">
+                            <div class="card-header">
+                                <h5 class="mb-0">Resumen del Perfil</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
+                                        style="width:64px; height:64px;">
+                                        <i data-lucide="user" class="text-light"></i>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0 fw-medium">Profesor Gym</p>
+                                        <small class="text-muted">Rol: Profesor</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="d-flex align-items-center gap-2"><i data-lucide="mail"
+                                            class="text-muted"></i> <span class="small">profesor@gym.com</span></div>
+                                    <div class="d-flex align-items-center gap-2"><i data-lucide="phone"
+                                            class="text-muted"></i> <span class="small">+54 11 1234-5678</span></div>
+                                    <div class="d-flex align-items-center gap-2"><i data-lucide="map-pin"
+                                            class="text-muted"></i> <span class="small">Buenos Aires, Argentina</span>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2"><i data-lucide="calendar"
+                                            class="text-muted"></i> <span class="small">Miembro desde: Enero 2024</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/lucide/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/perfil.js"></script>
+</body>
+
+</html>
