@@ -1,47 +1,39 @@
-body {
-    background-color: #020817;
-    font-family: Arial, sans-serif;
-}
 
-.flex-grow-1 {
-    background-color: #020817;
+body {
+  background-color: #020817;
 }
 
 .bg-card {
-    background-color: #020817;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: #020817;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
 }
 
-.bg-hed{
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+.bg-hed {
+  background-color: #020817;
+  
 }
 
-.card-header {
-    background-color: #020817;
-    border-bottom: 1px solid #334155;
-    border-radius: 10px;
+.nav-link.active {
+  color: #0d6efd;
+  font-weight: 500;
 }
 
-.card-body {
-    background-color: #020817;
-    color: #f1f5f9;
-}
-
-input,
-textarea,
-.form-control {
-    background-color: #020817;
-    border: 1px solid #334155;
-    color: #f1f5f9;
-}
-
-.btn-outline-light {
-    border-color: #475569;
-    color: #f1f5f9;
+.card input[readonly],
+.card input[disabled] {
+  background-color: #020817;
+  color: #adb5bd;
+  border: 1px solid #2a3248;
+  cursor: not-allowed;
 }
 
 .btn-outline-light:hover {
-    background-color: #475569;
+  background-color: #ffffff20;
+}
+
+.btn-danger {
+  border: none;
+  transition: 0.2s;
 }
 
 /* Sidebar */
@@ -66,39 +58,41 @@ textarea,
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Mantener fondo oscuro al enfocar */
-input:focus,
-input.form-control:focus {
-    background-color: #020817;
-    color: #f1f5f9;
-    /* Mantener texto claro */
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 .2rem rgba(13, 110, 253, .25);
-}
+
 
 .text-muted {
   color: #9ca3af !important;
 }
 
-/* === Botones de configuración más pequeños y con efecto === */
+
+ /* === Botones de configuración más pequeños y con efecto === */
 .custom-btn {
-  width: auto; /* evita que se estiren a todo el ancho */
-  padding: 6px 14px;
-  border-radius: 8px;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
+    width: auto;
+    /* evita que se estiren a todo el ancho */
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
 }
 
 .custom-btn:hover {
-  background-color: #1e293b;
-  border-color: #60a5fa;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(96, 165, 250, 0.3);
+    background-color: #1e293b;
+    border-color: #60a5fa;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(96, 165, 250, 0.3);
 }
 
 .custom-btn:active {
-  transform: scale(0.98);
-  box-shadow: 0 2px 4px rgba(96, 165, 250, 0.2);
+    transform: scale(0.98);
+    box-shadow: 0 2px 4px rgba(96, 165, 250, 0.2);
+}
+/* modales */
+.modal-content {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
+.modal-header .btn-close {
+  filter: invert(1);
+}
