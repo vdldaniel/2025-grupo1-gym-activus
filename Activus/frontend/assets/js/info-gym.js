@@ -13,10 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
       Sábado: "9:00 - 18:00",
       Domingo: "Cerrado"
     },
-    holidays: [
-      { date: "9 de Julio", name: "Día de la Independencia" },
-      { date: "25 de Diciembre", name: "Navidad" }
-    ]
   };
 
   // Mostrar datos
@@ -29,13 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
     li.textContent = `${day}: ${hours}`;
     scheduleList.appendChild(li);
   }
-
-  const holidayList = document.getElementById("holidayList");
-  gymData.holidays.forEach(h => {
-    const li = document.createElement("li");
-    li.textContent = `${h.date} – ${h.name}`;
-    holidayList.appendChild(li);
-  });
 
   // Inicializar mapa con Leaflet
   const map = L.map('map').setView(gymData.coordinates, 15);

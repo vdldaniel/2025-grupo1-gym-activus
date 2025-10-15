@@ -36,6 +36,39 @@ body {
   transition: 0.2s;
 }
 
+input,
+textarea,
+.form-control {
+    background-color: #020817;
+    border: 1px solid #334155;
+    color: #f1f5f9;
+}
+
+.text-muted {
+  color: #9ca3af !important;
+}
+
+/* para inputs con borde */
+.dark-input {
+  background-color: #020817;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.dark-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Mantener fondo oscuro al enfocar */
+input:focus,
+input.form-control:focus,
+textarea.form-control:focus {
+  background-color: #020817; 
+  color: #f1f5f9; /* Mantener texto claro */
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 .2rem rgba(13,110,253,.25);
+}
+
 /* Sidebar */
 .sidebar {
     width: 250px;
@@ -57,13 +90,6 @@ body {
 .sidebar .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
-
-
-
-.text-muted {
-  color: #9ca3af !important;
-}
-
 
  /* === Botones de configuración más pequeños y con efecto === */
 .custom-btn {
@@ -87,6 +113,7 @@ body {
     transform: scale(0.98);
     box-shadow: 0 2px 4px rgba(96, 165, 250, 0.2);
 }
+
 /* modales */
 .modal-content {
   border-radius: 12px;
