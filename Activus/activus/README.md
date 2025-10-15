@@ -67,13 +67,16 @@ Tener instalado:
 3. Generar la clave de aplicación
 - php artisan key:generate
 
-4. Configurar la base de datos en .env
+4. Copiar el .env
+- copy .env.example .env
+
+5. Configurar la base de datos en .env
 - DB_DATABASE= activus_db
   DB_USERNAME=root
   DB_PASSWORD=
 
-5. Ejecutar migraciones
+6. Ejecutar migraciones
 - php artisan migrate
 
-6. Iniciar Servidor **http://127.0.0.1:8000**
+7. Iniciar Servidor **http://127.0.0.1:8000**
 - php artisan serve 

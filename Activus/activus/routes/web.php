@@ -47,6 +47,15 @@ Route::get('/pagos', function () {
     return view('pagos.index');
 });
 
+Route::get('/salas', function () {
+    return view('salas.index');
+});
+
+Route::get('/configuraciones', function () {
+    return view('configuraciones.index');
+});
+
+
 
 Route::get('/estadosUsuario', [EstadoUsuarioController::class, 'index']);
 Route::get('/roles', [RolController::class, 'index']);
