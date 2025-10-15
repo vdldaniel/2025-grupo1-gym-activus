@@ -129,47 +129,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-document.addEventListener("click", async (e) => {
-    if (e.target.closest(".editar-btn")) {
-        const btnUsuario = e.target.closest(".editar-btn");
-        const idUsuario = btnUsuario.dataset.id;
 
-        try {
-            const res = await fetch(`/usuarios/${idUsuario}`);
-            if (!res.ok) throw new Error("No se pudo obtener el usuario");
+const modalEditar = document.getElementById('modalEditarUsuario');
 
-            const usuario = await res.json();
+modalEditar.addEventListener('show.bs.modal', function (e) {
+    const btnUsuario = e.relatedTarget;
 
-            
-            document.getElementById("idUsuarioEditar").value = usuario.ID_Usuario ?? "";
-            document.getElementById("nombreUsuarioEditar").value = usuario.Nombre ?? "";
-            document.getElementById("apellidoUsuarioEditar").value = usuario.Apellido ?? "";
-            document.getElementById("dniUsuarioEditar").value = usuario.DNI ?? "";
-            document.getElementById("telefonoUsuarioEditar").value = usuario.Telefono ?? "";
-            document.getElementById("emailUsuarioEditar").value = usuario.Email ?? "";
+    const id = btnUsuario.getAttribute('data-id');
+    const nombre = btnUsuario.getAttribute('data-nombre');
+    const apellido = btnUsuario.getAttribute('data-apellido');
+    const email = btnUsuario.getAttribute('data-email');
+    const dni = btnUsuario.getAttribute('data-dni');
+    const telefono = btnUsuario.getAttribute('data-telefono');
+    const rol = btnUsuario.getAttribute('data-rol');
 
-            const selectRol = document.getElementById("rolUsuarioEditar");
-            if (selectRol && usuario.roles && usuario.roles.length > 0) {
-                selectRol.value = usuario.roles[0].ID_Rol; 
-            } else {
-                selectRol.value = "";
-            }
+    modalEditar.querySelector('#nombreUsuarioEditar').value = nombre;
+    modalEditar.querySelector('#apellidoUsuarioEditar').value = apellido;
+    modalEditar.querySelector('#emailUsuarioEditar').value = email;
+    modalEditar.querySelector('#dniUsuarioEditar').value = dni;
+    modalEditar.querySelector('#telefonoUsuarioEditar').value = telefono;
+    modalEditar.querySelector('#rolUsuarioEditar').value = rol;
 
+    modalEditar.querySelector('#formEditarUsuario').action = `/usuarios/${id}`;
 
-        } catch (error) {
-            console.error(error);
-            alert("Error al obtener los datos del usuario.");
-        }
-    }
-});
-
-
-
-
+    const ruta = modalEditar.querySelector('#formEditarUsuario').action;
+    
+    
+    
     if (formEditarUsuario) {
         formEditarUsuario.addEventListener("submit", async (e) => {
         e.preventDefault();
-
+        
         const campos = [
             "nombreUsuarioEditar", "apellidoUsuarioEditar", "dniUsuarioEditar",
             "telefonoUsuarioEditar", "emailUsuarioEditar", "rolUsuarioEditar"
@@ -181,20 +171,19 @@ document.addEventListener("click", async (e) => {
             if (input) input.classList.remove("is-invalid");
             if (errorDiv) errorDiv.textContent = "";
         });
-
+        
         try {
             const formData = new FormData(formEditarUsuario);
-            formData.append("_method", "PUT");
+            formData.append("_method", "PUT"); 
 
-            const usuarioId = document.getElementById("idUsuarioEditar").value;
-
-            const res = await fetch(`/usuarios/${usuarioId}`, {
-                method: "POST",
+            const res = await fetch(ruta, {
+                method: "POST", 
                 headers: {
                     "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
                 },
                 body: formData
             });
+            
 
             const json = await res.json();
 
@@ -206,7 +195,7 @@ document.addEventListener("click", async (e) => {
                     const modalExito = bootstrap.Modal.getOrCreateInstance(modalExitoEl);
                     const modalExitoTitulo = document.getElementById("titulo-exito");
                     const modalExitoBtn = document.getElementById("btn-exito");
-
+                    
                     modalExitoTitulo.textContent = json.message;
                     modalExito.show();
 
@@ -229,16 +218,17 @@ document.addEventListener("click", async (e) => {
             alert("Error de conexión o del servidor.");
         }
     });
-    }
+}
+});
 
-    const botones = document.querySelectorAll(".btn-desactivar");
+const botonesDesAct = document.querySelectorAll(".btn-desactivar");
 
-    botones.forEach(btn => {
-        btn.addEventListener("click", async () => {
-            const idUsuario = btn.dataset.id;
-
+botonesDesAct.forEach(btn => {
+    btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+        
             try {
-                const res = await fetch(`/usuarios/${idUsuario}/cambiar-estado`, {
+                const res = await fetch(`/usuarios/${id}/cambiar-estado`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -280,6 +270,15 @@ document.addEventListener("click", async (e) => {
         });
     });
 
+    const modalEliminar = document.getElementById('modalEliminarUsuario');
+
+    modalEliminar.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+
+        const form = modalEliminar.querySelector('#formEliminarUsuario');
+        form.action = `/usuarios/${id}`;
+    });
 
 
 });

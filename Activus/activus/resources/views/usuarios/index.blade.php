@@ -148,6 +148,7 @@
                         </tr>
                         </thead>
                         <tbody>
+                            @if($usuarios->count())
                             @foreach($usuarios as $u)
                             <tr>
                                 
@@ -185,7 +186,15 @@
                                         <ul class="dropdown-menu dropdown-menu-end dropdown-acciones">
 
                                             <li>
-                                                <button class="dropdown-item editar-btn dropdown-acciones dropdown-item-acciones" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario" data-id="{{ $u->ID_Usuario }}">
+                                                <button class="dropdown-item editar-btn dropdown-acciones dropdown-item-acciones" data-bs-toggle="modal"
+                                                    data-bs-target="#modalEditarUsuario"
+                                                    data-id="{{ $u->ID_Usuario }}"
+                                                    data-nombre="{{ $u->Nombre }}"
+                                                    data-apellido="{{ $u->Apellido }}"
+                                                    data-email="{{ $u->Email }}"
+                                                    data-dni="{{ $u->DNI }}"
+                                                    data-telefono="{{ $u->Telefono }}"
+                                                    data-rol="{{ $u->roles->first()?->ID_Rol }}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen me-2">
                                                         <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                                         <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/>
@@ -223,6 +232,7 @@
                                 </td>
                             </tr>
                             @endforeach
+                            @endif
                             </tbody>
 
                     </table>
@@ -239,7 +249,7 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div id="modal-body-crear" class="modal-body my-4 p-4">        
-            <form id="formUsuario"action="{{ route('usuarios.crear') }}" method="POST"">
+            <form id="formUsuario"action="{{ route('usuarios.crear') }}" method="POST">
                 @csrf
                 <div class="row g-3">
                         <div class="mb-3 col-12 col-md-6">
@@ -300,10 +310,10 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body my-4 p-4">        
-                <form id="formEditarUsuario" method="POST" action="{{ route('usuarios.editar', $u->ID_Usuario) }}">
+                <form id="formEditarUsuario" method="POST" action="">
                 @csrf
                 @method('PUT')
-                <input hidden id="idUsuarioEditar" data-id="{{ $u->ID_Usuario }}" type="text">
+                <input type="hidden" id="idUsuarioEditar" name="idUsuarioEditar">
                 <div class="row g-3">
                         <div class="mb-3 col-12 col-md-6">
                             <label class="form-label">Nombre</label>
@@ -367,7 +377,7 @@
             <p>¿Está seguro de que desea eliminar este usuario?</p>
         </div>
         <div class="modal-footer border-0">
-        <form action="{{ route('usuarios.eliminar', $u->ID_Usuario) }}" method="POST">
+            <form id="formEliminarUsuario" method="POST" action="">
             @csrf
             @method('DELETE')
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
