@@ -35,7 +35,7 @@
 
 
   {{-- Resources --}}
-  @vite(['resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/js/usuario.js', 'resources/js/asistencia.js'])
+  @vite(['resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/js/usuario.js', 'resources/js/asistencia.js', 'resources/js/profesores-socio.js', 'resources/js/profesores-administrativo.js', 'resources/js/membresias-socio.js'])
 
 </head>
 
@@ -157,6 +157,21 @@
       @if(PermisoHelper::tienePermiso('Profesores', $idUsuarioPrueba))
         <li>
           <a href="/profesores">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="lucide lucide-users-icon lucide-users">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <path d="M16 3.128a4 4 0 0 1 0 7.744" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <circle cx="9" cy="7" r="4" />
+            </svg>
+            <span class="sidebar-span">Profesores</span>
+          </a>
+        </li>
+      @endif
+      @if(PermisoHelper::tienePermiso('Gestion Profesores', $idUsuarioPrueba))
+        <li>
+          <a href="/profesores/gestion">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               class="lucide lucide-users-icon lucide-users">

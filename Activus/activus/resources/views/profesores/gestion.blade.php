@@ -16,11 +16,37 @@
                 </svg>
                 <div>
                     <h2 class="fw-bold mb-0">Profesores</h2>
-                    <span class="text-secondary small">Conocé a nuestros instructores</span>
+                    <span class="text-secondary small">Gestiona el equipo de instructores del gimnasio</span>
                 </div>
             </div>
         </div>
-
+        <!-- cards metricas -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6>Total Profesores</h6><i class="bi bi-mortarboard text-secondary "></i>
+                    </div>
+                    <h3 id="totalProfesores"></h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6>Profesores Activos</h6><i class="bi bi-people text-secondary "></i>
+                    </div>
+                    <h3 id="profesoresActivos"></h3>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6>Clases Asignadas</h6> <i class="bi bi-calendar4-event text-secondary "></i>
+                    </div>
+                    <h3 id="clasesAsignadas"></h3>
+                </div>
+            </div>
+        </div>
         <div class="card p-3 mb-5">
             <h6>Buscar Profesores</h6>
             <div class="search-box position-relative mt-2  mb-2 input-group flex-nowrap">
@@ -33,12 +59,12 @@
                         <circle cx="11" cy="11" r="8" />
                     </svg>
                 </span>
-                <input type="text" id="BuscarProfesores" class="form-control card-input input-left border-secondary"
+                <input type="text" id="BuscarProfesoresadmin" class="form-control card-input input-left border-secondary"
                     placeholder="Buscar por nombre ...">
             </div>
         </div>
 
-        <div class="row g-4 " id="ListadoProfesores">
+        <div class="row g-4 " id="ListadoProfesoresadmin">
 
 
         </div>

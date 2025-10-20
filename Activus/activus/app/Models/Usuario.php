@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Clase;
 
 class Usuario extends Authenticatable
 {
@@ -44,11 +45,19 @@ class Usuario extends Authenticatable
 
     public function scopeConRol($query, string $nombreRol)
     {
-        return $query->whereHas('roles', function($q) use ($nombreRol) {
+        return $query->whereHas('roles', function ($q) use ($nombreRol) {
             $q->where('rol.Nombre_Rol', $nombreRol);
         });
     }
+    public function clases()
+    {
+        return $this->hasMany(Clase::class, 'ID_Profesor', 'ID_Usuario');
+    }
 
+    public function estadoUsuario()
+    {
+        return $this->belongsTo(EstadoUsuario::class, 'ID_Estado_Usuario', 'ID_Estado_Usuario');
+    }
 
 
 }

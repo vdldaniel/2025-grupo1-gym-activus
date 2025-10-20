@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-    <div class="container py-4">
+    <div class="container vista-asistencia py-4">
 
         <div
             class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 gap-3">
@@ -35,7 +35,7 @@
             </h6>
             <p class="texto-secundario">Lista de accesos registrados</p>
 
-            <table class="table">
+            <table class="table tabla-asistencia">
                 <thead>
                     <tr>
                         <th>Nombre</th>
@@ -45,7 +45,6 @@
                     </tr>
                 </thead>
                 <tbody id="tablaAsistencias">
-                    <!-- filas cargadas dinámicamente -->
 
                 </tbody>
             </table>

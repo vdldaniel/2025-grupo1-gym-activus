@@ -42,6 +42,6 @@ async function cargarAsistencias() {
 document.addEventListener('DOMContentLoaded', () => {
     cargarAsistencias();
 
-    // Refresca cada 10 segundos
+    //actualiza cada 10 segundos  (puede no estar) es para que se vayan actualizando los datos automaticamente,creo que hay una mejor forma con event en laravel
     setInterval(cargarAsistencias, 10000);
 });
