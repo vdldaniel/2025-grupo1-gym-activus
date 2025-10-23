@@ -320,3 +320,24 @@ thead {
     text-align: left;
   }
 }
+
+/* === FIX DEFINITIVO COLOR BOTÓN FILTRAR === */
+#filtroRango .btn,
+#filtroRango button,
+#filtroRango .btn-primary {
+  background-color: #2563EB !important;  /* Azul acento igual al resto */
+  color: #fff !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  font-weight: 500 !important;
+  transition: background-color 0.2s ease;
+}
+
+#filtroRango .btn:hover,
+#filtroRango button:hover,
+#filtroRango .btn-primary:hover {
+  background-color: #1D4ED8 !important; /* Azul más oscuro al pasar el mouse */
+}
+
+@import url('./estilo.css');
