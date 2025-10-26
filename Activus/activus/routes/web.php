@@ -7,6 +7,7 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\AsistenciaController;
 use App\http\Controllers\ProfesoresController;
 use App\Http\Controllers\TipoMembresiaController;
+use App\Http\Controllers\GestionTipoMembresiaController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -33,14 +34,12 @@ Route::get('/usuarios/perfil', function () {
     return view('usuarios.perfil');
 });
 
-Route::get('/profesores', function () {
-    return view('profesores.index');
-});
-
 Route::get('/membresias', function () {
     return view('membresias.index');
 });
-
+Route::get('/membresias/gestion', function () {
+    return view('membresias.gestion');
+});
 Route::get('/donde-entrenar', function () {
     return view('donde-entrenar.index');
 });
@@ -89,3 +88,9 @@ Route::post('/usuarios/{id}/cambiar-estado', [UsuarioController::class, 'cambiar
 
 
 
+Route::get('/admin/membresias', [GestionTipoMembresiaController::class, 'index'])->name('admin.membresias');
+Route::get('/admin/membresias/listar', [GestionTipoMembresiaController::class, 'listar']);
+Route::post('/admin/membresias', [GestionTipoMembresiaController::class, 'store']);
+Route::get('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'show']);
+Route::put('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'update']);
+Route::delete('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'destroy']);
