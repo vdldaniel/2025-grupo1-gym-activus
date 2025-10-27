@@ -12,4 +12,13 @@ class TipoMembresiaController extends Controller
         $membresias = TipoMembresia::all();
         return response()->json($membresias);
     }
+    
+
+    public function index()
+    {
+        $membresias = TipoMembresia::all();
+        return view('socios.index', compact('membresias'));
+    }
+
+
 }
