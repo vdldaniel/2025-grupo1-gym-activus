@@ -19,11 +19,10 @@ class TipoMembresia extends Model
         'Descripcion'
 
     ];
-    public function socios()
-    {
-        return $this->hasMany(MembresiaSocio::class, 'ID_Tipo_Membresia');
-    }
 
+    public function socios() {
+    return $this->belongsToMany(Socio::class, 'membresia_socio', 'ID_Tipo_Membresia', 'ID_Usuario_Socio');
+    }
 
 
 }
