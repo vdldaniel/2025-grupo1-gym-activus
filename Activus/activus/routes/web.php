@@ -94,6 +94,7 @@ Route::get('/usuarios/{id}', [UsuarioController::class, 'obtenerUsuario']);
 Route::post('/usuarios/{id}/cambiar-estado', [UsuarioController::class, 'cambiarEstado'])->name('usuarios.cambiarEstado');
 
 Route::post('/socios/crear', [SocioController::class, 'crearSocio'])->name('socios.crear');
+Route::get('/socios/{id}/perfil', [SocioController::class, 'mostrar'])->name('socios.perfil');
 Route::put('/socios/{id}', [SocioController::class, 'editarSocio'])->name('socios.editar');
 Route::delete('/socios/{id}', [SocioController::class, 'eliminarSocio'])->name('socios.eliminar');
 

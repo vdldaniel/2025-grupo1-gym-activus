@@ -49,32 +49,32 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <p class="text-light">Nombre</p>
-                                        <p class="mb-1 small">Socio1</p>
+                                        <p class="mb-1 small">{{ $socio->usuario->Nombre }}</p>
                                     </div>
                                     <div class="col-md-6">
                                         <p class="text-light">Apellido</p>
-                                        <p class="mb-1 small">Gym</p>
+                                        <p class="mb-1 small">{{ $socio->usuario->Apellido }}</p>
                                     </div>
                                 </div>
 
                                 <div class="mt-3">
                                     <p class="text-light">Fecha Nacimiento</p>
-                                    <p class="mb-1 small">07/07/2000</p>
+                                    <p class="mb-1 small">{{ $socio->Fecha_Nacimiento }}</p>
                                 </div>
 
                                 <div class="mt-3">
                                     <p class="text-light">Correo Electrónico</p>
-                                    <p class="mb-1 small">socio1@gym.com</p>
+                                    <p class="mb-1 small">{{ $socio->usuario->Email }}</p>
                                 </div>
 
                                 <div class="mt-3">
                                     <p class="text-light">Teléfono</p>
-                                    <p class="mb-1 small">+54 11 1288-5678</p>
+                                    <p class="mb-1 small">{{ $socio->usuario->Telefono }}</p>
                                 </div>
 
                                 <div class="mt-3">
                                     <p class="text-light">Dirección</p>
-                                    <p class="mb-1 small">Av. Corrientes 1234, Buenos Aires, Argentina</p>
+                                    <p class="mb-1 small">{{ $socio->usuario->Dirección }}</p>
                                 </div>
                             </div>
                         </div>
@@ -94,7 +94,7 @@
                                         <i data-lucide="user" class="text-light"></i>
                                     </div>
                                     <div>
-                                        <p class="mb-0 fw-semibold">Primer Socio</p>
+                                        <p class="mb-0 fw-semibold">{{ $socio->usuario->Nombre }} {{ $socio->usuario->Apellido }}</p>
                                         <span class="badge bg-primary bg-opacity-25 text-primary border border-primary">
                                             <i data-lucide="crown" class="me-1"></i> Básico
                                         </span>
@@ -106,8 +106,7 @@
                                         <span class="small">socio1@gym.com</span>
                                     </div>
                                     <div class="d-flex align-items-center gap-2"><i data-lucide="calendar"
-                                            class="text-muted"></i> <span class="small">Miembro desde: Enero
-                                            2024</span>
+                                            class="text-muted"></i> <span class="small">Miembro desde: {{ $socio->usuario->Fecha_Alta }}</span>
                                     </div>
                                 </div>
                             </div>
