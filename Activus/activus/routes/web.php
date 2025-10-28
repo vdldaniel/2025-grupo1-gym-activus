@@ -7,15 +7,12 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\AsistenciaController;
 use App\http\Controllers\ProfesoresController;
 use App\Http\Controllers\TipoMembresiaController;
-<<<<<<< HEAD
 use App\Http\Controllers\PagoController;
-=======
 use App\Http\Controllers\GestionTipoMembresiaController;
 use App\Http\Controllers\EstadoMembresiaSocioController;
 use App\Http\Controllers\MembresiaSocioController;
 use App\Http\Controllers\SocioController;
 use App\Models\TipoMembresia;
->>>>>>> origin/main
 
 Route::get('/', function () {
     return view('inicio');

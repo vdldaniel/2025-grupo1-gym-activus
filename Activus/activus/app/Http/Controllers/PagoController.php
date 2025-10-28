@@ -23,7 +23,7 @@ class PagoController extends Controller
     {
         $hoy = Carbon::now()->toDateString();
 
-        // 🔄 Actualizar estados automáticamente según las fechas
+        //  Actualizar estados automáticamente según las fechas
         $membresias = DB::table('membresia_socio')->get();
 
         foreach ($membresias as $m) {
@@ -44,7 +44,7 @@ class PagoController extends Controller
             }
         }
 
-        // 📋 Consultar pagos con estado actualizado
+        // Consultar pagos con estado actualizado
         $pagos = DB::table('pago')
             ->join('membresia_socio', 'pago.ID_Membresia_Socio', '=', 'membresia_socio.ID_Membresia_Socio')
             ->join('usuario', 'membresia_socio.ID_Usuario_Socio', '=', 'usuario.ID_Usuario')
@@ -136,14 +136,14 @@ class PagoController extends Controller
 
             foreach ($request->membresias as $idMembresia) {
 
-                // 🔍 Verificar si el socio ya tiene esa membresía
+                //  Verificar si el socio ya tiene esa membresía
                 $membresiaSocio = DB::table('membresia_socio')->where([
                     ['ID_Usuario_Socio', $request->idSocio],
                     ['ID_Tipo_Membresia', $idMembresia],
                 ])->first();
 
                 if (!$membresiaSocio) {
-                    // ➕ Crear una nueva membresía
+                    //  Crear una nueva membresía
                     $idMembresiaSocio = DB::table('membresia_socio')->insertGetId([
                         'ID_Usuario_Socio' => $request->idSocio,
                         'ID_Tipo_Membresia' => $idMembresia,
@@ -152,7 +152,7 @@ class PagoController extends Controller
                         'Estado_Membresia' => 'Activa',
                     ]);
                 } else {
-                    // 🔄 Actualizar fechas y estado de la existente
+                    // Actualizar fechas y estado de la existente
                     $idMembresiaSocio = $membresiaSocio->ID_Membresia_Socio;
 
                     DB::table('membresia_socio')
@@ -164,12 +164,12 @@ class PagoController extends Controller
                         ]);
                 }
 
-                // 💰 Obtener precio de la membresía
+                // Obtener precio de la membresía
                 $precio = DB::table('tipo_membresia')
                     ->where('ID_Tipo_Membresia', $idMembresia)
                     ->value('Precio');
 
-                // 🧾 Registrar el pago
+                // Registrar el pago
                 DB::table('pago')->insert([
                     'ID_Membresia_Socio' => $idMembresiaSocio,
                     'ID_Usuario_Socio' => $request->idSocio,
