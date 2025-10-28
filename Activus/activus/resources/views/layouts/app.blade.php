@@ -1,6 +1,6 @@
 @php
   use App\Helpers\PermisoHelper;
-  $idUsuarioPrueba = 4; //Usuario autenticado de prueba - 1-Admin 2-Recepcionista 3-Profesor 4-Socio 5-Superadmin
+  $idUsuarioPrueba = 2; //Usuario autenticado de prueba - 1-Admin 2-Recepcionista 3-Profesor 4-Socio 5-Superadmin
 @endphp
 
 <!DOCTYPE html>

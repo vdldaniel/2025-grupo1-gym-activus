@@ -13,7 +13,7 @@
                 </div>
                 <div>
                     <p class="mb-0 fw-semibold">{{ $usuario->Nombre }} {{ $usuario->Apellido }}</p>
-                    <small class="mb-1 small">Rol: AdminSistema</small>
+                    <small class="mb-1 small">Rol: Recepcionista</small>
                 </div>
             </div>
             <div class="d-flex flex-column gap-2">
