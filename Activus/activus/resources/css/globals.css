@@ -88,6 +88,7 @@ main p {
   border-color: #2563EB;
   outline: none;
   box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, .25);
+  color: #f8fafc;
 }
 
 .texto-small-card {
@@ -320,3 +321,53 @@ thead {
     text-align: left;
   }
 }
+<<<<<<< HEAD
+=======
+
+
+@media (max-width: 768px) {
+
+  #vista-membresias-admin .table thead {
+    display: none;
+  }
+
+  #vista-membresias-admin .table,
+  #vista-membresias-admin .table tbody,
+  #vista-membresias-admin .table tr,
+  #vista-membresias-admin .table td {
+    display: block;
+    width: 100%;
+  }
+
+  #vista-membresias-admin .table tr {
+    margin-bottom: 1rem;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    background-color: var(--secondary-componente-base-clr);
+    padding: 0.8rem;
+  }
+
+  #vista-membresias-admin .table td {
+    text-align: left;
+    padding-left: 40%;
+    position: relative;
+    border: none !important;
+    border-bottom: 1px solid #1e293b !important;
+    background-color: transparent !important;
+  }
+
+  #vista-membresias-admin .table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 1rem;
+    width: 35%;
+    white-space: nowrap;
+    font-weight: 600;
+    color: var(--text-clr);
+  }
+
+  #vista-membresias-admin .table td:last-child {
+    border-bottom: none !important;
+  }
+}
+>>>>>>> origin/main

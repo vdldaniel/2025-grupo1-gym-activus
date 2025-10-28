@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MembresiaSocio;
 
 class TipoMembresia extends Model
 {
@@ -19,7 +20,9 @@ class TipoMembresia extends Model
 
     ];
 
-
+    public function socios() {
+    return $this->belongsToMany(Socio::class, 'membresia_socio', 'ID_Tipo_Membresia', 'ID_Usuario_Socio');
+    }
 
 
 }

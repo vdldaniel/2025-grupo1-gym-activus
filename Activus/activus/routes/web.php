@@ -7,7 +7,15 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\AsistenciaController;
 use App\http\Controllers\ProfesoresController;
 use App\Http\Controllers\TipoMembresiaController;
+<<<<<<< HEAD
 use App\Http\Controllers\PagoController;
+=======
+use App\Http\Controllers\GestionTipoMembresiaController;
+use App\Http\Controllers\EstadoMembresiaSocioController;
+use App\Http\Controllers\MembresiaSocioController;
+use App\Http\Controllers\SocioController;
+use App\Models\TipoMembresia;
+>>>>>>> origin/main
 
 Route::get('/', function () {
     return view('inicio');
@@ -34,14 +42,12 @@ Route::get('/usuarios/perfil', function () {
     return view('usuarios.perfil');
 });
 
-Route::get('/profesores', function () {
-    return view('profesores.index');
-});
-
 Route::get('/membresias', function () {
     return view('membresias.index');
 });
-
+Route::get('/membresias/gestion', function () {
+    return view('membresias.gestion');
+});
 Route::get('/donde-entrenar', function () {
     return view('donde-entrenar.index');
 });
@@ -80,6 +86,9 @@ Route::get('/profesores/socio', [ProfesoresController::class, 'obtenerProfesores
 Route::get('/profesores/admin', [ProfesoresController::class, 'obtenerProfesoresAdmin']);
 Route::get('/profesoresMetricas', [ProfesoresController::class, 'obtenerMetricas']);
 Route::get('/membresias/socio', [TipoMembresiaController::class, 'obtenerMembresias']);
+Route::get('/estadosMembresiaSocio', [EstadoMembresiaSocioController::class, 'index']);
+Route::get('/socios', [SocioController::class, 'index'])->name('socios.index');
+Route::get('/membresias', [TipoMembresiaController::class, 'index'])->name('membresias.index');
 
 
 Route::post('/usuarios/crear', [UsuarioController::class, 'crearUsuario'])->name('usuarios.crear');
@@ -88,6 +97,9 @@ Route::delete('/usuarios/{id}', [UsuarioController::class, 'eliminarUsuario'])->
 Route::get('/usuarios/{id}', [UsuarioController::class, 'obtenerUsuario']);
 Route::post('/usuarios/{id}/cambiar-estado', [UsuarioController::class, 'cambiarEstado'])->name('usuarios.cambiarEstado');
 
+Route::post('/socios/crear', [SocioController::class, 'crearSocio'])->name('socios.crear');
+Route::put('/socios/{id}', [SocioController::class, 'editarSocio'])->name('socios.editar');
+Route::delete('/socios/{id}', [SocioController::class, 'eliminarSocio'])->name('socios.eliminar');
 
 Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
 Route::get('/pagos/listar', [PagoController::class, 'listar'])->name('pagos.listar');
@@ -96,3 +108,9 @@ Route::get('/pagos/buscar_socio', [PagoController::class, 'buscar_socio'])->name
 Route::post('/pagos/agregar', [PagoController::class, 'agregar'])->name('pagos.agregar');
 
 
+Route::get('/admin/membresias', [GestionTipoMembresiaController::class, 'index'])->name('admin.membresias');
+Route::get('/admin/membresias/listar', [GestionTipoMembresiaController::class, 'listar']);
+Route::post('/admin/membresias', [GestionTipoMembresiaController::class, 'store']);
+Route::get('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'show']);
+Route::put('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'update']);
+Route::delete('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'destroy']);
