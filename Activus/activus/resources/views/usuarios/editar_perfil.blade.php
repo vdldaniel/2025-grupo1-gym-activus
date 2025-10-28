@@ -42,7 +42,7 @@
                                     <h5 class="mb-0">Información Personal</h5>
                                     <small class="text-secondary small mb-2">Gestiona tu información de perfil</small>
                                 </div>
-                                <a href="{{ route('usuarios.editarPerfil', ['id' => $usuario->ID_Usuario]) }}"
+                                <a href="editar-perfil-socio.html"
                                     class="btn btn-outline-primary btn-sm position-absolute top-0 end-0 m-2">
                                     <i data-lucide="edit" class="me-1"></i>Editar
                                 </a>
@@ -50,28 +50,34 @@
                             <div class="card-body">
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <p class="text-light">Nombre</p>
-                                        <p class="mb-1 small">{{ $usuario->Nombre }}</p>
+                                        <label class="form-label" for="firstName">Nombre</label>
+                                        <input type="text" id="firstName" class="form-control"
+                                            value="Mi Nombre">
                                     </div>
                                     <div class="col-md-6">
-                                        <p class="text-light">Apellido</p>
-                                        <p class="mb-1 small">{{ $usuario->Apellido }}</p>
+                                        <label class="form-label" for="lastName">Apellido</label>
+                                        <input type="text" id="lastName" class="form-control"
+                                            value="Mi Apellido">
                                     </div>
                                 </div>
                                 @if($rolId === 4)
                                 <div class="mt-3">
-                                    <p class="text-light">Fecha Nacimiento</p>
-                                    <p class="mb-1 small">{{ $socio->Fecha_Nacimiento }}</p>
+                                    <label class="form-label" for="scheduleDate">Fecha
+                                        Nacimiento</label>
+                                    <input type="date" id="scheduleDate" class="form-control"
+                                        value="1990-01-01">
                                 </div>
                                 @endif
                                 <div class="mt-3">
-                                    <p class="text-light">Correo Electrónico</p>
-                                    <p class="mb-1 small">{{ $usuario->Email }}</p>
+                                    <label class="form-label" for="email">Correo Electrónico</label>
+                                    <input type="email" id="email" class="form-control"
+                                        value="micorreo@gym.com">
                                 </div>
 
                                 <div class="mt-3">
-                                    <p class="text-light">Teléfono</p>
-                                    <p class="mb-1 small">{{ $usuario->Telefono }}</p>
+                                    <label class="form-label" for="phone">Teléfono</label>
+                                    <input type="text" id="phone" class="form-control"
+                                        value="+54 11 1234-5678">
                                 </div>
                             </div>
                         </div>

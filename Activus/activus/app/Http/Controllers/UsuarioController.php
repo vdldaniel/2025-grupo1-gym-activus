@@ -236,15 +236,33 @@ class UsuarioController extends Controller
         // Cargar el usuario con sus relaciones
         $usuario = Usuario::with(['roles'])->findOrFail($id);
 
-        // Buscar el socio correspondiente (si existe)
+
         $socio = \App\Models\Socio::where('ID_Usuario', $usuario->ID_Usuario)
             ->with('usuario') // para poder usar $socio->usuario->Nombre
             ->first();
 
-        // Obtener el rol (por ejemplo, el primero que tenga)
+
         $rolId = $usuario->roles->first()->ID_Rol ?? null;
 
         // Enviar todo a la vista
         return view('usuarios.perfil', compact('usuario', 'socio', 'rolId'));
+    }
+
+    public function editar($id)
+    {
+        
+        $usuario = Usuario::with('roles')->findOrFail($id);
+
+        
+        $rolId = $usuario->roles->first()->ID_Rol ?? null;
+
+        
+        $socio = null;
+        if ($rolId === 4) {
+            $socio = \App\Models\Socio::where('ID_Usuario', $usuario->ID_Usuario)->first();
+        }
+
+        
+        return view('usuarios.editar_perfil', compact('usuario', 'rolId', 'socio'));
     }
 }
