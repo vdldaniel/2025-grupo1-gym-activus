@@ -7,6 +7,7 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\AsistenciaController;
 use App\http\Controllers\ProfesoresController;
 use App\Http\Controllers\TipoMembresiaController;
+use App\Http\Controllers\PagoController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -87,5 +88,11 @@ Route::delete('/usuarios/{id}', [UsuarioController::class, 'eliminarUsuario'])->
 Route::get('/usuarios/{id}', [UsuarioController::class, 'obtenerUsuario']);
 Route::post('/usuarios/{id}/cambiar-estado', [UsuarioController::class, 'cambiarEstado'])->name('usuarios.cambiarEstado');
 
+
+Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
+Route::get('/pagos/listar', [PagoController::class, 'listar'])->name('pagos.listar');
+Route::get('/pagos/listar_membresias', [PagoController::class, 'listar_membresias'])->name('pagos.listar_membresias');
+Route::get('/pagos/buscar_socio', [PagoController::class, 'buscar_socio'])->name('pagos.buscar_socio');
+Route::post('/pagos/agregar', [PagoController::class, 'agregar'])->name('pagos.agregar');
 
 
