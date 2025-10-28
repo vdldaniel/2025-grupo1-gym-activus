@@ -107,9 +107,6 @@ class UsuarioController extends Controller
                 'message' => "Usuario creado correctamente",
                 'usuario' => $usuario->load('roles'),
             ], 200);
-
-
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -184,10 +181,6 @@ class UsuarioController extends Controller
                 'message' => "Usuario editado correctamente",
                 'usuario' => $usuario->load('roles'),
             ], 200);
-
-
-
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -240,10 +233,18 @@ class UsuarioController extends Controller
 
     public function perfil($id)
     {
-        $usuario = Usuario::findOrFail($id);
-        return view('usuarios.perfil', compact('usuario'));
+        // Cargar el usuario con sus relaciones
+        $usuario = Usuario::with(['roles'])->findOrFail($id);
+
+        // Buscar el socio correspondiente (si existe)
+        $socio = \App\Models\Socio::where('ID_Usuario', $usuario->ID_Usuario)
+            ->with('usuario') // para poder usar $socio->usuario->Nombre
+            ->first();
+
+        // Obtener el rol (por ejemplo, el primero que tenga)
+        $rolId = $usuario->roles->first()->ID_Rol ?? null;
+
+        // Enviar todo a la vista
+        return view('usuarios.perfil', compact('usuario', 'socio', 'rolId'));
     }
-
-
-
 }

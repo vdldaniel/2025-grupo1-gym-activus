@@ -59,5 +59,8 @@ class Usuario extends Authenticatable
         return $this->belongsTo(EstadoUsuario::class, 'ID_Estado_Usuario', 'ID_Estado_Usuario');
     }
 
-
+    public function socio()
+    {
+        return $this->hasOne(Socio::class, 'ID_Usuario', 'ID_Usuario');
+    }
 }

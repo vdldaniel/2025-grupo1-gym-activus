@@ -244,15 +244,19 @@ class SocioController extends Controller
     // Método para ver un socio específico
     public function mostrar($id)
     {
-        // Buscamos el socio con su usuario asociado
-        $socio = Socio::with('usuario')->find($id);
+        // 1️⃣ Buscamos el usuario con sus roles y (si existe) su socio
+        $usuario = Usuario::with(['roles', 'socio'])->findOrFail($id);
 
-        // Si no existe, devolvemos un error 404
-        if (!$socio) {
-            abort(404, 'Socio no encontrado');
-        }
+        // 2️⃣ Obtenemos el primer rol (si tiene más de uno)
+        $rol = $usuario->roles->first();
 
-        // Enviamos los datos a la vista
-        return view('usuarios.perfil', compact('socio'));
+        // Si el usuario no tiene rol, evitamos error
+        $rolId = $rol ? $rol->ID_Rol : null;
+
+        // 3️⃣ Buscamos el socio asociado (si lo hay)
+        $socio = $usuario->socio;
+
+        // 4️⃣ Enviamos todo a la vista
+        return view('usuarios.perfil', compact('usuario', 'rolId', 'socio'));
     }
 }
