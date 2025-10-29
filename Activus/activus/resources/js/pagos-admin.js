@@ -85,37 +85,70 @@ document.addEventListener("DOMContentLoaded", async () => {
         membresiasContainer.insertAdjacentHTML("beforeend", `
           <div class="form-check">
             <input class="form-check-input" type="checkbox" value="${m.id}"
-                   id="mem${m.id}" data-precio="${m.precio}" data-duracion="${m.duracion}">
+                  id="mem${m.id}" data-precio="${m.precio}" data-duracion="${m.duracion}">
             <label class="form-check-label" for="mem${m.id}">
-              ${m.nombre} — $${Number(m.precio).toLocaleString()} (${m.duracion} días)
+              ${m.nombre} — $${Number(m.precio).toLocaleString()}
             </label>
           </div>
         `);
       });
+
     } catch (err) {
       console.error("Error al cargar membresías:", err);
     }
   }
 
   // ============================
-  // CALCULAR MONTO Y VENCIMIENTO
+  // CALCULAR MONTO Y VENCIMIENTO (con calendario real)
   // ============================
   membresiasContainer?.addEventListener("change", () => {
     const seleccionadas = [...document.querySelectorAll("#membresiasContainer input:checked")];
 
+    // Calcular monto total
     const total = seleccionadas.reduce((sum, chk) => sum + Number(chk.dataset.precio || 0), 0);
-    if (montoTotal) montoTotal.value = total ? `$${total.toLocaleString()}` : "";
+    montoTotal.value = total ? `$${total.toLocaleString()}` : "";
 
     if (seleccionadas.length > 0) {
-      const hoy = fechaPago.value ? new Date(fechaPago.value) : new Date();
+      const hoy = fechaPago.value ? new Date(fechaPago.value + "T00:00:00") : new Date();
+
+      // Detectar duración más larga entre las membresías seleccionadas
       const diasMax = Math.max(...seleccionadas.map(chk => Number(chk.dataset.duracion || 0)));
       const venc = new Date(hoy);
-      venc.setDate(venc.getDate() + (isFinite(diasMax) ? diasMax : 0));
-      if (fechaVencimiento) fechaVencimiento.value = venc.toISOString().split("T")[0];
+
+      // Cálculo adaptativo preciso
+      if (diasMax >= 28 && diasMax <= 31) {
+        // Mensual → agregar 1 mes exacto, manteniendo el mismo día si existe
+        const dia = venc.getDate();
+        venc.setMonth(venc.getMonth() + 1);
+        // Si el mes siguiente no tiene ese día (por ejemplo 31), ajusta al último disponible
+        if (venc.getDate() < dia) venc.setDate(0);
+      } else if (diasMax >= 89 && diasMax <= 92) {
+        // Trimestral
+        const dia = venc.getDate();
+        venc.setMonth(venc.getMonth() + 3);
+        if (venc.getDate() < dia) venc.setDate(0);
+      } else if (diasMax >= 180 && diasMax <= 190) {
+        // Semestral
+        const dia = venc.getDate();
+        venc.setMonth(venc.getMonth() + 6);
+        if (venc.getDate() < dia) venc.setDate(0);
+      } else if (diasMax >= 360 && diasMax <= 370) {
+        // Anual
+        const dia = venc.getDate();
+        venc.setFullYear(venc.getFullYear() + 1);
+        if (venc.getDate() < dia) venc.setDate(0);
+      } else {
+        // Otras duraciones (en días)
+        venc.setDate(venc.getDate() + diasMax);
+      }
+
+      fechaVencimiento.value = venc.toISOString().split("T")[0];
     } else {
-      if (fechaVencimiento) fechaVencimiento.value = "";
+      fechaVencimiento.value = "";
     }
   });
+
+
 
   // ============================
   // LIMPIAR MODAL AL ABRIR

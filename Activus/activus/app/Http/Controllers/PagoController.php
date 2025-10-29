@@ -176,6 +176,7 @@ class PagoController extends Controller
                     'ID_Usuario_Registro' => auth()->id() ?? 1,
                     'Monto' => $precio,
                     'Fecha_Pago' => $request->fechaPago,
+                    'Fecha_Vencimiento' => $request->fechaVencimiento,
                     'Metodo_Pago' => $request->metodo,
                     'Observacion' => $request->observacion ?? null,
                 ]);
