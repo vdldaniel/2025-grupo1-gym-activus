@@ -13,6 +13,7 @@
   <title>Activus</title>
   {{-- jQuery --}}
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  
 
 
   {{-- Bootstrap --}}
@@ -23,6 +24,7 @@
     integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
     crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 
 
