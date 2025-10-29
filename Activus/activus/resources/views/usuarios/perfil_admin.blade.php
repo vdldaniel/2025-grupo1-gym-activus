@@ -27,7 +27,7 @@
             </div>
         </div>
     </div>
-
+    @if (!Str::contains(Route::currentRouteName(), 'editarPerfil'))
     <!-- Configuración de Cuenta -->
     <div class="card bg-card text-light shadow-sm">
         <div class="card-header">
@@ -40,4 +40,5 @@
             <button class="btn btn-danger btn-sm">Cerrar sesión</button>
         </div>
     </div>
+    @endif
 </div>

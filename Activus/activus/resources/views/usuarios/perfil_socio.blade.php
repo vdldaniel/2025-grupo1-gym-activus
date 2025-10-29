@@ -12,7 +12,7 @@
                      <i data-lucide="user" class="text-light"></i>
                  </div>
                  <div>
-                     <p class="mb-0 fw-semibold">{{ $socio->usuario->Nombre }} {{ $socio->usuario->Apellido }}</p>
+                     <p class="mb-0 fw-semibold">{{ $usuario->Nombre }} {{ $usuario->Apellido }}</p>
                      <span class="badge bg-primary bg-opacity-25 text-primary border border-primary">
                          <i data-lucide="crown" class="me-1"></i> Básico
                      </span>
@@ -21,7 +21,7 @@
              <div class="d-flex flex-column gap-2">
                  <div class="d-flex align-items-center gap-2">
                      <i data-lucide="mail" class="text-muted"></i>
-                     <span class="small">{{ $socio->usuario->Email }}</span>
+                     <span class="small">{{ $usuario->Email }}</span>
                  </div>
                  <div class="d-flex align-items-center gap-2"><i data-lucide="calendar"
                          class="text-muted"></i> <span class="small">Miembro desde: {{ $socio->usuario->Fecha_Alta }}</span>
@@ -29,7 +29,7 @@
              </div>
          </div>
      </div>
-
+     @if (!Str::contains(Route::currentRouteName(), 'editarPerfil'))
      <!-- Configuración de Cuenta -->
      <div class="card bg-card text-light shadow-sm">
          <div class="card-header">
@@ -42,4 +42,5 @@
              <button class="btn btn-danger btn-sm">Cerrar sesión</button>
          </div>
      </div>
+     @endif
  </div>

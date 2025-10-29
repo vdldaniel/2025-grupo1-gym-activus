@@ -37,48 +37,46 @@
                     <!-- Información Personal -->
                     <div class="col-lg-8">
                         <div class="card bg-card text-light shadow-sm">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="mb-0">Información Personal</h5>
-                                    <small class="text-secondary small mb-2">Gestiona tu información de perfil</small>
-                                </div>
-                                <a href="editar-perfil-socio.html"
-                                    class="btn btn-outline-primary btn-sm position-absolute top-0 end-0 m-2">
-                                    <i data-lucide="edit" class="me-1"></i>Editar
-                                </a>
-                            </div>
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="firstName">Nombre</label>
-                                        <input type="text" id="firstName" class="form-control"
-                                            value="Mi Nombre">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="lastName">Apellido</label>
-                                        <input type="text" id="lastName" class="form-control"
-                                            value="Mi Apellido">
-                                    </div>
-                                </div>
-                                @if($rolId === 4)
-                                <div class="mt-3">
-                                    <label class="form-label" for="scheduleDate">Fecha
-                                        Nacimiento</label>
-                                    <input type="date" id="scheduleDate" class="form-control"
-                                        value="1990-01-01">
-                                </div>
-                                @endif
-                                <div class="mt-3">
-                                    <label class="form-label" for="email">Correo Electrónico</label>
-                                    <input type="email" id="email" class="form-control"
-                                        value="micorreo@gym.com">
-                                </div>
 
-                                <div class="mt-3">
-                                    <label class="form-label" for="phone">Teléfono</label>
-                                    <input type="text" id="phone" class="form-control"
-                                        value="+54 11 1234-5678">
-                                </div>
+                            <div class="card-body">
+                                <form id="editPerfil" action="{{ route('usuarios.enviarEdicion', $usuario->ID_Usuario) }}" method="POST">
+                                    @csrf
+                                    @method('PUT') {{-- Porque es una actualización --}}
+
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label" for="firstName">Nombre</label>
+                                            <input type="text" id="firstName" name="Nombre" class="form-control"
+                                                value="{{ old('Nombre', $usuario->Nombre) }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label" for="lastName">Apellido</label>
+                                            <input type="text" id="lastName" name="Apellido" class="form-control"
+                                                value="{{ old('Apellido', $usuario->Apellido) }}">
+                                        </div>
+                                    </div>
+
+                                    @if($rolId === 4)
+                                    <div class="mt-3">
+                                        <label class="form-label" for="scheduleDate">Fecha Nacimiento</label>
+                                        <input type="date" id="scheduleDate" name="Fecha_Nacimiento" class="form-control"
+                                            value="{{ old('Fecha_Nacimiento', $socio->Fecha_Nacimiento) }}">
+                                    </div>
+                                    @endif
+
+                                    <div class="mt-3">
+                                        <label class="form-label" for="phone">Teléfono</label>
+                                        <input type="text" id="phone" name="Telefono" class="form-control"
+                                            value="{{ old('Telefono', $usuario->Telefono ?? '') }}">
+                                    </div>
+
+                                    <!-- Botones -->
+                                    <div class="d-flex justify-content-end gap-3 mt-4">
+                                        <a href="{{ route('usuarios.perfil', $usuario->ID_Usuario) }}" class="btn btn-outline-light">Cancelar</a>
+                                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                    </div>
+                                </form>
+
                             </div>
                         </div>
                     </div>
@@ -91,6 +89,7 @@
                     @elseif($rolId === 4)
                     @include('usuarios.perfil_socio')
                     @endif
+
                 </div>
 
             </div>
