@@ -34,7 +34,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.css">
 
 
-  {{-- Resources --}}
+  {{-- Resources --}}  
   @vite(['resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/css/configuraciones.css', 'resources/js/usuario.js', 'resources/js/asistencia.js', 'resources/js/profesores-socio.js', 'resources/js/profesores-administrativo.js', 'resources/js/membresias-socio.js', 'resources/js/membresias-administrativo.js', 'resources/js/socio.js'])
 
 </head>
