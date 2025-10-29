@@ -36,11 +36,80 @@
              <h5 class="mb-0">Configuración de Cuenta</h5>
          </div>
          <div class="card-body d-flex flex-column gap-2">
-             <button class="btn btn-outline-light btn-sm custom-btn">Cambiar Correo</button>
-             <button class="btn btn-outline-light btn-sm custom-btn">Cambiar Contraseña</button>
+             <button class="btn btn-outline-light btn-sm custom-btn" data-bs-toggle="modal" data-bs-target="#modalCambiarCorreo">
+                 Cambiar Correo
+             </button>
+             <button class="btn btn-outline-light btn-sm custom-btn" data-bs-toggle="modal" data-bs-target="#modalCambiarContrasenia">
+                 Cambiar Contraseña
+             </button>
              <button class="btn btn-outline-light btn-sm custom-btn">Subir Certificado</button>
              <button class="btn btn-danger btn-sm">Cerrar sesión</button>
          </div>
      </div>
      @endif
  </div>
+
+ @section('modales')
+ <!-- Modal Cambiar Correo -->
+ <div class="modal fade" id="modalCambiarCorreo" tabindex="-1" aria-labelledby="modalCambiarCorreoLabel" aria-hidden="true">
+     <div class="modal-dialog modal-dialog-centered">
+         <div class="modal-content bg-card text-light">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="modalCambiarCorreoLabel">Cambiar Correo</h5>
+                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+             </div>
+             <div class="modal-body">
+                 <form id="formCambiarCorreo" method="POST" action="{{ route('usuarios.cambiarCorreo', $usuario->ID_Usuario) }}">
+                     @csrf
+                     <div class="mb-3">
+                         <label for="nuevoCorreo" class="form-label">Nuevo Correo</label>
+                         <input type="email" class="form-control" id="nuevoCorreo" name="nuevoCorreo" required>
+                     </div>
+                     <div class="text-end">
+                         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                     </div>
+                 </form>
+             </div>
+         </div>
+     </div>
+ </div>
+
+ <!-- Modal Cambiar Contraseña -->
+ <div class="modal fade" id="modalCambiarContrasenia" tabindex="-1" aria-labelledby="modalCambiarContraseniaLabel" aria-hidden="true">
+     <div class="modal-dialog modal-dialog-centered">
+         <div class="modal-content bg-card text-light">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="modalCambiarContraseniaLabel">Cambiar Contraseña</h5>
+                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+             </div>
+
+             <div class="modal-body">
+                 <form id="formCambiarContrasenia" method="POST" action="{{ route('usuarios.cambiarContrasenia', $usuario->ID_Usuario) }}">
+                     @csrf
+                     
+                     <div class="mb-3">
+                         <label for="contraseniaActual" class="form-label">Contraseña Actual</label>
+                         <input type="password" class="form-control" id="contraseniaActual" name="contraseniaActual" required>
+                     </div>
+                     <div class="mb-3">
+                         <label for="nuevaContrasenia" class="form-label">Nueva Contraseña</label>
+                         <input type="password" class="form-control" id="nuevaContrasenia" name="nuevaContrasenia" required>
+                         <div class="form-text text-secondary">
+                             Debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula, un número y un símbolo.
+                         </div>
+                     </div>
+                     <div class="mb-3">
+                         <label for="confirmarContrasenia" class="form-label">Confirmar Nueva Contraseña</label>
+                         <input type="password" class="form-control" id="confirmarContrasenia" name="confirmarContrasenia" required>
+                     </div>
+
+                     <div class="text-end">
+                         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                     </div>
+                 </form>
+             </div>
+         </div>
+     </div>
+ </div>
+
+ @endsection

@@ -36,7 +36,6 @@
         <div class="card-body d-flex flex-column gap-2">
             <button class="btn btn-outline-light btn-sm custom-btn">Cambiar Correo</button>
             <button class="btn btn-outline-light btn-sm custom-btn">Cambiar Contraseña</button>
-            <button class="btn btn-outline-light btn-sm custom-btn">Configuración</button>
             <button class="btn btn-danger btn-sm">Cerrar sesión</button>
         </div>
         @endif

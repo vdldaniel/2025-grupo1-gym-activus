@@ -94,6 +94,8 @@ Route::delete('/usuarios/{id}', [UsuarioController::class, 'eliminarUsuario'])->
 Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuarios.enviarEdicion');
 Route::get('/usuarios/{id}', [UsuarioController::class, 'obtenerUsuario']);
 Route::post('/usuarios/{id}/cambiar-estado', [UsuarioController::class, 'cambiarEstado'])->name('usuarios.cambiarEstado');
+Route::post('/usuario/{id}/cambiar-correo', [UsuarioController::class, 'cambiarCorreo'])->name('usuarios.cambiarCorreo');
+Route::post('/usuario/{id}/cambiar-contrasenia', [UsuarioController::class, 'cambiarContrasenia'])->name('usuarios.cambiarContrasenia');
 
 Route::post('/socios/crear', [SocioController::class, 'crearSocio'])->name('socios.crear');
 Route::get('/socios/{id}/perfil', [SocioController::class, 'mostrar'])->name('socios.perfil');
@@ -106,3 +108,14 @@ Route::post('/admin/membresias', [GestionTipoMembresiaController::class, 'store'
 Route::get('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'show']);
 Route::put('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'update']);
 Route::delete('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'destroy']);
+
+//PARA CUANDO ESTE ARMADO LOGIN
+// Route::middleware(['auth'])->group(function () {
+//     // Cambiar correo
+//     Route::post('/usuario/cambiar-correo', [UsuarioController::class, 'cambiarCorreo'])
+//         ->name('usuarios.cambiarCorreo');
+
+//     // Cambiar contraseña
+//     Route::post('/usuario/cambiar-contrasenia', [UsuarioController::class, 'cambiarContrasenia'])
+//         ->name('usuarios.cambiarContrasenia');
+// });

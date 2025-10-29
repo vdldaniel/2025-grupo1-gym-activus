@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
 {
@@ -245,7 +246,7 @@ class UsuarioController extends Controller
 
         $rolId = $usuario->roles->first()->ID_Rol ?? null;
 
-    
+
         return view('usuarios.perfil', compact('usuario', 'socio', 'rolId'));
     }
 
@@ -290,7 +291,7 @@ class UsuarioController extends Controller
             $usuario->save();
 
             //  rol "Socio" (ID 4)
-            
+
             $esSocio = $usuario->roles->contains('ID_Rol', 4);
 
             if ($esSocio && array_key_exists('Fecha_Nacimiento', $validated)) {
@@ -298,7 +299,7 @@ class UsuarioController extends Controller
                 if ($socio) {
                     $socio->Fecha_Nacimiento = $validated['Fecha_Nacimiento'];
                     $socio->save();
-                } 
+                }
             }
 
             DB::commit();
@@ -312,7 +313,7 @@ class UsuarioController extends Controller
                 ]);
             }
 
-           
+
             return redirect()
                 ->route('usuarios.perfil', $usuario->ID_Usuario)
                 ->with('success', 'Perfil actualizado correctamente.');
@@ -333,5 +334,57 @@ class UsuarioController extends Controller
                 ->withInput()
                 ->with('error', 'Error al actualizar perfil: ' . $e->getMessage());
         }
+    }
+
+    public function cambiarCorreo(Request $request, $id)
+    {
+        $usuario = Usuario::find($id);
+
+        if (!$usuario) {
+            return back()->withErrors(['usuario' => 'Usuario no encontrado.']);
+        }
+
+        $request->validate([
+            'nuevoCorreo' => [
+                'required',
+                'email',
+                'unique:usuario,Email,' . $usuario->ID_Usuario . ',ID_Usuario'
+            ],
+        ]);
+
+        $usuario->Email = $request->input('nuevoCorreo');
+        $usuario->save();
+
+        return back()->with('success', 'Correo actualizado correctamente.');
+    }
+
+
+
+    public function cambiarContrasenia(Request $request, $id)
+    {
+        $usuario = Usuario::find($id);
+
+        if (!$usuario) {
+            return back()->withErrors(['usuario' => 'Usuario no encontrado.']);
+        }
+
+        // Validar datos del formulario
+        $request->validate([
+            'contraseniaActual' => ['required'],
+            'nuevaContrasenia' => ['required', 'min:6'],
+            'repetirContrasenia' => ['required', 'same:nuevaContrasenia'],
+        ]);
+
+
+        if ($request->input('contraseniaActual') !== $usuario->Contrasena) {
+            return back()->withErrors(['contraseniaActual' => 'La contraseña actual no es correcta.']);
+        }
+
+
+        // Si todo está bien, actualizar la contraseña
+        $usuario->Contrasena = Hash::make($request->input('nuevaContrasenia'));
+        $usuario->save();
+
+        return back()->with('success', 'La contraseña se actualizó correctamente.');
     }
 }
