@@ -9,7 +9,7 @@ use Carbon\Carbon;
 class PagoController extends Controller
 {
     /**
-     * Vista principal de pagos (administrativo)
+     * Vista principal del módulo de pagos (Administrativo)
      */
     public function index()
     {
@@ -17,72 +17,90 @@ class PagoController extends Controller
     }
 
     /**
-     * Listar todos los pagos con estado real de la membresía
+     * Listar todos los pagos con actualización automática de estados
      */
     public function listar()
     {
-        $hoy = Carbon::now()->toDateString();
+        try {
+            $hoy = Carbon::now()->toDateString();
 
-        //  Actualizar estados automáticamente según las fechas
-        $membresias = DB::table('membresia_socio')->get();
+            // Actualizar estados de membresías según fecha
+            $membresias = DB::table('membresia_socio')->get();
 
-        foreach ($membresias as $m) {
-            $estadoNuevo = $m->Estado_Membresia;
+            foreach ($membresias as $m) {
+                $nuevoEstado = $m->Estado_Membresia;
 
-            if ($m->Fecha_Fin && $m->Fecha_Fin < $hoy) {
-                $estadoNuevo = 'Vencida';
-            } elseif ($m->Fecha_Inicio && $m->Fecha_Inicio > $hoy) {
-                $estadoNuevo = 'Pendiente';
-            } else {
-                $estadoNuevo = 'Activa';
+                if ($m->Fecha_Fin && $m->Fecha_Fin < $hoy) {
+                    $nuevoEstado = 'Vencida';
+                } elseif ($m->Fecha_Inicio && $m->Fecha_Inicio > $hoy) {
+                    $nuevoEstado = 'Pendiente';
+                } else {
+                    $nuevoEstado = 'Activa';
+                }
+
+                if ($nuevoEstado !== $m->Estado_Membresia) {
+                    DB::table('membresia_socio')
+                        ->where('ID_Membresia_Socio', $m->ID_Membresia_Socio)
+                        ->update(['Estado_Membresia' => $nuevoEstado]);
+                }
             }
 
-            if ($estadoNuevo !== $m->Estado_Membresia) {
-                DB::table('membresia_socio')
-                    ->where('ID_Membresia_Socio', $m->ID_Membresia_Socio)
-                    ->update(['Estado_Membresia' => $estadoNuevo]);
-            }
+            // Consultar pagos con relaciones
+            $pagos = DB::table('pago')
+                ->join('membresia_socio', 'pago.ID_Membresia_Socio', '=', 'membresia_socio.ID_Membresia_Socio')
+                ->join('usuario', 'membresia_socio.ID_Usuario_Socio', '=', 'usuario.ID_Usuario')
+                ->join('tipo_membresia', 'membresia_socio.ID_Tipo_Membresia', '=', 'tipo_membresia.ID_Tipo_Membresia')
+                ->select(
+                    'pago.ID_Pago as id',
+                    DB::raw("CONCAT(usuario.Nombre, ' ', usuario.Apellido) as socio"),
+                    'usuario.DNI as dni',
+                    'tipo_membresia.Nombre_Tipo_Membresia as plan',
+                    'membresia_socio.Estado_Membresia as estado',
+                    'membresia_socio.Fecha_Fin as fecha_vencimiento',
+                    'pago.Monto as monto',
+                    'pago.Fecha_Pago as fecha_pago',
+                    'pago.Metodo_Pago as metodo',
+                    'pago.Observacion as observacion'
+                )
+                ->orderByDesc('pago.Fecha_Pago')
+                ->get();
+
+            return response()->json($pagos);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al listar pagos',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        // Consultar pagos con estado actualizado
-        $pagos = DB::table('pago')
-            ->join('membresia_socio', 'pago.ID_Membresia_Socio', '=', 'membresia_socio.ID_Membresia_Socio')
-            ->join('usuario', 'membresia_socio.ID_Usuario_Socio', '=', 'usuario.ID_Usuario')
-            ->join('tipo_membresia', 'membresia_socio.ID_Tipo_Membresia', '=', 'tipo_membresia.ID_Tipo_Membresia')
-            ->select(
-                'pago.ID_Pago as id',
-                DB::raw("CONCAT(usuario.Nombre, ' ', usuario.Apellido) as socio"),
-                'usuario.DNI as dni',
-                'tipo_membresia.Nombre_Tipo_Membresia as plan',
-                'membresia_socio.Estado_Membresia as estado',
-                'membresia_socio.Fecha_Fin as fecha_vencimiento',
-                'pago.Monto as monto',
-                'pago.Fecha_Pago as fecha_pago',
-                'pago.Metodo_Pago as metodo',
-                'pago.Observacion as observacion'
-            )
-            ->orderByDesc('pago.Fecha_Pago')
-            ->get();
-
-        return response()->json($pagos);
     }
 
     /**
-     * Listar membresías disponibles
+     * Listar tipos de membresías disponibles
      */
     public function listar_membresias()
     {
-        $membresias = DB::table('tipo_membresia')
-            ->select(
-                'ID_Tipo_Membresia as id',
-                'Nombre_Tipo_Membresia as nombre',
-                'Duracion as duracion',
-                'Precio as precio'
-            )
-            ->orderBy('nombre')
-            ->get();
+        try {
+            $membresias = DB::table('tipo_membresia')
+                ->select(
+                    'ID_Tipo_Membresia as id',
+                    'Nombre_Tipo_Membresia as nombre',
+                    'Duracion as duracion',
+                    'Precio as precio'
+                )
+                ->orderBy('nombre')
+                ->get();
 
-        return response()->json($membresias);
+            return response()->json($membresias);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al cargar las membresías',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -90,32 +108,41 @@ class PagoController extends Controller
      */
     public function buscar_socio(Request $request)
     {
-        $dni = $request->query('dni');
-        $id = $request->query('id');
+        try {
+            $dni = $request->query('dni');
+            $id = $request->query('id');
 
-        $query = DB::table('usuario')
-            ->join('usuario_rol', 'usuario.ID_Usuario', '=', 'usuario_rol.ID_Usuario')
-            ->join('rol', 'usuario_rol.ID_Rol', '=', 'rol.ID_Rol')
-            ->where('rol.Nombre_Rol', 'Socio');
+            $query = DB::table('usuario')
+                ->join('usuario_rol', 'usuario.ID_Usuario', '=', 'usuario_rol.ID_Usuario')
+                ->join('rol', 'usuario_rol.ID_Rol', '=', 'rol.ID_Rol')
+                ->where('rol.Nombre_Rol', 'Socio');
 
-        if ($dni) {
-            $query->where('usuario.DNI', $dni);
-        } elseif ($id) {
-            $query->where('usuario.ID_Usuario', $id);
+            if ($dni) {
+                $query->where('usuario.DNI', $dni);
+            } elseif ($id) {
+                $query->where('usuario.ID_Usuario', $id);
+            }
+
+            $socio = $query->select(
+                'usuario.ID_Usuario as id',
+                'usuario.Nombre',
+                'usuario.Apellido',
+                'usuario.DNI'
+            )->first();
+
+            if ($socio) {
+                return response()->json(['success' => true, 'socio' => $socio]);
+            }
+
+            return response()->json(['success' => false, 'message' => 'Socio no encontrado']);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al buscar socio',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        $socio = $query->select(
-            'usuario.ID_Usuario as id',
-            'usuario.Nombre',
-            'usuario.Apellido',
-            'usuario.DNI'
-        )->first();
-
-        if ($socio) {
-            return response()->json(['success' => true, 'socio' => $socio]);
-        }
-
-        return response()->json(['success' => false, 'message' => 'Socio no encontrado']);
     }
 
     /**
@@ -135,15 +162,15 @@ class PagoController extends Controller
             DB::beginTransaction();
 
             foreach ($request->membresias as $idMembresia) {
-
-                //  Verificar si el socio ya tiene esa membresía
-                $membresiaSocio = DB::table('membresia_socio')->where([
-                    ['ID_Usuario_Socio', $request->idSocio],
-                    ['ID_Tipo_Membresia', $idMembresia],
-                ])->first();
+                // Verificar si el socio ya tiene esa membresía
+                $membresiaSocio = DB::table('membresia_socio')
+                    ->where([
+                        ['ID_Usuario_Socio', $request->idSocio],
+                        ['ID_Tipo_Membresia', $idMembresia],
+                    ])
+                    ->first();
 
                 if (!$membresiaSocio) {
-                    //  Crear una nueva membresía
                     $idMembresiaSocio = DB::table('membresia_socio')->insertGetId([
                         'ID_Usuario_Socio' => $request->idSocio,
                         'ID_Tipo_Membresia' => $idMembresia,
@@ -152,9 +179,7 @@ class PagoController extends Controller
                         'Estado_Membresia' => 'Activa',
                     ]);
                 } else {
-                    // Actualizar fechas y estado de la existente
                     $idMembresiaSocio = $membresiaSocio->ID_Membresia_Socio;
-
                     DB::table('membresia_socio')
                         ->where('ID_Membresia_Socio', $idMembresiaSocio)
                         ->update([
@@ -164,7 +189,7 @@ class PagoController extends Controller
                         ]);
                 }
 
-                // Obtener precio de la membresía
+                // Obtener el precio actual
                 $precio = DB::table('tipo_membresia')
                     ->where('ID_Tipo_Membresia', $idMembresia)
                     ->value('Precio');
@@ -183,7 +208,10 @@ class PagoController extends Controller
             }
 
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Pago registrado con éxito']);
+            return response()->json([
+                'success' => true,
+                'message' => 'Pago registrado con éxito',
+            ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
