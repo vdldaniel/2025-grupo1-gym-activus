@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\AsistenciaController;
-use App\http\Controllers\ProfesoresController;
+use App\Http\Controllers\ProfesoresController;
 use App\Http\Controllers\TipoMembresiaController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\GestionTipoMembresiaController;
@@ -14,6 +14,8 @@ use App\Http\Controllers\MembresiaSocioController;
 use App\Http\Controllers\SocioController;
 use App\Models\TipoMembresia;
 use App\Http\Controllers\PagoSocioController;
+use App\Http\Controllers\InicioSocioController;
+
 
 Route::get('/', function () {
     return view('inicio');
@@ -115,3 +117,5 @@ Route::delete('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 
 Route::get('/pagos/socio', [PagoSocioController::class, 'index'])->name('pagos.socio');
 Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 
+Route::get('/inicio-socio', [InicioSocioController::class, 'index']);
+Route::get('/inicio-socio/obtener-datos', [InicioSocioController::class, 'obtenerDatos']);

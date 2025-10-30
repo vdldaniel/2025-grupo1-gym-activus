@@ -1,0 +1,80 @@
+/* ==========================================================
+   Módulo: Inicios (Socio / Administrativo / Profesor)
+   Proyecto: Activus Gym
+   Autor: Esmilce Mendoza
+   Descripción:
+   Estilos compartidos para las vistas de inicio de cada rol.
+   Basado en el modo oscuro global y variables de globals.css.
+   ========================================================== */
+
+/* ====== Tarjetas principales ====== */
+.card.bg-dark {
+  background-color: var(--secondary-componente-base-clr);
+  border: 1px solid var(--componente-border-clr);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+  color: var(--text-clr);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card.bg-dark:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ====== Títulos y subtítulos ====== */
+.card-title {
+  color: var(--text-clr);
+  font-weight: 600;
+}
+
+.card-subtitle {
+  color: var(--secondary-text-clr);
+}
+
+/* ====== Badges ====== */
+.badge {
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 0.4em;
+}
+
+.badge.bg-success {
+  background-color: #22c55e !important;
+}
+
+.badge.bg-danger {
+  background-color: #ef4444 !important;
+}
+
+/* ====== Listado de clases / actividades ====== */
+#listaClasesHoy li {
+  border-bottom: 1px solid var(--secondary-line-clr);
+  padding: 0.5rem 0;
+  color: var(--text-clr);
+}
+
+#listaClasesHoy li:last-child {
+  border-bottom: none;
+}
+
+/* ====== Animaciones suaves ====== */
+.card,
+#listaClasesHoy li {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* ====== Responsividad ====== */
+@media (max-width: 768px) {
+  .card-title {
+    font-size: 1rem;
+  }
+
+  .display-4 {
+    font-size: 2rem;
+  }
+}
+
+.card.bg-dark {
+  background-color: #111827!important;
+}
