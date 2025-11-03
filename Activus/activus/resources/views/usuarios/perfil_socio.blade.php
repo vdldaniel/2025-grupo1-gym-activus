@@ -122,11 +122,11 @@
 
  <!-- Modal Subir Certificado -->
  <div class="modal fade" id="certificadoModal" tabindex="-1" aria-labelledby="certificadoModalLabel" aria-hidden="true">
-     <div class="modal-dialog modal-lg">
-         <div class="modal-content">
+     <div class="modal-dialog modal-dialog-centered">
+         <div class="modal-content bg-card text-light">
              <div class="modal-header">
                  <h5 class="modal-title" id="certificadoModalLabel">Mis Certificados</h5>
-                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
              </div>
              <div class="modal-body">
 
@@ -169,8 +169,15 @@
 
                      @csrf
                      <div class="mb-3">
-                         <label for="imagen_certificado" class="form-label">Subir nuevo certificado</label>
-                         <input type="file" class="form-control" name="imagen_certificado" required>
+                         <!-- <label for="imagen_certificado" class="form-label">Subir nuevo certificado</label> -->
+                         <!-- <input type="file" class="form-control" name="imagen_certificado" required> -->
+                         <div class="mb-3">
+                             <label for="imagen_certificado" class="form-label">Subir nuevo certificado</label>
+                             <input type="file" class="form-control" name="certificado" required>
+                             @error('certificado')
+                             <div class="text-danger mt-1">{{ $message }}</div>
+                             @enderror
+                         </div>
                      </div>
                      <button type="submit" class="btn btn-primary">Subir</button>
                  </form>

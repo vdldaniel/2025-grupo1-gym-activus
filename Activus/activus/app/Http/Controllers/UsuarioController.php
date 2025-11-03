@@ -398,14 +398,25 @@ class UsuarioController extends Controller
 
     public function subirCertificado(Request $request, $id)
     {
-
         $request->validate([
             'certificado' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
+        // Año actual
+        $anioActual = Carbon::now()->year;
+
+        
+        // Verificar si ya existe un certificado para este usuario y año
+        $existe = Certificado::where('ID_Usuario_Socio', $id)
+            ->whereYear('Fecha_Emision', $anioActual)
+            ->exists();
+
+        if ($existe) {
+            return back()->withErrors(['certificado' => 'Ya existe un certificado para el año ' . $anioActual . '.']);
+        }
+
         // Guardar la imagen en storage/app/public/certificados
         $path = $request->file('certificado')->store('certificados', 'public');
-
 
         $certificado = new Certificado();
         $certificado->ID_Usuario_Socio = $id;
@@ -417,5 +428,4 @@ class UsuarioController extends Controller
 
         return back()->with('success', 'Certificado subido correctamente.');
     }
-
-    }
+}
