@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Certificado;
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class UsuarioController extends Controller
 {
@@ -238,16 +241,21 @@ class UsuarioController extends Controller
         // Cargar el usuario con sus relaciones
         $usuario = Usuario::with(['roles'])->findOrFail($id);
 
-
+        // Buscar el socio asociado al usuario
         $socio = \App\Models\Socio::where('ID_Usuario', $usuario->ID_Usuario)
-            ->with('usuario') // para poder usar $socio->usuario->Nombre
+            ->with('usuario')
             ->first();
-
 
         $rolId = $usuario->roles->first()->ID_Rol ?? null;
 
+        // 🔹 Traer todos los certificados del usuario (si tiene relación definida)
+        $certificados = \App\Models\Certificado::where('ID_Usuario_Socio', $usuario->ID_Usuario)->get();
 
-        return view('usuarios.perfil', compact('usuario', 'socio', 'rolId'));
+        // 🔹 Verificar si tiene al menos un certificado aprobado
+        $tieneCertificado = $certificados->where('Aprobado', 1)->isNotEmpty();
+
+        // 🔹 Enviar todo a la vista
+        return view('usuarios.perfil', compact('usuario', 'socio', 'rolId', 'certificados', 'tieneCertificado'));
     }
 
     public function editarPerfil($id)
@@ -387,4 +395,27 @@ class UsuarioController extends Controller
 
         return back()->with('success', 'La contraseña se actualizó correctamente.');
     }
-}
+
+    public function subirCertificado(Request $request, $id)
+    {
+
+        $request->validate([
+            'certificado' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // Guardar la imagen en storage/app/public/certificados
+        $path = $request->file('certificado')->store('certificados', 'public');
+
+
+        $certificado = new Certificado();
+        $certificado->ID_Usuario_Socio = $id;
+        $certificado->Imagen_Certificado = $path;
+        $certificado->Aprobado = 0;
+        $certificado->Fecha_Emision = Carbon::now();
+        $certificado->Fecha_Vencimiento = Carbon::now()->addYear(); // opcional, un año después
+        $certificado->save();
+
+        return back()->with('success', 'Certificado subido correctamente.');
+    }
+
+    }

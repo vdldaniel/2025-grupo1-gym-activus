@@ -42,9 +42,14 @@
              <button class="btn btn-outline-light btn-sm custom-btn" data-bs-toggle="modal" data-bs-target="#modalCambiarContrasenia">
                  Cambiar Contraseña
              </button>
-             <button class="btn btn-outline-light btn-sm custom-btn" data-bs-toggle="modal" data-bs-target="#modalSubirCertificado">
-                 Subir Certificado
+             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#certificadoModal">
+                 @if($tieneCertificado)
+                 ✅ Certificado cargado
+                 @else
+                 ⚠️ Subir certificado
+                 @endif
              </button>
+
 
              <button class="btn btn-danger btn-sm">Cerrar sesión</button>
          </div>
@@ -116,30 +121,63 @@
  </div>
 
  <!-- Modal Subir Certificado -->
-<div class="modal fade" id="modalSubirCertificado" tabindex="-1" aria-labelledby="modalSubirCertificadoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-card text-light">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalSubirCertificadoLabel">Subir Certificado</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
+ <div class="modal fade" id="certificadoModal" tabindex="-1" aria-labelledby="certificadoModalLabel" aria-hidden="true">
+     <div class="modal-dialog modal-lg">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="certificadoModalLabel">Mis Certificados</h5>
+                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+             </div>
+             <div class="modal-body">
 
-            <div class="modal-body">
-                <form id="formSubirCertificado" method="POST" action="{{ route('usuarios.subirCertificado', $usuario->ID_Usuario) }}" enctype="multipart/form-data">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="certificado" class="form-label">Seleccionar imagen del certificado</label>
-                        <input type="file" class="form-control" id="certificado" name="certificado" accept="image/*" required>
-                    </div>
+                 @if($certificados->isEmpty())
+                 <p class="text-center">No tenés certificados cargados todavía.</p>
+                 @else
+                 <table class="table table-striped">
+                     <thead>
+                         <tr>
+                             <th>Imagen</th>
+                             <th>Aprobado</th>
+                             <th>Emisión</th>
+                             <th>Vencimiento</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                         @foreach($certificados as $certificado)
+                         <tr>
+                             <td>
+                                 <a href="{{ asset('storage/'.$certificado->Imagen_Certificado) }}" target="_blank">Ver</a>
+                             </td>
+                             <td>
+                                 @if($certificado->Aprobado)
+                                 <span class="badge bg-success">Aprobado</span>
+                                 @else
+                                 <span class="badge bg-warning text-dark">Pendiente</span>
+                                 @endif
+                             </td>
+                             <td>{{ $certificado->Fecha_Emision }}</td>
+                             <td>{{ $certificado->Fecha_Vencimiento }}</td>
+                         </tr>
+                         @endforeach
+                     </tbody>
+                 </table>
+                 @endif
 
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary">Subir</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                 <!-- Formulario para subir nuevo certificado -->
+                 <hr>
+                 <form action="{{ route('usuarios.subirCertificado', $usuario->ID_Usuario) }}" method="POST" enctype="multipart/form-data">
 
+                     @csrf
+                     <div class="mb-3">
+                         <label for="imagen_certificado" class="form-label">Subir nuevo certificado</label>
+                         <input type="file" class="form-control" name="imagen_certificado" required>
+                     </div>
+                     <button type="submit" class="btn btn-primary">Subir</button>
+                 </form>
+
+             </div>
+         </div>
+     </div>
+ </div>
 
  @endsection

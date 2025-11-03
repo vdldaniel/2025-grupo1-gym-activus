@@ -98,6 +98,8 @@ Route::get('/usuarios/{id}', [UsuarioController::class, 'obtenerUsuario']);
 Route::post('/usuarios/{id}/cambiar-estado', [UsuarioController::class, 'cambiarEstado'])->name('usuarios.cambiarEstado');
 Route::post('/usuario/{id}/cambiar-correo', [UsuarioController::class, 'cambiarCorreo'])->name('usuarios.cambiarCorreo');
 Route::post('/usuario/{id}/cambiar-contrasenia', [UsuarioController::class, 'cambiarContrasenia'])->name('usuarios.cambiarContrasenia');
+Route::post('/usuarios/{id}/subir-certificado', [UsuarioController::class, 'subirCertificado'])->name('usuarios.subirCertificado');
+// Route::post('/usuarios/{id}/mostrar-certificado', [UsuarioController::class, 'mostrarCertificados'])->name('usuarios.mostrarCertificado');
 
 Route::post('/socios/crear', [SocioController::class, 'crearSocio'])->name('socios.crear');
 Route::get('/socios/{id}/perfil', [SocioController::class, 'mostrar'])->name('socios.perfil');
