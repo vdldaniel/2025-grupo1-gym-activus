@@ -42,7 +42,10 @@
              <button class="btn btn-outline-light btn-sm custom-btn" data-bs-toggle="modal" data-bs-target="#modalCambiarContrasenia">
                  Cambiar Contraseña
              </button>
-             <button class="btn btn-outline-light btn-sm custom-btn">Subir Certificado</button>
+             <button class="btn btn-outline-light btn-sm custom-btn" data-bs-toggle="modal" data-bs-target="#modalSubirCertificado">
+                 Subir Certificado
+             </button>
+
              <button class="btn btn-danger btn-sm">Cerrar sesión</button>
          </div>
      </div>
@@ -86,7 +89,7 @@
              <div class="modal-body">
                  <form id="formCambiarContrasenia" method="POST" action="{{ route('usuarios.cambiarContrasenia', $usuario->ID_Usuario) }}">
                      @csrf
-                     
+
                      <div class="mb-3">
                          <label for="contraseniaActual" class="form-label">Contraseña Actual</label>
                          <input type="password" class="form-control" id="contraseniaActual" name="contraseniaActual" required>
@@ -111,5 +114,32 @@
          </div>
      </div>
  </div>
+
+ <!-- Modal Subir Certificado -->
+<div class="modal fade" id="modalSubirCertificado" tabindex="-1" aria-labelledby="modalSubirCertificadoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-card text-light">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalSubirCertificadoLabel">Subir Certificado</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="formSubirCertificado" method="POST" action="{{ route('usuarios.subirCertificado', $usuario->ID_Usuario) }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="certificado" class="form-label">Seleccionar imagen del certificado</label>
+                        <input type="file" class="form-control" id="certificado" name="certificado" accept="image/*" required>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">Subir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
  @endsection
