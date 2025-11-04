@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Certificado;
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class UsuarioController extends Controller
 {
@@ -238,16 +241,30 @@ class UsuarioController extends Controller
         // Cargar el usuario con sus relaciones
         $usuario = Usuario::with(['roles'])->findOrFail($id);
 
-
+        // Buscar el socio asociado al usuario
         $socio = \App\Models\Socio::where('ID_Usuario', $usuario->ID_Usuario)
-            ->with('usuario') // para poder usar $socio->usuario->Nombre
+            ->with('usuario')
             ->first();
-
 
         $rolId = $usuario->roles->first()->ID_Rol ?? null;
 
+        // 🔹 Traer todos los certificados del usuario (si tiene relación definida)
+        $certificados = \App\Models\Certificado::where('ID_Usuario_Socio', $usuario->ID_Usuario)->get();
 
-        return view('usuarios.perfil', compact('usuario', 'socio', 'rolId'));
+        $anioActual = Carbon::now()->year;
+
+        // Obtener certificados del usuario
+        $certificados = $usuario->certificados;
+
+        // Verificar si existe el certificado del año actual
+        $certificadoEsteAnio = $certificados->firstWhere(function ($c) use ($anioActual) {
+            return Carbon::parse($c->Fecha_Emision)->year == $anioActual;
+        });
+        // 🔹 Verificar si tiene al menos un certificado aprobado
+        $tieneCertificado = $certificados->where('Aprobado', 1)->isNotEmpty();
+
+        // 🔹 Enviar todo a la vista
+        return view('usuarios.perfil', compact('usuario', 'socio', 'rolId', 'certificados', 'tieneCertificado', 'certificadoEsteAnio', 'anioActual'));
     }
 
     public function editarPerfil($id)
@@ -344,18 +361,27 @@ class UsuarioController extends Controller
             return back()->withErrors(['usuario' => 'Usuario no encontrado.']);
         }
 
-        $request->validate([
-            'nuevoCorreo' => [
-                'required',
-                'email',
-                'unique:usuario,Email,' . $usuario->ID_Usuario . ',ID_Usuario'
-            ],
+        $validator = Validator::make($request->all(), [
+            'nuevoCorreo' => 'required|email|unique:usuario,Email,' . $id . ',ID_Usuario',
+        ], [
+            'nuevoCorreo.required' => 'Debes ingresar un correo.',
+            'nuevoCorreo.email' => 'Formato de correo inválido.',
+            'nuevoCorreo.unique' => 'Ese correo ya está en uso.',
         ]);
+
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('modal', 'modalCambiarCorreo'); // 👈 importante
+        }
 
         $usuario->Email = $request->input('nuevoCorreo');
         $usuario->save();
 
-        return back()->with('success', 'Correo actualizado correctamente.');
+        return back()
+            ->with('modal', 'modalCambiarCorreo')
+            ->with('success', 'Correo actualizado correctamente.');
     }
 
 
@@ -365,26 +391,176 @@ class UsuarioController extends Controller
         $usuario = Usuario::find($id);
 
         if (!$usuario) {
-            return back()->withErrors(['usuario' => 'Usuario no encontrado.']);
+            return back()
+                ->withErrors(['usuario' => 'Usuario no encontrado.'])
+                ->with('modal', 'modalCambiarContrasenia');
         }
 
-        // Validar datos del formulario
-        $request->validate([
+        // Validar los campos del formulario
+        $validator = Validator::make($request->all(), [
             'contraseniaActual' => ['required'],
-            'nuevaContrasenia' => ['required', 'min:6'],
+            'nuevaContrasenia' => ['required', 'min:8'],
             'repetirContrasenia' => ['required', 'same:nuevaContrasenia'],
+        ], [
+            'contraseniaActual.required' => 'Debes ingresar tu contraseña actual.',
+            'nuevaContrasenia.required' => 'Debes ingresar una nueva contraseña.',
+            'nuevaContrasenia.min' => 'La nueva contraseña debe tener al menos 6 caracteres.',
+            'repetirContrasenia.required' => 'Debes repetir la nueva contraseña.',
+            'repetirContrasenia.same' => 'Las contraseñas no coinciden.',
+        ]);
+
+        // Si hay errores de validación
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('modal', 'modalCambiarContrasenia');
+        }
+
+        if (!Hash::check($request->input('contraseniaActual'), $usuario->Contrasena)) {
+            return back()
+                ->withErrors(['contraseniaActual' => 'La contraseña actual no es correcta.'])
+                ->with('modal', 'modalCambiarContrasenia'); // para reabrir el modal
+        }
+
+
+        $usuario->Contrasena = $request->input('nuevaContrasenia');
+        $usuario->save();
+
+        return back()
+            ->with('modal', 'modalCambiarContrasenia')
+            ->with('success', 'La contraseña se actualizó correctamente.');
+    }
+
+    public function subirCertificado(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'certificado' => 'required|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'certificado.required' => 'Debe seleccionar un archivo.',
+            'certificado.mimes' => 'El archivo debe ser JPG o PNG.',
+            'certificado.max' => 'El tamaño máximo permitido es de 2 MB.',
         ]);
 
 
-        if ($request->input('contraseniaActual') !== $usuario->Contrasena) {
-            return back()->withErrors(['contraseniaActual' => 'La contraseña actual no es correcta.']);
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('modal', 'certificadoModal');
         }
 
 
-        // Si todo está bien, actualizar la contraseña
-        $usuario->Contrasena = Hash::make($request->input('nuevaContrasenia'));
+        $anioActual = Carbon::now()->year;
+
+
+        // Verificar si ya existe un certificado para este usuario y año
+        $existe = Certificado::where('ID_Usuario_Socio', $id)
+            ->whereYear('Fecha_Emision', $anioActual)
+            ->exists();
+
+        if ($existe) {
+            return back()
+                ->with('modal', 'certificadoModal')
+                ->with('warning', 'Ya existe un certificado para el año ' . $anioActual . '.');
+            // ->withErrors(['certificado' => 'Ya existe un certificado para el año ' . $anioActual . '.']);
+        }
+
+        // Guardar la imagen en storage/app/public/certificados
+        $path = $request->file('certificado')->store('certificados', 'public');
+
+        $certificado = new Certificado();
+        $certificado->ID_Usuario_Socio = $id;
+        $certificado->Imagen_Certificado = $path;
+        $certificado->Aprobado = 0;
+        $certificado->Fecha_Emision = Carbon::now();
+        $certificado->Fecha_Vencimiento = Carbon::now()->addYear(); // opcional, un año después
+        $certificado->save();
+
+        return back()
+
+            ->with('modal', 'certificadoModal')
+            ->with('success', 'Certificado subido correctamente.');
+    }
+
+    public function eliminarCertificado($id, $certificadoId)
+    {
+        $certificado = Certificado::where('ID_Usuario_Socio', $id)
+            ->where('ID_Certificado', $certificadoId)
+            ->firstOrFail();
+
+        // Eliminar archivo físico si existe
+        if (Storage::disk('public')->exists($certificado->Imagen_Certificado)) {
+            Storage::disk('public')->delete($certificado->Imagen_Certificado);
+        }
+
+        // Eliminar registro de la base de datos
+        $certificado->delete();
+
+        return back()
+            ->with('modal', 'certificadoModal')
+            ->with('success', 'Certificado eliminado correctamente.');
+    }
+
+    public function cambiarFoto(Request $request, $id)
+    {
+        $usuario = Usuario::find($id);
+
+        if (!$usuario) {
+            return back()->with('error', 'Usuario no encontrado.')
+                ->with('modal', 'modalCambiarFoto');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'foto' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+        ], [
+            'foto.required' => 'Debe seleccionar una imagen.',
+            'foto.image' => 'El archivo debe ser una imagen.',
+            'foto.mimes' => 'Solo se permiten formatos JPEG, PNG, JPG, GIF o WEBP.',
+            'foto.max' => 'La imagen no puede superar los 2MB.',
+        ]);
+
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('modal', 'modalCambiarFoto');
+        }
+
+        // Guardar imagen
+        $path = $request->file('foto')->store('fotos_perfil', 'public');
+
+        // Borrar imagen anterior (si existe)
+        if ($usuario->Foto_Perfil && Storage::disk('public')->exists($usuario->Foto_Perfil)) {
+            Storage::disk('public')->delete($usuario->Foto_Perfil);
+        }
+
+        $usuario->Foto_Perfil = $path;
         $usuario->save();
 
-        return back()->with('success', 'La contraseña se actualizó correctamente.');
+        return back()->with('success', 'Foto actualizada correctamente.')
+            ->with('modal', 'modalCambiarFoto');
+    }
+
+    public function eliminarFoto($id)
+    {
+        $usuario = Usuario::findOrFail($id);
+
+        if ($usuario->Foto_Perfil) {
+            // Ruta completa al archivo dentro de storage/app/public/
+            $path = 'public/' . $usuario->Foto_Perfil;
+
+            if (Storage::exists($path)) {
+                Storage::delete($path);
+            }
+
+            
+            $usuario->Foto_Perfil = null;
+            $usuario->save();
+        }
+
+        return back()
+            ->with('modal', 'modalCambiarFoto')
+            ->with('success', 'La foto de perfil fue eliminada correctamente.');
     }
 }
