@@ -251,11 +251,20 @@ class UsuarioController extends Controller
         // 🔹 Traer todos los certificados del usuario (si tiene relación definida)
         $certificados = \App\Models\Certificado::where('ID_Usuario_Socio', $usuario->ID_Usuario)->get();
 
+        $anioActual = Carbon::now()->year;
+
+        // Obtener certificados del usuario
+        $certificados = $usuario->certificados;
+
+        // Verificar si existe el certificado del año actual
+        $certificadoEsteAnio = $certificados->firstWhere(function ($c) use ($anioActual) {
+            return Carbon::parse($c->Fecha_Emision)->year == $anioActual;
+        });
         // 🔹 Verificar si tiene al menos un certificado aprobado
         $tieneCertificado = $certificados->where('Aprobado', 1)->isNotEmpty();
 
         // 🔹 Enviar todo a la vista
-        return view('usuarios.perfil', compact('usuario', 'socio', 'rolId', 'certificados', 'tieneCertificado'));
+        return view('usuarios.perfil', compact('usuario', 'socio', 'rolId', 'certificados', 'tieneCertificado', 'certificadoEsteAnio', 'anioActual'));
     }
 
     public function editarPerfil($id)
@@ -405,7 +414,7 @@ class UsuarioController extends Controller
         // Año actual
         $anioActual = Carbon::now()->year;
 
-        
+
         // Verificar si ya existe un certificado para este usuario y año
         $existe = Certificado::where('ID_Usuario_Socio', $id)
             ->whereYear('Fecha_Emision', $anioActual)
@@ -428,4 +437,21 @@ class UsuarioController extends Controller
 
         return back()->with('success', 'Certificado subido correctamente.');
     }
+
+    public function eliminarCertificado($id, $certificadoId)
+{
+    $certificado = Certificado::where('ID_Usuario_Socio', $id)
+        ->where('ID_Certificado', $certificadoId)
+        ->firstOrFail();
+
+    // Eliminar archivo físico si existe
+    if (Storage::disk('public')->exists($certificado->Imagen_Certificado)) {
+        Storage::disk('public')->delete($certificado->Imagen_Certificado);
+    }
+
+    // Eliminar registro de la base de datos
+    $certificado->delete();
+
+    return back()->with('success', 'Certificado eliminado correctamente.');
+}
 }

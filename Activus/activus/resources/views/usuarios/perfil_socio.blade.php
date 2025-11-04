@@ -42,11 +42,13 @@
              <button class="btn btn-outline-light btn-sm custom-btn" data-bs-toggle="modal" data-bs-target="#modalCambiarContrasenia">
                  Cambiar Contraseña
              </button>
-             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#certificadoModal">
-                 @if($tieneCertificado)
-                 ✅ Certificado cargado
+             <button type="button" class="btn 
+    @if(!$certificadoEsteAnio) btn-danger @else btn btn-outline-light btn-sm custom-btn @endif"
+                 data-bs-toggle="modal" data-bs-target="#certificadoModal">
+                 @if(!$certificadoEsteAnio)
+                 ⚠️ Certificado adeudado
                  @else
-                 ⚠️ Subir certificado
+                 Mis certificados
                  @endif
              </button>
 
@@ -129,10 +131,38 @@
                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
              </div>
              <div class="modal-body">
+                 {{-- Mensajes del backend --}}
+                 @if ($errors->any())
+                 <div class="alert alert-danger">
+                     <strong>Se encontraron algunos errores:</strong>
+                     <ul class="mb-0">
+                         @foreach ($errors->all() as $error)
+                         <li>{{ $error }}</li>
+                         @endforeach
+                     </ul>
+                 </div>
+                 @endif
 
-                 @if($certificados->isEmpty())
-                 <p class="text-center">No tenés certificados cargados todavía.</p>
-                 @else
+                 @if (session('success'))
+                 <div class="alert alert-success">
+                     {{ session('success') }}
+                 </div>
+                 @endif
+
+                 @if (session('warning'))
+                 <div class="alert alert-warning">
+                     {{ session('warning') }}
+                 </div>
+                 @endif
+
+                 @if (session('error'))
+                 <div class="alert alert-danger">
+                     {{ session('error') }}
+                 </div>
+                 @endif
+                 <!-- Lista de certificados existentes -->
+                 @if(!$certificados->isEmpty())
+
                  <table class="table table-striped">
                      <thead>
                          <tr>
@@ -146,7 +176,18 @@
                          @foreach($certificados as $certificado)
                          <tr>
                              <td>
-                                 <a href="{{ asset('storage/'.$certificado->Imagen_Certificado) }}" target="_blank">Ver</a>
+                                 <a href="{{ asset('storage/'.$certificado->Imagen_Certificado) }}" target="_blank" class="text-primary me-2">Ver</a>
+
+                                 <form id="delete-cert-{{ $certificado->id }}"
+                                     action="{{ route('usuarios.eliminarCertificado', [$usuario->ID_Usuario, $certificado->ID_Certificado]) }}"
+                                     method="POST" style="display:inline;">
+                                     @csrf
+                                     @method('DELETE')
+                                     <a href="#" class="text-danger"
+                                         onclick="event.preventDefault(); if(confirm('¿Seguro que deseas eliminar este certificado?')) document.getElementById('delete-cert-{{ $certificado->id }}').submit();">
+                                         Eliminar
+                                     </a>
+                                 </form>
                              </td>
                              <td>
                                  @if($certificado->Aprobado)
@@ -165,12 +206,18 @@
 
                  <!-- Formulario para subir nuevo certificado -->
                  <hr>
+                 @if(!$certificadoEsteAnio)
+                 <div class="alert alert-warning">
+                     No has subido el certificado correspondiente al año {{ $anioActual }}.
+                     Por favor, carga el certificado para mantener tu perfil al día.
+                 </div>
+                 @endif
+
                  <form action="{{ route('usuarios.subirCertificado', $usuario->ID_Usuario) }}" method="POST" enctype="multipart/form-data">
 
                      @csrf
                      <div class="mb-3">
-                         <!-- <label for="imagen_certificado" class="form-label">Subir nuevo certificado</label> -->
-                         <!-- <input type="file" class="form-control" name="imagen_certificado" required> -->
+
                          <div class="mb-3">
                              <label for="imagen_certificado" class="form-label">Subir nuevo certificado</label>
                              <input type="file" class="form-control" name="certificado" required>
@@ -187,4 +234,15 @@
      </div>
  </div>
 
+
+ 
  @endsection
+
+  @if ($errors->any() || session('success') || session('error') || session('warning'))
+ <script>
+     document.addEventListener('DOMContentLoaded', function() {
+         const modal = new bootstrap.Modal(document.getElementById('certificadoModal'));
+         modal.show();
+     });
+ </script>
+ @endif
