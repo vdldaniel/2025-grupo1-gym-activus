@@ -9,7 +9,31 @@
              <div class="d-flex align-items-center gap-3 mb-3">
                  <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
                      style="width:64px; height:64px;">
-                     <i data-lucide="user" class="text-light"></i>
+                     <div class="position-relative">
+                         @if($usuario->Foto_Perfil)
+                         <img src="{{ asset('storage/'.$usuario->Foto_Perfil) }}"
+                             alt="Foto de perfil"
+                             class="rounded-circle object-fit-cover"
+                             style="width:64px; height:64px;">
+                         @else
+                         <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
+                             style="width:64px; height:64px;">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
+                                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                 <circle cx="12" cy="7" r="4" />
+                             </svg>
+                         </div>
+                         @endif
+
+                         <!-- Botón pequeño de editar -->
+                         <button class="btn btn-sm btn-secondary rounded-circle position-absolute bottom-0 end-0"
+                             data-bs-toggle="modal" data-bs-target="#modalCambiarFoto"
+                             style="width:24px; height:24px; line-height:0;">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera-icon lucide-camera">
+                                 <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" />
+                                 <circle cx="12" cy="13" r="3" />
+                             </svg> </button>
+                     </div>
                  </div>
                  <div>
                      <p class="mb-0 fw-semibold">{{ $usuario->Nombre }} {{ $usuario->Apellido }}</p>
@@ -265,7 +289,7 @@
                          <div class="mb-3">
                              <label for="imagen_certificado" class="form-label">Subir nuevo certificado</label>
                              <input type="file" class="form-control" name="certificado" required>
-                           
+
                          </div>
                      </div>
                      <button type="submit" class="btn btn-primary">Subir</button>
@@ -275,20 +299,79 @@
          </div>
      </div>
  </div>
-@if (session('modal'))
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const modalId = "{{ session('modal') }}";
-        const modalEl = document.getElementById(modalId);
-        if (modalEl) {
-            const modal = new bootstrap.Modal(modalEl);
-            modal.show();
-        }
-    });
-</script>
-@endif
 
+ <!-- Modal Cambiar Foto -->
+ <div class="modal fade" id="modalCambiarFoto" tabindex="-1" aria-labelledby="modalCambiarFotoLabel" aria-hidden="true">
+     <div class="modal-dialog modal-dialog-centered">
+         <div class="modal-content bg-card text-light">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="modalCambiarFotoLabel">Cambiar Foto de Perfil</h5>
+                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+             </div>
+             <div class="modal-body">
+
+                 @if (session('modal') === 'modalCambiarFoto')
+                 @if ($errors->any())
+                 <div class="alert alert-danger">
+                     <strong>Se encontraron algunos errores:</strong>
+                     <ul class="mb-0">
+                         @foreach ($errors->all() as $error)
+                         <li>{{ $error }}</li>
+                         @endforeach
+                     </ul>
+                 </div>
+                 @endif
+                 @if (session('success'))
+                 <div class="alert alert-success">{{ session('success') }}</div>
+                 @endif
+                 @endif
+
+                 <form method="POST" action="{{ route('usuarios.cambiarFoto', $usuario->ID_Usuario) }}" enctype="multipart/form-data">
+                     @csrf
+
+                     <div class="mb-3 text-center">
+                         <label for="foto" class="form-label">Seleccionar nueva foto</label>
+                         <input type="file" name="foto" id="foto" class="form-control" accept="image/*" required>
+
+                         <div id="preview" class="mt-3">
+                             @if($usuario->Foto_Perfil)
+                             <img src="{{ asset('storage/'.$usuario->Foto_Perfil) }}"
+                                 class="rounded-circle object-fit-cover"
+                                 style="width:80px; height:80px;">
+                             @endif
+                         </div>
+                     </div>
+
+                     <div class="text-end">
+                         <button type="submit" class="btn btn-primary">Guardar Foto</button>
+                     </div>
+                 </form>
+             </div>
+         </div>
+     </div>
+ </div>
+
+ @if (session('modal'))
+ <script>
+     document.addEventListener('DOMContentLoaded', function() {
+         const modalId = "{{ session('modal') }}";
+         const modalEl = document.getElementById(modalId);
+         if (modalEl) {
+             const modal = new bootstrap.Modal(modalEl);
+             modal.show();
+         }
+     });
+ </script>
+ @endif
+
+ <script>
+     document.getElementById('foto')?.addEventListener('change', function(e) {
+         const [file] = e.target.files;
+         if (file) {
+             const preview = document.getElementById('preview');
+             preview.innerHTML = `<img src="${URL.createObjectURL(file)}" class="rounded-circle" style="width:80px; height:80px; object-fit:cover;">`;
+         }
+     });
+ </script>
 
  @endsection
-
- 

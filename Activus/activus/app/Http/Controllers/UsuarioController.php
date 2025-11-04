@@ -501,4 +501,44 @@ class UsuarioController extends Controller
             ->with('modal', 'certificadoModal')
             ->with('success', 'Certificado eliminado correctamente.');
     }
+
+    public function cambiarFoto(Request $request, $id)
+    {
+        $usuario = Usuario::find($id);
+
+        if (!$usuario) {
+            return back()->with('error', 'Usuario no encontrado.')
+                ->with('modal', 'modalCambiarFoto');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'foto' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+        ], [
+            'foto.required' => 'Debe seleccionar una imagen.',
+            'foto.image' => 'El archivo debe ser una imagen.',
+            'foto.mimes' => 'Solo se permiten formatos JPEG, PNG, JPG, GIF o WEBP.',
+            'foto.max' => 'La imagen no puede superar los 2MB.',
+        ]);
+
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('modal', 'modalCambiarFoto');
+        }
+
+        // Guardar imagen
+        $path = $request->file('foto')->store('fotos_perfil', 'public');
+
+        // Borrar imagen anterior (si existe)
+        if ($usuario->Foto_Perfil && Storage::disk('public')->exists($usuario->Foto_Perfil)) {
+            Storage::disk('public')->delete($usuario->Foto_Perfil);
+        }
+
+        $usuario->Foto_Perfil = $path;
+        $usuario->save();
+
+        return back()->with('success', 'Foto actualizada correctamente.')
+            ->with('modal', 'modalCambiarFoto');
+    }
 }
