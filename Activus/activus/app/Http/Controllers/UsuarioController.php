@@ -361,18 +361,27 @@ class UsuarioController extends Controller
             return back()->withErrors(['usuario' => 'Usuario no encontrado.']);
         }
 
-        $request->validate([
-            'nuevoCorreo' => [
-                'required',
-                'email',
-                'unique:usuario,Email,' . $usuario->ID_Usuario . ',ID_Usuario'
-            ],
+        $validator = Validator::make($request->all(), [
+            'nuevoCorreo' => 'required|email|unique:usuario,Email,' . $id . ',ID_Usuario',
+        ], [
+            'nuevoCorreo.required' => 'Debes ingresar un correo.',
+            'nuevoCorreo.email' => 'Formato de correo inválido.',
+            'nuevoCorreo.unique' => 'Ese correo ya está en uso.',
         ]);
+
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('modal', 'modalCambiarCorreo'); // 👈 importante
+        }
 
         $usuario->Email = $request->input('nuevoCorreo');
         $usuario->save();
 
-        return back()->with('success', 'Correo actualizado correctamente.');
+        return back()
+            ->with('modal', 'modalCambiarCorreo')
+            ->with('success', 'Correo actualizado correctamente.');
     }
 
 
@@ -382,36 +391,66 @@ class UsuarioController extends Controller
         $usuario = Usuario::find($id);
 
         if (!$usuario) {
-            return back()->withErrors(['usuario' => 'Usuario no encontrado.']);
+            return back()
+                ->withErrors(['usuario' => 'Usuario no encontrado.'])
+                ->with('modal', 'modalCambiarContrasenia');
         }
 
-        // Validar datos del formulario
-        $request->validate([
+        // Validar los campos del formulario
+        $validator = Validator::make($request->all(), [
             'contraseniaActual' => ['required'],
-            'nuevaContrasenia' => ['required', 'min:6'],
+            'nuevaContrasenia' => ['required', 'min:8'],
             'repetirContrasenia' => ['required', 'same:nuevaContrasenia'],
+        ], [
+            'contraseniaActual.required' => 'Debes ingresar tu contraseña actual.',
+            'nuevaContrasenia.required' => 'Debes ingresar una nueva contraseña.',
+            'nuevaContrasenia.min' => 'La nueva contraseña debe tener al menos 6 caracteres.',
+            'repetirContrasenia.required' => 'Debes repetir la nueva contraseña.',
+            'repetirContrasenia.same' => 'Las contraseñas no coinciden.',
         ]);
 
+        // Si hay errores de validación
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('modal', 'modalCambiarContrasenia');
+        }
 
-        if ($request->input('contraseniaActual') !== $usuario->Contrasena) {
-            return back()->withErrors(['contraseniaActual' => 'La contraseña actual no es correcta.']);
+        if (!Hash::check($request->input('contraseniaActual'), $usuario->Contrasena)) {
+            return back()
+                ->withErrors(['contraseniaActual' => 'La contraseña actual no es correcta.'])
+                ->with('modal', 'modalCambiarContrasenia'); // para reabrir el modal
         }
 
 
-        // Si todo está bien, actualizar la contraseña
-        $usuario->Contrasena = Hash::make($request->input('nuevaContrasenia'));
+        $usuario->Contrasena = $request->input('nuevaContrasenia');
         $usuario->save();
 
-        return back()->with('success', 'La contraseña se actualizó correctamente.');
+        return back()
+            ->with('modal', 'modalCambiarContrasenia')
+            ->with('success', 'La contraseña se actualizó correctamente.');
     }
 
     public function subirCertificado(Request $request, $id)
     {
-        $request->validate([
-            'certificado' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        $validator = Validator::make($request->all(), [
+            'certificado' => 'required|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'certificado.required' => 'Debe seleccionar un archivo.',
+            'certificado.mimes' => 'El archivo debe ser JPG o PNG.',
+            'certificado.max' => 'El tamaño máximo permitido es de 2 MB.',
         ]);
 
-        // Año actual
+
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('modal', 'certificadoModal');
+        }
+
+
         $anioActual = Carbon::now()->year;
 
 
@@ -421,7 +460,10 @@ class UsuarioController extends Controller
             ->exists();
 
         if ($existe) {
-            return back()->withErrors(['certificado' => 'Ya existe un certificado para el año ' . $anioActual . '.']);
+            return back()
+                ->with('modal', 'certificadoModal')
+                ->with('warning', 'Ya existe un certificado para el año ' . $anioActual . '.');
+            // ->withErrors(['certificado' => 'Ya existe un certificado para el año ' . $anioActual . '.']);
         }
 
         // Guardar la imagen en storage/app/public/certificados
@@ -435,23 +477,28 @@ class UsuarioController extends Controller
         $certificado->Fecha_Vencimiento = Carbon::now()->addYear(); // opcional, un año después
         $certificado->save();
 
-        return back()->with('success', 'Certificado subido correctamente.');
+        return back()
+
+            ->with('modal', 'certificadoModal')
+            ->with('success', 'Certificado subido correctamente.');
     }
 
     public function eliminarCertificado($id, $certificadoId)
-{
-    $certificado = Certificado::where('ID_Usuario_Socio', $id)
-        ->where('ID_Certificado', $certificadoId)
-        ->firstOrFail();
+    {
+        $certificado = Certificado::where('ID_Usuario_Socio', $id)
+            ->where('ID_Certificado', $certificadoId)
+            ->firstOrFail();
 
-    // Eliminar archivo físico si existe
-    if (Storage::disk('public')->exists($certificado->Imagen_Certificado)) {
-        Storage::disk('public')->delete($certificado->Imagen_Certificado);
+        // Eliminar archivo físico si existe
+        if (Storage::disk('public')->exists($certificado->Imagen_Certificado)) {
+            Storage::disk('public')->delete($certificado->Imagen_Certificado);
+        }
+
+        // Eliminar registro de la base de datos
+        $certificado->delete();
+
+        return back()
+            ->with('modal', 'certificadoModal')
+            ->with('success', 'Certificado eliminado correctamente.');
     }
-
-    // Eliminar registro de la base de datos
-    $certificado->delete();
-
-    return back()->with('success', 'Certificado eliminado correctamente.');
-}
 }

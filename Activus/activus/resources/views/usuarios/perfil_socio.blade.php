@@ -43,7 +43,7 @@
                  Cambiar Contraseña
              </button>
              <button type="button" class="btn 
-    @if(!$certificadoEsteAnio) btn-danger @else btn btn-outline-light btn-sm custom-btn @endif"
+    @if(!$certificadoEsteAnio) btn-danger btn-sm custom-btn @else btn btn-outline-light btn-sm custom-btn @endif"
                  data-bs-toggle="modal" data-bs-target="#certificadoModal">
                  @if(!$certificadoEsteAnio)
                  ⚠️ Certificado adeudado
@@ -69,6 +69,31 @@
                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
              </div>
              <div class="modal-body">
+                 @if (session('modal') === 'modalCambiarCorreo')
+                 @if ($errors->any())
+                 <div class="alert alert-danger">
+                     <strong>Se encontraron algunos errores:</strong>
+                     <ul class="mb-0">
+                         @foreach ($errors->all() as $error)
+                         <li>{{ $error }}</li>
+                         @endforeach
+                     </ul>
+                 </div>
+                 @endif
+
+                 @if (session('success'))
+                 <div class="alert alert-success">{{ session('success') }}</div>
+                 @endif
+
+                 @if (session('warning'))
+                 <div class="alert alert-warning">{{ session('warning') }}</div>
+                 @endif
+
+                 @if (session('error'))
+                 <div class="alert alert-danger">{{ session('error') }}</div>
+                 @endif
+                 @endif
+
                  <form id="formCambiarCorreo" method="POST" action="{{ route('usuarios.cambiarCorreo', $usuario->ID_Usuario) }}">
                      @csrf
                      <div class="mb-3">
@@ -94,6 +119,30 @@
              </div>
 
              <div class="modal-body">
+                 @if (session('modal') === 'modalCambiarContrasenia')
+                 @if ($errors->any())
+                 <div class="alert alert-danger">
+                     <strong>Se encontraron algunos errores:</strong>
+                     <ul class="mb-0">
+                         @foreach ($errors->all() as $error)
+                         <li>{{ $error }}</li>
+                         @endforeach
+                     </ul>
+                 </div>
+                 @endif
+
+                 @if (session('success'))
+                 <div class="alert alert-success">{{ session('success') }}</div>
+                 @endif
+
+                 @if (session('warning'))
+                 <div class="alert alert-warning">{{ session('warning') }}</div>
+                 @endif
+
+                 @if (session('error'))
+                 <div class="alert alert-danger">{{ session('error') }}</div>
+                 @endif
+                 @endif
                  <form id="formCambiarContrasenia" method="POST" action="{{ route('usuarios.cambiarContrasenia', $usuario->ID_Usuario) }}">
                      @csrf
 
@@ -110,7 +159,7 @@
                      </div>
                      <div class="mb-3">
                          <label for="confirmarContrasenia" class="form-label">Confirmar Nueva Contraseña</label>
-                         <input type="password" class="form-control" id="confirmarContrasenia" name="confirmarContrasenia" required>
+                         <input type="password" class="form-control" id="confirmarContrasenia" name="repetirContrasenia" required>
                      </div>
 
                      <div class="text-end">
@@ -131,7 +180,7 @@
                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
              </div>
              <div class="modal-body">
-                 {{-- Mensajes del backend --}}
+                 @if (session('modal') === 'certificadoModal')
                  @if ($errors->any())
                  <div class="alert alert-danger">
                      <strong>Se encontraron algunos errores:</strong>
@@ -144,21 +193,16 @@
                  @endif
 
                  @if (session('success'))
-                 <div class="alert alert-success">
-                     {{ session('success') }}
-                 </div>
+                 <div class="alert alert-success">{{ session('success') }}</div>
                  @endif
 
                  @if (session('warning'))
-                 <div class="alert alert-warning">
-                     {{ session('warning') }}
-                 </div>
+                 <div class="alert alert-warning">{{ session('warning') }}</div>
                  @endif
 
                  @if (session('error'))
-                 <div class="alert alert-danger">
-                     {{ session('error') }}
-                 </div>
+                 <div class="alert alert-danger">{{ session('error') }}</div>
+                 @endif
                  @endif
                  <!-- Lista de certificados existentes -->
                  @if(!$certificados->isEmpty())
@@ -221,9 +265,7 @@
                          <div class="mb-3">
                              <label for="imagen_certificado" class="form-label">Subir nuevo certificado</label>
                              <input type="file" class="form-control" name="certificado" required>
-                             @error('certificado')
-                             <div class="text-danger mt-1">{{ $message }}</div>
-                             @enderror
+                           
                          </div>
                      </div>
                      <button type="submit" class="btn btn-primary">Subir</button>
@@ -233,16 +275,20 @@
          </div>
      </div>
  </div>
+@if (session('modal'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modalId = "{{ session('modal') }}";
+        const modalEl = document.getElementById(modalId);
+        if (modalEl) {
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+    });
+</script>
+@endif
 
 
- 
  @endsection
 
-  @if ($errors->any() || session('success') || session('error') || session('warning'))
- <script>
-     document.addEventListener('DOMContentLoaded', function() {
-         const modal = new bootstrap.Modal(document.getElementById('certificadoModal'));
-         modal.show();
-     });
- </script>
- @endif
+ 
