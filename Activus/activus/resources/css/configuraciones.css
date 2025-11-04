@@ -1,33 +1,55 @@
 .horarios .horario-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 120px 140px 1fr 1fr;
   align-items: center;
   gap: 12px;
   background: #111827;
   border-radius: 8px;
   padding: 10px 14px;
-  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
-/* Switch estilo moderno */
+.nombre-dia {
+  width: 100px;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: #f3f4f6;
+}
+
+.horario-row input[type="time"] {
+  flex: 0 0 auto;
+  width: 110px;
+}
+
+.horario-row input[type="time"]:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+
 .switch {
   position: relative;
   display: inline-block;
   width: 36px;
   height: 20px;
 }
+
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
+
 .slider {
   position: absolute;
   cursor: pointer;
   inset: 0;
   background-color: #475569;
   border-radius: 20px;
-  transition: .3s;
+  transition: 0.3s;
 }
+
 .slider:before {
   position: absolute;
   content: "";
@@ -37,11 +59,60 @@
   bottom: 3px;
   background-color: white;
   border-radius: 50%;
-  transition: .3s;
+  transition: 0.3s;
 }
-.switch input:checked + .slider {
+
+.switch input:checked+.slider {
   background-color: #3b82f6;
 }
-.switch input:checked + .slider:before {
+
+.switch input:checked+.slider:before {
   transform: translateX(16px);
+}
+
+/* recuadro del horario */
+.horario-item {
+  background-color: #121826;
+  border-radius: 8px;
+}
+
+/* mensaje de error */
+.ErrorHorario {
+  display: block;
+  font-size: 0.875rem;
+  color: #dc3545;
+  padding-left: 10px;
+  padding-bottom: 5px;
+}
+
+
+@media (max-width: 992px) {
+  .horarios .horario-row {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
+  }
+
+  .nombre-dia {
+    width: auto;
+    grid-column: 1 / -1;
+  }
+
+  .horario-row label {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .horarios .horario-row {
+    grid-template-columns: 1fr;
+  }
+
+  .horario-row input[type="time"] {
+    width: 100%;
+  }
+
+  .nombre-dia {
+    text-align: center;
+    margin-bottom: 4px;
+  }
 }

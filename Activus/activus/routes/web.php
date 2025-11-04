@@ -16,6 +16,7 @@ use App\Models\TipoMembresia;
 use App\Http\Controllers\PagoSocioController;
 use App\Http\Controllers\InicioSocioController;
 
+use App\Http\Controllers\ConfiguracionController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -60,9 +61,9 @@ Route::get('/salas', function () {
     return view('salas.index');
 });
 
-Route::get('/configuraciones', function () {
+/*Route::get('/configuraciones', function () {
     return view('configuraciones.index');
-});
+});*/
 
 Route::get('/asistencias', function () {
     return view('asistencias.index');
@@ -88,8 +89,11 @@ Route::get('/profesoresMetricas', [ProfesoresController::class, 'obtenerMetricas
 Route::get('/membresias/socio', [TipoMembresiaController::class, 'obtenerMembresias']);
 Route::get('/estadosMembresiaSocio', [EstadoMembresiaSocioController::class, 'index']);
 Route::get('/socios', [SocioController::class, 'index'])->name('socios.index');
-Route::get('/membresias', [TipoMembresiaController::class, 'index'])->name('membresias.index');
-
+//Route::get('/membresias', [TipoMembresiaController::class, 'index'])->name('membresias.index');
+Route::get('/configuraciones', [ConfiguracionController::class, 'index'])
+    ->name('configuracion.index');
+Route::get('/donde-entrenar', [ConfiguracionController::class, 'mostrar'])
+    ->name('donde-entrenar.index');
 
 Route::post('/usuarios/crear', [UsuarioController::class, 'crearUsuario'])->name('usuarios.crear');
 Route::put('/usuarios/{id}', [UsuarioController::class, 'editarUsuario'])->name('usuarios.editar');
@@ -124,3 +128,6 @@ Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 
 Route::get('/inicio-socio', [InicioSocioController::class, 'index']);
 Route::get('/inicio-socio/obtener-datos', [InicioSocioController::class, 'obtenerDatos']);
+
+Route::post('/configuraciones', [ConfiguracionController::class, 'storeOrUpdate'])
+    ->name('configuracion.storeOrUpdate');
