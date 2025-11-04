@@ -9,7 +9,7 @@
              <div class="d-flex align-items-center gap-3 mb-3">
                  <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
                      style="width:64px; height:64px;">
-                     <div class="position-relative">
+                     <div class="position-relative d-inline-block">
                          @if($usuario->Foto_Perfil)
                          <img src="{{ asset('storage/'.$usuario->Foto_Perfil) }}"
                              alt="Foto de perfil"
@@ -18,21 +18,23 @@
                          @else
                          <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
                              style="width:64px; height:64px;">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
-                                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                                 <circle cx="12" cy="7" r="4" />
-                             </svg>
+                             <i data-lucide="user" class="text-light"></i>
                          </div>
                          @endif
 
-                         <!-- Botón pequeño de editar -->
-                         <button class="btn btn-sm btn-secondary rounded-circle position-absolute bottom-0 end-0"
-                             data-bs-toggle="modal" data-bs-target="#modalCambiarFoto"
+                         <!-- Botón  editar la foto -->
+                         <button class="btn btn-sm btn-secondary position-absolute bottom-0 end-0 rounded-circle p-1"
+                             data-bs-toggle="modal"
+                             data-bs-target="#modalCambiarFoto"
+                             title="Editar foto"
                              style="width:24px; height:24px; line-height:0;">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-camera-icon lucide-camera">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                 class="lucide lucide-camera">
                                  <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" />
                                  <circle cx="12" cy="13" r="3" />
-                             </svg> </button>
+                             </svg>
+                         </button>
                      </div>
                  </div>
                  <div>
@@ -334,10 +336,18 @@
                          <input type="file" name="foto" id="foto" class="form-control" accept="image/*" required>
 
                          <div id="preview" class="mt-3">
-                             @if($usuario->Foto_Perfil)
+                             @if ($usuario->Foto_Perfil)
                              <img src="{{ asset('storage/'.$usuario->Foto_Perfil) }}"
                                  class="rounded-circle object-fit-cover"
                                  style="width:80px; height:80px;">
+
+                             {{-- Enlace para eliminar --}}
+                             <a href="#" class="text-danger d-block mt-2"
+                                 onclick="event.preventDefault(); 
+                            if(confirm('¿Seguro que deseas eliminar la foto de perfil?')) 
+                                document.getElementById('delete-foto-{{ $usuario->ID_Usuario }}').submit();">
+                                 Eliminar foto
+                             </a>
                              @endif
                          </div>
                      </div>
@@ -345,6 +355,13 @@
                      <div class="text-end">
                          <button type="submit" class="btn btn-primary">Guardar Foto</button>
                      </div>
+                 </form>
+                 {{-- Formulario de eliminación fuera del anterior --}}
+                 <form id="delete-foto-{{ $usuario->ID_Usuario }}"
+                     action="{{ route('usuarios.eliminarFoto', $usuario->ID_Usuario) }}"
+                     method="POST" style="display:none;">
+                     @csrf
+                     @method('DELETE')
                  </form>
              </div>
          </div>

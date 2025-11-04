@@ -541,4 +541,26 @@ class UsuarioController extends Controller
         return back()->with('success', 'Foto actualizada correctamente.')
             ->with('modal', 'modalCambiarFoto');
     }
+
+    public function eliminarFoto($id)
+    {
+        $usuario = Usuario::findOrFail($id);
+
+        if ($usuario->Foto_Perfil) {
+            // Ruta completa al archivo dentro de storage/app/public/
+            $path = 'public/' . $usuario->Foto_Perfil;
+
+            if (Storage::exists($path)) {
+                Storage::delete($path);
+            }
+
+            
+            $usuario->Foto_Perfil = null;
+            $usuario->save();
+        }
+
+        return back()
+            ->with('modal', 'modalCambiarFoto')
+            ->with('success', 'La foto de perfil fue eliminada correctamente.');
+    }
 }

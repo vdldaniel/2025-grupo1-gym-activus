@@ -101,6 +101,7 @@ Route::post('/usuario/{id}/cambiar-contrasenia', [UsuarioController::class, 'cam
 Route::post('/usuarios/{id}/subir-certificado', [UsuarioController::class, 'subirCertificado'])->name('usuarios.subirCertificado');
 Route::delete('/usuarios/{id}/eliminar-certificado/{certificado}', [UsuarioController::class, 'eliminarCertificado'])->name('usuarios.eliminarCertificado');
 Route::post('/usuario/{id}/cambiar-foto', [UsuarioController::class, 'cambiarFoto'])->name('usuarios.cambiarFoto');
+Route::delete('/usuarios/{id}/eliminar-foto', [UsuarioController::class, 'eliminarFoto'])->name('usuarios.eliminarFoto');
 
 Route::post('/socios/crear', [SocioController::class, 'crearSocio'])->name('socios.crear');
 Route::get('/socios/{id}/perfil', [SocioController::class, 'mostrar'])->name('socios.perfil');
