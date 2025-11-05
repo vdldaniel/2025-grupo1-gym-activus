@@ -240,15 +240,21 @@ class UsuarioController extends Controller
     {
         // Cargar el usuario con sus relaciones
         $usuario = Usuario::with(['roles'])->findOrFail($id);
+        $usuario = Usuario::with(['socio.membresia.tipo'])->findOrFail($id);
 
-        // Buscar el socio asociado al usuario
+        $membresia = $usuario->socio?->membresia;
+
+        $fechaFin = $membresia?->Fecha_Fin ? Carbon::parse($membresia->Fecha_Fin) : null;
+        $diasRestantes = $fechaFin ? now()->diffInDays($fechaFin, false) : null;
+
+
         $socio = \App\Models\Socio::where('ID_Usuario', $usuario->ID_Usuario)
             ->with('usuario')
             ->first();
 
         $rolId = $usuario->roles->first()->ID_Rol ?? null;
 
-        // 🔹 Traer todos los certificados del usuario (si tiene relación definida)
+
         $certificados = \App\Models\Certificado::where('ID_Usuario_Socio', $usuario->ID_Usuario)->get();
 
         $anioActual = Carbon::now()->year;
@@ -264,7 +270,7 @@ class UsuarioController extends Controller
         $tieneCertificado = $certificados->where('Aprobado', 1)->isNotEmpty();
 
         // 🔹 Enviar todo a la vista
-        return view('usuarios.perfil', compact('usuario', 'socio', 'rolId', 'certificados', 'tieneCertificado', 'certificadoEsteAnio', 'anioActual'));
+        return view('usuarios.perfil', compact('usuario',  'membresia', 'diasRestantes', 'fechaFin', 'socio', 'rolId', 'certificados', 'tieneCertificado', 'certificadoEsteAnio', 'anioActual'));
     }
 
     public function editarPerfil($id)
@@ -554,7 +560,7 @@ class UsuarioController extends Controller
                 Storage::delete($path);
             }
 
-            
+
             $usuario->Foto_Perfil = null;
             $usuario->save();
         }

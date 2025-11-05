@@ -22,4 +22,14 @@ class MembresiaSocio extends Model
     {
         return $this->belongsTo(EstadoMembresiaSocio::class, 'ID_Estado_Membresia_Socio', 'ID_Estado_Membresia_Socio');
     }
+
+    public function socio()
+    {
+        return $this->belongsTo(Socio::class, 'ID_Usuario_Socio', 'ID_Usuario');
+    }
+
+    public function tipo()
+    {
+        return $this->belongsTo(TipoMembresia::class, 'ID_TipoMembresia', 'ID_TipoMembresia');
+    }
 }

@@ -6,7 +6,10 @@
         <main class="flex-grow-1">
             <header class="p-4">
                 <div class="d-flex align-items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
                     <div>
                         <h1 class="fw-bold mb-0">Mi Perfil</h1>
                         <small class="text-secondary small">Gestiona tu información personal</small>
@@ -18,20 +21,40 @@
 
                 @if($rolId === 4)
                 <!-- Próximo Pago -->
-                <div class="col-lg-12  mb-4">
+                <div class="col-lg-12 mb-4">
                     <div class="card bg-card text-light shadow-sm">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h6 class="mb-0">Próximo Pago</h6>
                             <i data-lucide="credit-card" class="text-muted"></i>
                         </div>
                         <div class="card-body">
-                            <h3 class="fw-bold">7 días</h3>
-                            <p class="text-secondary small mb-2">Vencimiento: 17/09/2025</p>
-                            <span class="badge bg-success bg-opacity-25 text-success border border-success">Al
-                                día</span>
+                            @if($membresia)
+                            <h3 class="fw-bold">
+                                @if($diasRestantes > 0)
+                                {{ $diasRestantes }} días
+                                @elseif($diasRestantes === 0)
+                                Hoy vence
+                                @else
+                                Vencido hace {{ abs($diasRestantes) }} días
+                                @endif
+                            </h3>
+
+                            <p class="text-secondary small mb-2">
+                                Vencimiento: {{ $fechaFin->format('d/m/Y') }}
+                            </p>
+
+                            @if($diasRestantes > 0)
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success">Al día</span>
+                            @else
+                            <span class="badge bg-danger bg-opacity-25 text-danger border border-danger">Vencido</span>
+                            @endif
+                            @else
+                            <p class="text-secondary mb-0">Sin membresía activa</p>
+                            @endif
                         </div>
                     </div>
                 </div>
+
                 @endif
                 <div class="row g-4">
                     <!-- Información Personal -->
@@ -44,7 +67,10 @@
                                 </div>
                                 <a href="{{ route('usuarios.editarPerfil', ['id' => $usuario->ID_Usuario]) }}"
                                     class="btn btn-outline-primary btn-sm position-absolute top-0 end-0 m-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen-icon lucide-square-pen"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg>Editar
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen-icon lucide-square-pen">
+                                        <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                        <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" />
+                                    </svg>Editar
                                 </a>
                             </div>
                             <div class="card-body">
