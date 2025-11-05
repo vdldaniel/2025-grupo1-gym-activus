@@ -19,6 +19,7 @@ use App\Http\Controllers\InicioAdminController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\InicioProfesorController;
 use App\Http\Controllers\SalaController;
+use App\Http\Controllers\InicioAdministradorController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -178,3 +179,6 @@ Route::get('/salas/listar', [SalaController::class, 'listar'])->name('salas.list
 Route::post('/salas', [SalaController::class, 'store'])->name('salas.store');
 Route::put('/salas/{id}', [SalaController::class, 'update'])->name('salas.update');
 Route::delete('/salas/{id}', [SalaController::class, 'destroy'])->name('salas.destroy');
+
+Route::get('/inicio-administrador', [InicioAdministradorController::class, 'index'])->name('inicio.administrador');
+Route::get('/inicio-administrador/datos', [InicioAdministradorController::class, 'datos']);
