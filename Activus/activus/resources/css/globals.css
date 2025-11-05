@@ -367,3 +367,18 @@ thead {
     border-bottom: none !important;
   }
 }
+
+#vistaSala table tbody td,
+#vistaSala table thead th {
+  vertical-align: middle;
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+  background-color: var(--componente-base-clr) !important;
+  border-bottom: 1px solid #1e293b !important;
+
+}
+
+#vistaSala table th,
+#vistaSala table td {
+  white-space: normal !important;
+}

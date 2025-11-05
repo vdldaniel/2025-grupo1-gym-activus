@@ -18,6 +18,7 @@ use App\Http\Controllers\InicioSocioController;
 use App\Http\Controllers\InicioAdminController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\InicioProfesorController;
+use App\Http\Controllers\SalaController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -38,7 +39,7 @@ Route::get('/socios', function () {
 
 Route::get('/clases', function () {
     return view('clases.index');
-});
+})->name('clases.index');
 
 Route::get('/usuarios/perfil', function () {
     return view('usuarios.perfil');
@@ -47,9 +48,9 @@ Route::get('/usuarios/perfil', function () {
 Route::get('/membresias', function () {
     return view('membresias.index');
 });
-Route::get('/membresias/gestion', function () {
+/*Route::get('/membresias/gestion', function () {
     return view('membresias.gestion');
-});
+});*/
 Route::get('/donde-entrenar', function () {
     return view('donde-entrenar.index');
 });
@@ -58,9 +59,9 @@ Route::get('/pagos', function () {
     return view('pagos.index');
 });
 
-Route::get('/salas', function () {
+/*Route::get('/salas', function () {
     return view('salas.index');
-});
+});*/
 
 /*Route::get('/configuraciones', function () {
     return view('configuraciones.index');
@@ -73,14 +74,22 @@ Route::get('/asistencias', function () {
 Route::get('/profesores', function () {
     return view('profesores.index');
 });
+/*Route::get('/profesores/gestion', function () {
+    return view('profesores.gestion');
+});*/
+
+Route::get('/membresias/gestion', function () {
+    return view('membresias.gestion');
+})->name('membresias.gestion');
+
 Route::get('/profesores/gestion', function () {
     return view('profesores.gestion');
-});
+})->name('profesores.gestion');
 
 // === Rutas de apoyo para vista del Administrativo ===
 // (no modifican funcionalidad, solo evitan errores al renderizar)
 
-if (!Route::has('clases.index')) {
+/*if (!Route::has('clases.index')) {
     Route::get('/clases', function () {
         return view('clases.index');
     })->name('clases.index');
@@ -90,7 +99,7 @@ if (!Route::has('profesores.index')) {
     Route::get('/profesores', function () {
         return view('profesores.index');
     })->name('profesores.index');
-}
+}*/
 // =====================================================================
 //  Rutas temporales de apoyo para el módulo "Inicio Administrativo"
 // Estas rutas solo existen para evitar errores de vista durante pruebas.
@@ -163,3 +172,9 @@ Route::post('/configuraciones', [ConfiguracionController::class, 'storeOrUpdate'
 Route::get('/inicio-profesor', [InicioProfesorController::class, 'index'])->name('inicio.profesor');
 Route::get('/inicio-profesor/datos', [InicioProfesorController::class, 'datos']);
 
+
+Route::get('/salas', [SalaController::class, 'index'])->name('salas.index');
+Route::get('/salas/listar', [SalaController::class, 'listar'])->name('salas.listar');
+Route::post('/salas', [SalaController::class, 'store'])->name('salas.store');
+Route::put('/salas/{id}', [SalaController::class, 'update'])->name('salas.update');
+Route::delete('/salas/{id}', [SalaController::class, 'destroy'])->name('salas.destroy');
