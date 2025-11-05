@@ -12,6 +12,47 @@
                 <span class="text-secondary small">Administra las clases</span>
             </div>
         </div>
+        <div>
+            <div class="clases_container" >
+            <div class="clases_card">
+                <h5>Clase N:</h5>
+                <h5>Cantidad inscriptos</h5>
+                <h5>Profesor:</h5>
+                <h5>Horario:</h5>
+            </div>
+            <div class="clases_card">
+                <h5>Clase N:</h5>
+                <h5>Cantidad inscriptos</h5>
+                <h5>Profesor:</h5>
+                <h5>Horario:</h5>
+            </div>
+            <div class="clases_card">
+                <h5>Clase N:</h5>
+                <h5>Cantidad inscriptos</h5>
+                <h5>Profesor:</h5>
+                <h5>Horario:</h5>
+            </div>
+            <div class="clases_card">
+                <h5>Clase N:</h5>
+                <h5>Cantidad inscriptos</h5>
+                <h5>Profesor:</h5>
+                <h5>Horario:</h5>
+            </div>
+            <div class="clases_card">
+                <h5>Clase N:</h5>
+                <h5>Cantidad inscriptos</h5>
+                <h5>Profesor:</h5>
+                <h5>Horario:</h5>
+            </div>
+            <div class="clases_card">
+                <h5>Clase N:</h5>
+                <h5>Cantidad inscriptos</h5>
+                <h5>Profesor:</h5>
+                <h5>Horario:</h5>
+            </div>
+        </div>
+
+        </div>
     </div>
 </div>
 @endsection

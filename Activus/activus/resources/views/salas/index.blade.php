@@ -11,6 +11,35 @@
                 <span class="text-secondary small">Administra las salas</span>
             </div>
         </div>
+        <div>
+            <div class="clases_container" >
+            <div class="clases_card">
+                <h4>Sala N:</h4>
+                <span>Nombre de la sala:</span>
+            </div>
+            <div class="clases_card">
+                <h4>Sala N:</h4>
+                <span>Nombre de la sala:</span>
+            </div>
+            <div class="clases_card">
+                <h4>Sala N:</h4>
+                <span>Nombre de la sala:</span>
+            </div>
+            <div class="clases_card">
+                <h4>Sala N:</h4>
+                <span>Nombre de la sala:</span>
+            </div>
+            <div class="clases_card">
+                <h4>Sala N:</h4>
+                <span>Nombre de la sala:</span>
+            </div>
+            <div class="clases_card">
+                <h4>Sala N:</h4>
+                <span>Nombre de la sala:</span>
+            </div>
+        </div>
+
+        </div>
     </div>
 </div>
 @endsection
