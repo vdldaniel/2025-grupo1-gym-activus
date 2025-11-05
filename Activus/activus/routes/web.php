@@ -15,7 +15,7 @@ use App\Http\Controllers\SocioController;
 use App\Models\TipoMembresia;
 use App\Http\Controllers\PagoSocioController;
 use App\Http\Controllers\InicioSocioController;
-
+use App\Http\Controllers\InicioAdminController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -75,6 +75,27 @@ Route::get('/profesores/gestion', function () {
     return view('profesores.gestion');
 });
 
+// === Rutas de apoyo para vista del Administrativo ===
+// (no modifican funcionalidad, solo evitan errores al renderizar)
+
+if (!Route::has('clases.index')) {
+    Route::get('/clases', function () {
+        return view('clases.index');
+    })->name('clases.index');
+}
+
+if (!Route::has('profesores.index')) {
+    Route::get('/profesores', function () {
+        return view('profesores.index');
+    })->name('profesores.index');
+}
+// =====================================================================
+//  Rutas temporales de apoyo para el módulo "Inicio Administrativo"
+// Estas rutas solo existen para evitar errores de vista durante pruebas.
+// NO modificar vistas ajenas ni eliminar hasta que estén integradas
+// las rutas reales de Clases y Profesores.
+// =====================================================================
+
 
 Route::get('/estadosUsuario', [EstadoUsuarioController::class, 'index']);
 Route::get('/roles', [RolController::class, 'index']);
@@ -124,3 +145,6 @@ Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 
 Route::get('/inicio-socio', [InicioSocioController::class, 'index']);
 Route::get('/inicio-socio/obtener-datos', [InicioSocioController::class, 'obtenerDatos']);
+
+Route::get('/inicio/administrativo', [InicioAdminController::class, 'index'])->name('inicio.admin');
+Route::get('/inicio/administrativo/resumen', [InicioAdminController::class, 'resumen'])->name('inicio.admin.resumen');
