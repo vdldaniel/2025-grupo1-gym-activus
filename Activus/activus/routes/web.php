@@ -38,7 +38,7 @@ Route::get('/socios', function () {
 
 Route::get('/clases', function () {
     return view('clases.index');
-});
+})->name('clases.index');
 
 Route::get('/usuarios/perfil', function () {
     return view('usuarios.perfil');
@@ -47,9 +47,9 @@ Route::get('/usuarios/perfil', function () {
 Route::get('/membresias', function () {
     return view('membresias.index');
 });
-Route::get('/membresias/gestion', function () {
+/*Route::get('/membresias/gestion', function () {
     return view('membresias.gestion');
-});
+});*/
 Route::get('/donde-entrenar', function () {
     return view('donde-entrenar.index');
 });
@@ -73,14 +73,22 @@ Route::get('/asistencias', function () {
 Route::get('/profesores', function () {
     return view('profesores.index');
 });
+/*Route::get('/profesores/gestion', function () {
+    return view('profesores.gestion');
+});*/
+
+Route::get('/membresias/gestion', function () {
+    return view('membresias.gestion');
+})->name('membresias.gestion');
+
 Route::get('/profesores/gestion', function () {
     return view('profesores.gestion');
-});
+})->name('profesores.gestion');
 
 // === Rutas de apoyo para vista del Administrativo ===
 // (no modifican funcionalidad, solo evitan errores al renderizar)
 
-if (!Route::has('clases.index')) {
+/*if (!Route::has('clases.index')) {
     Route::get('/clases', function () {
         return view('clases.index');
     })->name('clases.index');
@@ -90,7 +98,7 @@ if (!Route::has('profesores.index')) {
     Route::get('/profesores', function () {
         return view('profesores.index');
     })->name('profesores.index');
-}
+}*/
 // =====================================================================
 //  Rutas temporales de apoyo para el módulo "Inicio Administrativo"
 // Estas rutas solo existen para evitar errores de vista durante pruebas.
