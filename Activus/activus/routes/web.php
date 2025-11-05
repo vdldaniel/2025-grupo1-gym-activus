@@ -16,9 +16,10 @@ use App\Models\TipoMembresia;
 use App\Http\Controllers\PagoSocioController;
 use App\Http\Controllers\InicioSocioController;
 use App\Http\Controllers\InicioAdminController;
-
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\InicioProfesorController;
 use App\Http\Controllers\SalaController;
+use App\Http\Controllers\InicioAdministradorController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -120,7 +121,7 @@ Route::get('/profesoresMetricas', [ProfesoresController::class, 'obtenerMetricas
 Route::get('/membresias/socio', [TipoMembresiaController::class, 'obtenerMembresias']);
 Route::get('/estadosMembresiaSocio', [EstadoMembresiaSocioController::class, 'index']);
 Route::get('/socios', [SocioController::class, 'index'])->name('socios.index');
-//Route::get('/membresias', [TipoMembresiaController::class, 'index'])->name('membresias.index');
+Route::get('/membresias', [TipoMembresiaController::class, 'index'])->name('membresias.index');
 Route::get('/configuraciones', [ConfiguracionController::class, 'index'])
     ->name('configuracion.index');
 Route::get('/donde-entrenar', [ConfiguracionController::class, 'mostrar'])
@@ -169,9 +170,15 @@ Route::get('/inicio/administrativo/resumen', [InicioAdminController::class, 'res
 Route::post('/configuraciones', [ConfiguracionController::class, 'storeOrUpdate'])
     ->name('configuracion.storeOrUpdate');
 
+Route::get('/inicio-profesor', [InicioProfesorController::class, 'index'])->name('inicio.profesor');
+Route::get('/inicio-profesor/datos', [InicioProfesorController::class, 'datos']);
+
 
 Route::get('/salas', [SalaController::class, 'index'])->name('salas.index');
 Route::get('/salas/listar', [SalaController::class, 'listar'])->name('salas.listar');
 Route::post('/salas', [SalaController::class, 'store'])->name('salas.store');
 Route::put('/salas/{id}', [SalaController::class, 'update'])->name('salas.update');
 Route::delete('/salas/{id}', [SalaController::class, 'destroy'])->name('salas.destroy');
+
+Route::get('/inicio-administrador', [InicioAdministradorController::class, 'index'])->name('inicio.administrador');
+Route::get('/inicio-administrador/datos', [InicioAdministradorController::class, 'datos']);
