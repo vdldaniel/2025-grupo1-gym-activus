@@ -69,4 +69,8 @@ class Usuario extends Authenticatable
         return $this->hasMany(Certificado::class, 'ID_Usuario_Socio', 'ID_Usuario');
     }
 
+    public function membresia()
+    {
+        return $this->hasOne(MembresiaSocio::class, 'ID_Usuario_Socio', 'ID_Usuario');
+    }
 }
