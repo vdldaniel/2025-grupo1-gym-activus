@@ -288,22 +288,53 @@ class UsuarioController extends Controller
 
     public function editarPerfil($id)
     {
-
         $usuario = Usuario::with('roles')->findOrFail($id);
-
-
         $rolId = $usuario->roles->first()->ID_Rol ?? null;
-
+        $vencimiento = null;
+        $diasRestantes = null;
 
         $socio = null;
         if ($rolId === 4) {
-            $socio = \App\Models\Socio::where('ID_Usuario', $usuario->ID_Usuario)->first();
+            $socio = \App\Models\Socio::where('ID_Usuario', $usuario->ID_Usuario)
+                ->with('usuario')
+                ->first();
         }
 
 
-        return view('usuarios.editar_perfil', compact('usuario', 'rolId', 'socio'));
-    }
+        $membresia = \App\Models\MembresiaSocio::with('tipoMembresia')
+            ->where('ID_Usuario_Socio', $id)
+            ->latest('Fecha_Fin')
+            ->first();
+        if ($membresia) {
+            $fechaFin = Carbon::parse($membresia->Fecha_Fin);
+            $hoy = Carbon::now();
 
+            // Calculamos la diferencia y redondeamos a entero
+            $diasRestantes = $hoy->diffInDays($fechaFin, false);
+            $vencimiento = $fechaFin->format('d/m/Y');
+        }
+
+        $certificados = \App\Models\Certificado::where('ID_Usuario_Socio', $usuario->ID_Usuario)->get();
+
+        $anioActual = \Carbon\Carbon::now()->year;
+
+
+        $certificadoEsteAnio = $certificados->firstWhere(function ($c) use ($anioActual) {
+            return \Carbon\Carbon::parse($c->Fecha_Emision)->year == $anioActual;
+        });
+
+        return view('usuarios.editar_perfil', compact(
+            'usuario',
+            'rolId',
+            'socio',
+            'membresia',
+            'diasRestantes',
+            'vencimiento',
+            'certificados',
+            'anioActual',
+            'certificadoEsteAnio'
+        ));
+    }
     public function update(Request $request, $id)
     {
         // Buscar usuario (findOrFail usa la primaryKey declarada en el modelo)
