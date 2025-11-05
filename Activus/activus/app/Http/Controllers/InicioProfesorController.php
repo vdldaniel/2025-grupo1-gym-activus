@@ -54,7 +54,7 @@ class InicioProfesorController extends Controller
                 'success' => true,
                 'data' => [
                     'totalEstudiantes' => $totalEstudiantes,
-                    'variacionEstudiantes' => '+12% desde el mes pasado',
+                    'variacionEstudiantes' => ' % desde el mes pasado',
                     'totalClases' => $totalClases,
                     'variacionClases' => $clasesHoy->count() . ' programadas para hoy',
                     'clasesHoy' => $clasesHoy
