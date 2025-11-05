@@ -31,7 +31,7 @@
                             @if($membresia)
                             <h3 class="fw-bold">
                                 @if($diasRestantes > 0)
-                                {{ $diasRestantes }} días
+                                {{intval($diasRestantes) }} días
                                 @elseif($diasRestantes === 0)
                                 Hoy vence
                                 @else
@@ -40,7 +40,7 @@
                             </h3>
 
                             <p class="text-secondary small mb-2">
-                                Vencimiento: {{ $fechaFin->format('d/m/Y') }}
+                                Vencimiento: {{ $vencimiento }}
                             </p>
 
                             @if($diasRestantes > 0)
