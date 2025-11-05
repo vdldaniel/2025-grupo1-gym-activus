@@ -1,6 +1,6 @@
 @php
   use App\Helpers\PermisoHelper;
-  $idUsuarioPrueba = 4; //Usuario autenticado de prueba - 1-Admin 2-Recepcionista 3-Profesor 4-Socio 5-Superadmin
+  $idUsuarioPrueba = 5; //Usuario autenticado de prueba - 1-Admin 2-Recepcionista 3-Profesor 4-Socio 5-Superadmin
 @endphp
 
 <!DOCTYPE html>
@@ -13,7 +13,7 @@
   <title>Activus</title>
   {{-- jQuery --}}
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  
+
 
 
   {{-- Bootstrap --}}
@@ -37,7 +37,7 @@
 
 
   {{-- Resources --}}
-  @vite(['resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/css/configuraciones.css', 'resources/js/usuario.js', 'resources/js/asistencia.js', 'resources/js/profesores-socio.js', 'resources/js/profesores-administrativo.js', 'resources/js/membresias-socio.js', 'resources/js/membresias-administrativo.js', 'resources/js/socio.js', 'resources/js/validarPerfil.js'])
+  @vite(['resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/css/configuraciones.css', 'resources/js/usuario.js', 'resources/js/socio.js', 'resources/js/validarPerfil.js'])
 
 </head>
 

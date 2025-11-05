@@ -6,7 +6,7 @@
         <main class="flex-grow-1">
             <header class="p-4">
                 <div class="d-flex align-items-center gap-3">
-                    <i data-lucide="users" class="text-primary"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     <div>
                         <h1 class="fw-bold mb-0">Mi Perfil</h1>
                         <small class="text-secondary small">Gestiona tu información personal</small>
@@ -44,7 +44,7 @@
                                 </div>
                                 <a href="{{ route('usuarios.editarPerfil', ['id' => $usuario->ID_Usuario]) }}"
                                     class="btn btn-outline-primary btn-sm position-absolute top-0 end-0 m-2">
-                                    <i data-lucide="edit" class="me-1"></i>Editar
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-pen-icon lucide-square-pen"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg>Editar
                                 </a>
                             </div>
                             <div class="card-body">
@@ -91,4 +91,5 @@
         </main>
     </div>
 </div>
+
 @endsection
