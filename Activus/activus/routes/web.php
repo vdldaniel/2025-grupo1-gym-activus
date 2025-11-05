@@ -16,8 +16,8 @@ use App\Models\TipoMembresia;
 use App\Http\Controllers\PagoSocioController;
 use App\Http\Controllers\InicioSocioController;
 use App\Http\Controllers\InicioAdminController;
-
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\InicioProfesorController;
 use App\Http\Controllers\SalaController;
 
 Route::get('/', function () {
@@ -120,7 +120,7 @@ Route::get('/profesoresMetricas', [ProfesoresController::class, 'obtenerMetricas
 Route::get('/membresias/socio', [TipoMembresiaController::class, 'obtenerMembresias']);
 Route::get('/estadosMembresiaSocio', [EstadoMembresiaSocioController::class, 'index']);
 Route::get('/socios', [SocioController::class, 'index'])->name('socios.index');
-//Route::get('/membresias', [TipoMembresiaController::class, 'index'])->name('membresias.index');
+Route::get('/membresias', [TipoMembresiaController::class, 'index'])->name('membresias.index');
 Route::get('/configuraciones', [ConfiguracionController::class, 'index'])
     ->name('configuracion.index');
 Route::get('/donde-entrenar', [ConfiguracionController::class, 'mostrar'])
@@ -168,6 +168,9 @@ Route::get('/inicio/administrativo', [InicioAdminController::class, 'index'])->n
 Route::get('/inicio/administrativo/resumen', [InicioAdminController::class, 'resumen'])->name('inicio.admin.resumen');
 Route::post('/configuraciones', [ConfiguracionController::class, 'storeOrUpdate'])
     ->name('configuracion.storeOrUpdate');
+
+Route::get('/inicio-profesor', [InicioProfesorController::class, 'index'])->name('inicio.profesor');
+Route::get('/inicio-profesor/datos', [InicioProfesorController::class, 'datos']);
 
 
 Route::get('/salas', [SalaController::class, 'index'])->name('salas.index');
