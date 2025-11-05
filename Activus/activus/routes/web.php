@@ -18,6 +18,7 @@ use App\Http\Controllers\InicioSocioController;
 use App\Http\Controllers\InicioAdminController;
 
 use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\SalaController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -58,9 +59,9 @@ Route::get('/pagos', function () {
     return view('pagos.index');
 });
 
-Route::get('/salas', function () {
+/*Route::get('/salas', function () {
     return view('salas.index');
-});
+});*/
 
 /*Route::get('/configuraciones', function () {
     return view('configuraciones.index');
@@ -167,3 +168,10 @@ Route::get('/inicio/administrativo', [InicioAdminController::class, 'index'])->n
 Route::get('/inicio/administrativo/resumen', [InicioAdminController::class, 'resumen'])->name('inicio.admin.resumen');
 Route::post('/configuraciones', [ConfiguracionController::class, 'storeOrUpdate'])
     ->name('configuracion.storeOrUpdate');
+
+
+Route::get('/salas', [SalaController::class, 'index'])->name('salas.index');
+Route::get('/salas/listar', [SalaController::class, 'listar'])->name('salas.listar');
+Route::post('/salas', [SalaController::class, 'store'])->name('salas.store');
+Route::put('/salas/{id}', [SalaController::class, 'update'])->name('salas.update');
+Route::delete('/salas/{id}', [SalaController::class, 'destroy'])->name('salas.destroy');
