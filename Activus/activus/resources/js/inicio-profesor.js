@@ -24,14 +24,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     d.clasesHoy.forEach(c => {
       lista.innerHTML += `
-        <li class="mb-2 d-flex justify-content-between align-items-center">
+        <li class="mb-3 d-flex justify-content-between align-items-start">
           <div>
             <i class="bi bi-circle-fill text-primary me-2"></i>
-            <span>${c.nombre}</span>
-            <p class="card-subtitle text-secondary small mb-0">
-              ${c.hora_inicio} – ${c.hora_fin} | ${c.sala}
+            <span class="fw-semibold">${c.nombre}</span>
+            <p class="card-subtitle text-primary small mb-0">
+              ${c.hora_inicio.slice(0,5)} – ${c.hora_fin.slice(0,5)} | ${c.sala}
             </p>
           </div>
+          <span class="badge border border-secondary text-primary bg-transparent px-2 py-1">
+            ${c.reservas_confirmadas}/${c.capacidad}
+          </span>
+
         </li>
       `;
     });
