@@ -1,0 +1,119 @@
+.btn-tab {
+    background-color: var(--componente-base-clr);
+    color: var(--text-clr);
+    border: 1px solid var(--componente-border-clr);
+    border-radius: 8px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+.btn-tab:hover {
+    background-color: var(--secondary-componente-base-clr);
+}
+
+.btn-tab.active {
+    background-color: var(--primary-element);
+    color: var(--base-clr);
+
+}
+
+.btn-nuevaClase {
+    background-color: var(--componente-base-clr);
+    color: var(--text-clr);
+    border: 1px solid var(--componente-border-clr);
+}
+
+.btn-nuevaClase:hover {
+    background-color: var(--secondary-componente-base-clr);
+    border: 1px solid var(--componente-border-clr);
+}
+
+#seccionProgramadas .table-responsive,
+#seccionClases .table-responsive {
+    overflow: visible !important;
+}
+
+#seccionProgramadas .dropdown-menu,
+#seccionClases .dropdown-menu {
+    position: absolute !important;
+    z-index: 2000 !important;
+}
+
+.fc-col-header-cell {
+    background-color: #1f2937;
+    color: #d1d5db;
+    font-weight: 600;
+    text-transform: capitalize;
+    text-align: center;
+    padding: 8px;
+    border-bottom: 1px solid;
+}
+
+.fc-timegrid-axis-cushion {
+    color: #9ca3af;
+    font-size: 0.85rem;
+}
+
+
+.fc-event {
+    background-color: #1e3a8a !important;
+    border: 1px solid #2563eb !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    padding: 4px;
+    overflow: hidden;
+}
+
+.fc-event:hover {
+    background-color: #2563eb !important;
+    cursor: pointer;
+    transform: scale(1.02);
+    transition: 0.2s ease;
+}
+
+.fc-timegrid-slot {
+    height: 50px !important;
+}
+
+
+.fc-col-header-cell-cushion {
+    color: #ffffff !important;
+    font-weight: 600;
+    text-transform: capitalize;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+    .fc-toolbar-title {
+        font-size: 1rem;
+    }
+
+    .fc .fc-timegrid-slot {
+        height: 2.5em !important;
+    }
+
+    .fc-col-header-cell-cushion {
+        font-size: 0.85rem;
+    }
+
+    .fc-event {
+        font-size: 0.8rem;
+        padding: 2px 4px;
+    }
+}
+
+
+@media (min-width: 769px) {
+    .fc-toolbar-title {
+        font-size: 1.2rem;
+    }
+
+    .fc-event {
+        font-size: 0.9rem;
+    }
+}

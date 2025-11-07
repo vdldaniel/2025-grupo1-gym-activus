@@ -39,7 +39,7 @@
         <div id="cardSalas" class="card p-3">
             <h6>Lista de Salas</h6>
             <small class="text-secondary">Administra todas las salas disponibles</small>
-            <table class="table ">
+            <table class="table  table-hover">
                 <thead>
                     <tr>
                         <th>Nombre</th>

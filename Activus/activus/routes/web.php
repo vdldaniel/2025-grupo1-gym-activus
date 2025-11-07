@@ -20,6 +20,7 @@ use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\InicioProfesorController;
 use App\Http\Controllers\SalaController;
 use App\Http\Controllers\InicioAdministradorController;
+use App\Http\Controllers\ClaseProgramadaController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -121,7 +122,7 @@ Route::get('/profesoresMetricas', [ProfesoresController::class, 'obtenerMetricas
 Route::get('/membresias/socio', [TipoMembresiaController::class, 'obtenerMembresias']);
 Route::get('/estadosMembresiaSocio', [EstadoMembresiaSocioController::class, 'index']);
 Route::get('/socios', [SocioController::class, 'index'])->name('socios.index');
-Route::get('/membresias', [TipoMembresiaController::class, 'index'])->name('membresias.index');
+//Route::get('/membresias', [TipoMembresiaController::class, 'index'])->name('membresias.index');
 Route::get('/configuraciones', [ConfiguracionController::class, 'index'])
     ->name('configuracion.index');
 Route::get('/donde-entrenar', [ConfiguracionController::class, 'mostrar'])
@@ -182,3 +183,6 @@ Route::delete('/salas/{id}', [SalaController::class, 'destroy'])->name('salas.de
 
 Route::get('/inicio-administrador', [InicioAdministradorController::class, 'index'])->name('inicio.administrador');
 Route::get('/inicio-administrador/datos', [InicioAdministradorController::class, 'datos']);
+
+/// cargar el calendario con as clases programadas 
+Route::get('/obtener/eventos', [ClaseProgramadaController::class, 'obtenerEventos']);
