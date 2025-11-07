@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use App\Models\Clase;
 
 class Usuario extends Authenticatable
 {
     use HasFactory;
+    use Notifiable;
 
     protected $table = 'usuario';
     protected $primaryKey = 'ID_Usuario';
@@ -27,6 +29,17 @@ class Usuario extends Authenticatable
         'Telefono',
         'Fecha_Alta',
     ];
+    // Laravel usa este método internamente para validar el password
+    public function getAuthPassword()
+    {
+        return $this->Contrasena;
+    }
+
+    // Para que Auth reconozca el campo del email correctamente
+    public function getAuthIdentifierName()
+    {
+        return 'Email';
+    }
 
     public function setContrasenaAttribute($value)
     {

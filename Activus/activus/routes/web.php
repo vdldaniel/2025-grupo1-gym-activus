@@ -14,6 +14,7 @@ use App\Http\Controllers\MembresiaSocioController;
 use App\Http\Controllers\SocioController;
 use App\Models\TipoMembresia;
 use App\Http\Controllers\PagoSocioController;
+use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -124,3 +125,6 @@ Route::delete('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 
 Route::get('/pagos/socio', [PagoSocioController::class, 'index'])->name('pagos.socio');
 Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 
+Route::get('/login', [AuthController::class, 'mostrarLogin'])->name('login.form');
+Route::post('/login', [AuthController::class, 'iniciarSesion'])->name('login.post');
+Route::post('/logout', [AuthController::class, 'cerrarSesion'])->name('logout');

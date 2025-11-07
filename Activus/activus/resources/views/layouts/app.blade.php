@@ -1,6 +1,6 @@
 @php
   use App\Helpers\PermisoHelper;
-  $idUsuarioPrueba = 4; //Usuario autenticado de prueba - 1-Admin 2-Recepcionista 3-Profesor 4-Socio 5-Superadmin
+  $idUsuario = Auth::id(); // obtiene el ID del usuario autenticado
 @endphp
 
 <!DOCTYPE html>
@@ -51,7 +51,7 @@
         <span class="logo">Gym</span>
 
       </li>
-      @if(PermisoHelper::tienePermiso('Ingresar Inicio', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Ingresar Inicio', $idUsuario))
         <li class="active">
           <a href="/">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -65,7 +65,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Gestionar Socios', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Gestionar Socios', $idUsuario))
         <li>
           <a href="/socios">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -80,7 +80,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Gestionar Usuarios', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Gestionar Usuarios', $idUsuario))
         <li>
           <a href="/usuarios">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -95,7 +95,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Clases', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Clases', $idUsuario))
         <li>
           <a href="/clases">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -110,7 +110,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Gestionar Salas', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Gestionar Salas', $idUsuario))
         <li>
           <a href="/salas">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -125,7 +125,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Rutinas', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Rutinas', $idUsuario))
         <li>
           <a href="/rutinas">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -143,7 +143,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Ejercicios', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Ejercicios', $idUsuario))
         <li>
           <a href="/ejercicios">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -156,7 +156,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Profesores', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Profesores', $idUsuario))
         <li>
           <a href="/profesores">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -171,7 +171,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Gestion Profesores', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Gestion Profesores', $idUsuario))
         <li>
           <a href="/profesores/gestion">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -186,7 +186,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Membresias', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Membresias', $idUsuario))
         <li>
           <a href="/membresias">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -200,7 +200,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Gestionar Membresias', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Gestionar Membresias', $idUsuario))
         <li>
           <a href="/membresias/gestion">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -214,7 +214,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Asistencias', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Asistencias', $idUsuario))
         <li>
           <a href="/asistencias">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -230,7 +230,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Pagos', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Pagos', $idUsuario))
         <li>
           <a href="/pagos">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -243,7 +243,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Donde Entrenar', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Donde Entrenar', $idUsuario))
         <li>
           <a href="/donde-entrenar">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -257,7 +257,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Configuracion', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Configuracion', $idUsuario))
         <li>
           <a href="/configuraciones">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -271,7 +271,7 @@
           </a>
         </li>
       @endif
-      @if(PermisoHelper::tienePermiso('Ver Perfil', $idUsuarioPrueba))
+      @if(PermisoHelper::tienePermiso('Ver Perfil', $idUsuario))
         <li>
           <a href="/usuarios/{{ $idUsuarioPrueba }}/perfil">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
