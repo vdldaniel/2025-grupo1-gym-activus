@@ -29,6 +29,11 @@ class Usuario extends Authenticatable
         'Telefono',
         'Fecha_Alta',
     ];
+
+    protected $hidden = [
+        'Contrasena', // 👈 para que no se muestre en Auth::user()
+    ];
+
     // Laravel usa este método internamente para validar el password
     public function getAuthPassword()
     {
@@ -43,9 +48,15 @@ class Usuario extends Authenticatable
 
     public function setContrasenaAttribute($value)
     {
-        $this->attributes['Contrasena'] = Hash::make($value);
+        // Si ya está hasheada, no la vuelve a hashear.
+        if (!empty($value) && !str_starts_with($value, '$2y$')) {
+            $this->attributes['Contrasena'] = Hash::make($value);
+        } else {
+            $this->attributes['Contrasena'] = $value;
+        }
     }
 
+    // ------------------- RELACIONES -------------------
     public function roles()
     {
         return $this->belongsToMany(Rol::class, 'usuario_rol', 'ID_Usuario', 'ID_Rol');

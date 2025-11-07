@@ -125,6 +125,15 @@ Route::delete('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 
 Route::get('/pagos/socio', [PagoSocioController::class, 'index'])->name('pagos.socio');
 Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 
-Route::get('/login', [AuthController::class, 'mostrarLogin'])->name('login.form');
-Route::post('/login', [AuthController::class, 'iniciarSesion'])->name('login.post');
-Route::post('/logout', [AuthController::class, 'cerrarSesion'])->name('logout');
+
+
+
+Route::middleware(['web'])->group(function () {
+    Route::get('/', function () {
+        return view('inicio'); // tu vista de inicio
+    });
+
+    Route::post('/login', [AuthController::class, 'iniciarSesion'])->name('login.post');
+    Route::post('/logout', [AuthController::class, 'cerrarSesion'])->name('logout');
+
+});

@@ -4,14 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\Usuario;
 
 class AuthController extends Controller
 {
-    public function mostrarLogin()
-    {
-        return view('auth.login');
-    }
-
     public function iniciarSesion(Request $request)
     {
         $request->validate([
@@ -19,27 +16,37 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-       
-        $user = \App\Models\Usuario::where('Email', $request->email)->first();
+        $usuario = \App\Models\Usuario::where('Email', $request->email)->first();
 
-        if ($user && $user->Contrasena === $request->password) {
-            Auth::login($user);
-            $request->session()->regenerate();
-            return redirect()->intended('/');
+        if (!$usuario) {
+            return back()->with('error', 'El usuario no existe.');
         }
 
-        return back()->withErrors([
-            'email' => 'Las credenciales no son válidas.',
-        ]);
+        // Compara hash o texto plano
+        $passwordOk = \Illuminate\Support\Facades\Hash::check($request->password, $usuario->Contrasena)
+            || $usuario->Contrasena === $request->password;
+
+        if ($passwordOk) {
+
+            Auth::login($usuario);
+            $request->session()->regenerate();
+            return redirect()->intended('/')->with('status', 'Sesión iniciada ✅');
+        }
+
+        return back()->with('error', 'Las credenciales no son válidas.');
     }
 
     public function cerrarSesion(Request $request)
     {
         Auth::logout();
 
+        // Invalida toda la sesión actual
         $request->session()->invalidate();
+
+        // Regenera el token CSRF
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        // Redirige al login
+        return redirect('/')->with('status', 'Sesión cerrada correctamente ✅');
     }
 }

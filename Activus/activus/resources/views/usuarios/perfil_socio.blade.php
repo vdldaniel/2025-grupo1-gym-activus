@@ -85,8 +85,15 @@
                  @endif
              </button>
 
+             <div class="d-flex justify-content-center mt-3">
+                 <form method="POST" action="{{ route('logout') }}">
+                     @csrf
+                     <button type="submit" class="btn btn-danger btn-sm">
+                         Cerrar sesión
+                     </button>
+                 </form>
+             </div>
 
-             <button class="btn btn-danger btn-sm">Cerrar sesión</button>
          </div>
      </div>
      @endif
