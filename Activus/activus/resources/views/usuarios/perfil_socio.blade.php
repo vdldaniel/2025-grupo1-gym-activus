@@ -84,7 +84,7 @@
                  Mis certificados
                  @endif
              </button>
-
+             <!-- cierre sesi{on -->
              <div class="d-flex justify-content-center mt-3">
                  <form method="POST" action="{{ route('logout') }}">
                      @csrf

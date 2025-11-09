@@ -130,8 +130,8 @@ Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 
 Route::middleware(['web'])->group(function () {
     Route::get('/', function () {
-        return view('inicio'); // tu vista de inicio
-    });
+        return view('inicio'); 
+    })->name('login');// tu vista de inicio
 
     Route::post('/login', [AuthController::class, 'iniciarSesion'])->name('login.post');
     Route::post('/logout', [AuthController::class, 'cerrarSesion'])->name('logout');

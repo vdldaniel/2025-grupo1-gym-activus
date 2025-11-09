@@ -69,201 +69,208 @@
             <button class="btn btn-outline-light btn-sm custom-btn" data-bs-toggle="modal" data-bs-target="#modalCambiarContrasenia">
                 Cambiar Contraseña
             </button>
-            <button class="btn btn-danger btn-sm">Cerrar sesión</button>
-        </div>
-        @endif
-    </div>
-</div>
-
-@section('modales')
-<!-- Modal Cambiar Correo -->
-<div class="modal fade" id="modalCambiarCorreo" tabindex="-1" aria-labelledby="modalCambiarCorreoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-card text-light">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalCambiarCorreoLabel">Cambiar Correo</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                @if (session('modal') === 'modalCambiarCorreo')
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <strong>Se encontraron algunos errores:</strong>
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
-                @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-
-                @if (session('warning'))
-                <div class="alert alert-warning">{{ session('warning') }}</div>
-                @endif
-
-                @if (session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
-                @endif
-
-                <form id="formCambiarCorreo" method="POST" action="{{ route('usuarios.cambiarCorreo', $usuario->ID_Usuario) }}">
+            <!-- cierre sesi{on -->
+            <div class="d-flex justify-content-center mt-3">
+                <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <div class="mb-3">
-                        <label for="nuevoCorreo" class="form-label">Nuevo Correo</label>
-                        <input type="email" class="form-control" id="nuevoCorreo" name="nuevoCorreo" required>
-                    </div>
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        Cerrar sesión
+                    </button>
                 </form>
             </div>
+            @endif
         </div>
     </div>
-</div>
 
-<!-- Modal Cambiar Contraseña -->
-<div class="modal fade" id="modalCambiarContrasenia" tabindex="-1" aria-labelledby="modalCambiarContraseniaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-card text-light">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalCambiarContraseniaLabel">Cambiar Contraseña</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-
-            <div class="modal-body">
-                @if (session('modal') === 'modalCambiarContrasenia')
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <strong>Se encontraron algunos errores:</strong>
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+    @section('modales')
+    <!-- Modal Cambiar Correo -->
+    <div class="modal fade" id="modalCambiarCorreo" tabindex="-1" aria-labelledby="modalCambiarCorreoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-card text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCambiarCorreoLabel">Cambiar Correo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                @endif
-
-                @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-
-                @if (session('warning'))
-                <div class="alert alert-warning">{{ session('warning') }}</div>
-                @endif
-
-                @if (session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
-                @endif
-                <form id="formCambiarContrasenia" method="POST" action="{{ route('usuarios.cambiarContrasenia', $usuario->ID_Usuario) }}">
-                    @csrf
-
-                    <div class="mb-3">
-                        <label for="contraseniaActual" class="form-label">Contraseña Actual</label>
-                        <input type="password" class="form-control" id="contraseniaActual" name="contraseniaActual" required>
+                <div class="modal-body">
+                    @if (session('modal') === 'modalCambiarCorreo')
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <strong>Se encontraron algunos errores:</strong>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                    <div class="mb-3">
-                        <label for="nuevaContrasenia" class="form-label">Nueva Contraseña</label>
-                        <input type="password" class="form-control" id="nuevaContrasenia" name="nuevaContrasenia" required>
-                        <div class="form-text text-secondary">
-                            Debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula, un número y un símbolo.
+                    @endif
+
+                    @if (session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+
+                    @if (session('warning'))
+                    <div class="alert alert-warning">{{ session('warning') }}</div>
+                    @endif
+
+                    @if (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                    @endif
+                    @endif
+
+                    <form id="formCambiarCorreo" method="POST" action="{{ route('usuarios.cambiarCorreo', $usuario->ID_Usuario) }}">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="nuevoCorreo" class="form-label">Nuevo Correo</label>
+                            <input type="email" class="form-control" id="nuevoCorreo" name="nuevoCorreo" required>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirmarContrasenia" class="form-label">Confirmar Nueva Contraseña</label>
-                        <input type="password" class="form-control" id="confirmarContrasenia" name="repetirContrasenia" required>
-                    </div>
-
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-                </form>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal Cambiar Foto -->
-<div class="modal fade" id="modalCambiarFoto" tabindex="-1" aria-labelledby="modalCambiarFotoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-card text-light">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalCambiarFotoLabel">Cambiar Foto de Perfil</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-
-                @if (session('modal') === 'modalCambiarFoto')
-                @if ($errors->any())
-                <div class="alert alert-danger">
-                    <strong>Se encontraron algunos errores:</strong>
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+    <!-- Modal Cambiar Contraseña -->
+    <div class="modal fade" id="modalCambiarContrasenia" tabindex="-1" aria-labelledby="modalCambiarContraseniaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-card text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCambiarContraseniaLabel">Cambiar Contraseña</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
-                @endif
-                @if (session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-                @endif
 
-                <form method="POST" action="{{ route('usuarios.cambiarFoto', $usuario->ID_Usuario) }}" enctype="multipart/form-data">
-                    @csrf
+                <div class="modal-body">
+                    @if (session('modal') === 'modalCambiarContrasenia')
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <strong>Se encontraron algunos errores:</strong>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
 
-                    <div class="mb-3 text-center">
-                        <label for="foto" class="form-label">Seleccionar nueva foto</label>
-                        <input type="file" name="foto" id="foto" class="form-control" accept="image/*" required>
+                    @if (session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
 
-                        <div id="preview" class="mt-3">
-                            @if ($usuario->Foto_Perfil)
-                            <img src="{{ asset('storage/'.$usuario->Foto_Perfil) }}"
-                                class="rounded-circle object-fit-cover"
-                                style="width:80px; height:80px;">
+                    @if (session('warning'))
+                    <div class="alert alert-warning">{{ session('warning') }}</div>
+                    @endif
 
-                            {{-- Enlace para eliminar --}}
-                            <a href="#" class="text-danger d-block mt-2"
-                                onclick="event.preventDefault(); 
+                    @if (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                    @endif
+                    @endif
+                    <form id="formCambiarContrasenia" method="POST" action="{{ route('usuarios.cambiarContrasenia', $usuario->ID_Usuario) }}">
+                        @csrf
+
+                        <div class="mb-3">
+                            <label for="contraseniaActual" class="form-label">Contraseña Actual</label>
+                            <input type="password" class="form-control" id="contraseniaActual" name="contraseniaActual" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nuevaContrasenia" class="form-label">Nueva Contraseña</label>
+                            <input type="password" class="form-control" id="nuevaContrasenia" name="nuevaContrasenia" required>
+                            <div class="form-text text-secondary">
+                                Debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula, un número y un símbolo.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmarContrasenia" class="form-label">Confirmar Nueva Contraseña</label>
+                            <input type="password" class="form-control" id="confirmarContrasenia" name="repetirContrasenia" required>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cambiar Foto -->
+    <div class="modal fade" id="modalCambiarFoto" tabindex="-1" aria-labelledby="modalCambiarFotoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-card text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCambiarFotoLabel">Cambiar Foto de Perfil</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+
+                    @if (session('modal') === 'modalCambiarFoto')
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <strong>Se encontraron algunos errores:</strong>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+                    @if (session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+                    @endif
+
+                    <form method="POST" action="{{ route('usuarios.cambiarFoto', $usuario->ID_Usuario) }}" enctype="multipart/form-data">
+                        @csrf
+
+                        <div class="mb-3 text-center">
+                            <label for="foto" class="form-label">Seleccionar nueva foto</label>
+                            <input type="file" name="foto" id="foto" class="form-control" accept="image/*" required>
+
+                            <div id="preview" class="mt-3">
+                                @if ($usuario->Foto_Perfil)
+                                <img src="{{ asset('storage/'.$usuario->Foto_Perfil) }}"
+                                    class="rounded-circle object-fit-cover"
+                                    style="width:80px; height:80px;">
+
+                                {{-- Enlace para eliminar --}}
+                                <a href="#" class="text-danger d-block mt-2"
+                                    onclick="event.preventDefault(); 
                             if(confirm('¿Seguro que deseas eliminar la foto de perfil?')) 
                                 document.getElementById('delete-foto-{{ $usuario->ID_Usuario }}').submit();">
-                                Eliminar foto
-                            </a>
-                            @endif
+                                    Eliminar foto
+                                </a>
+                                @endif
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary">Guardar Foto</button>
-                    </div>
-                </form>
-                {{-- Formulario de eliminación fuera del anterior --}}
-                <form id="delete-foto-{{ $usuario->ID_Usuario }}"
-                    action="{{ route('usuarios.eliminarFoto', $usuario->ID_Usuario) }}"
-                    method="POST" style="display:none;">
-                    @csrf
-                    @method('DELETE')
-                </form>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Guardar Foto</button>
+                        </div>
+                    </form>
+                    {{-- Formulario de eliminación fuera del anterior --}}
+                    <form id="delete-foto-{{ $usuario->ID_Usuario }}"
+                        action="{{ route('usuarios.eliminarFoto', $usuario->ID_Usuario) }}"
+                        method="POST" style="display:none;">
+                        @csrf
+                        @method('DELETE')
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-@if (session('modal'))
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const modalId = "{{ session('modal') }}";
-        const modalEl = document.getElementById(modalId);
-        if (modalEl) {
-            const modal = new bootstrap.Modal(modalEl);
-            modal.show();
-        }
-    });
-</script>
-@endif
+    @if (session('modal'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalId = "{{ session('modal') }}";
+            const modalEl = document.getElementById(modalId);
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
+        });
+    </script>
+    @endif
 
-@endsection
+    @endsection

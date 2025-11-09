@@ -290,12 +290,7 @@ $idUsuario = Auth::user()->ID_Usuario ?? null;
 
   <main>
     @yield('content')
-    @if(Auth::check())
-    <p>Sesión activa ✅</p>
-    <p>Usuario logueado: {{ Auth::user()->Nombre }}</p>
-    @else
-    <p>Sesión no iniciada ❌</p>
-    @endif
+    
   </main>
 
   @yield('modales')
