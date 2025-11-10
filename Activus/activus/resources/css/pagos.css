@@ -42,7 +42,8 @@
   border-color: var(--accent-clr);
   box-shadow: 0 0 0 0.2rem rgba(94, 99, 255, 0.25);
   background-color: var(--secondary-componente-base-clr);
-  color: #fff;
+  color: var(--text-clr);
+  /* #fff;*/
 }
 
 /* ====== Botones ====== */
@@ -157,9 +158,11 @@
   .container h2 {
     font-size: 1.4rem;
   }
+
   .btn {
     font-size: 0.9rem;
   }
+
   #listaPagos {
     font-size: 0.9rem;
   }

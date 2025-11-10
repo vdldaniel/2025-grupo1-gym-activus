@@ -8,7 +8,7 @@
    ========================================================== */
 
 /* ====== Tarjetas principales ====== */
-.card.bg-dark {
+.card {
   background-color: var(--secondary-componente-base-clr);
   border: 1px solid var(--componente-border-clr);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -17,7 +17,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.card.bg-dark:hover {
+.card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
@@ -76,5 +76,6 @@
 }
 
 .card.bg-dark {
-  background-color: #111827!important;
+  background-color: var(--secondary-componente-base-clr);
+  /* #111827!important;*/
 }

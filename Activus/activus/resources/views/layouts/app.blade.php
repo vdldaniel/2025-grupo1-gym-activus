@@ -2,6 +2,58 @@
   use App\Helpers\PermisoHelper;
   $idUsuarioPrueba = 5; //Usuario autenticado de prueba - 1-Admin 2-Recepcionista 3-Profesor 4-Socio 5-Superadmin
 @endphp
+@php
+  $config = configuracion_activa();
+  $fondo = $config->colorFondo->Codigo_Hex ?? '#020817';
+  $elemento = $config->Color_Elemento ?? '#3198ff';
+  $esOscuro = es_color_oscuro($fondo);
+@endphp
+
+<style>
+  :root {
+    /* Variables base según la configuración */
+    --base-clr:
+      {{ $fondo }}
+    ;
+    --primary-element:
+      {{ $elemento }}
+    ;
+    --accent-clr:
+      {{ $elemento }}
+    ;
+
+    /* segun fondo  */
+    --text-clr:
+      {{ $esOscuro ? '#e6e6ef' : '#111827' }}
+    ;
+    --secondary-text-clr:
+      {{ $esOscuro ? '#b0b3c1' : '#4b5563' }}
+    ;
+
+    --line-clr:
+      {{ $esOscuro ? '#42434a' : '#d1d5db' }}
+    ;
+    --componente-base-clr:
+      {{ $esOscuro ? '#0b1322' : '#ffffff' }}
+    ;
+    --componente-border-clr:
+      {{ $esOscuro ? '#1f2937' : '#e5e7eb' }}
+    ;
+    --secondary-componente-base-clr:
+      {{ $esOscuro ? '#111827' : '#f9fafb' }}
+    ;
+    --secondary-componente-border-clr:
+      {{ $esOscuro ? '#1f2730' : '#d1d5db' }}
+    ;
+    --secondary-line-clr:
+      {{ $esOscuro ? '#858585' : '#9ca3af' }}
+    ;
+    --hover-clr:
+      {{ $esOscuro ? '#222533' : '#f3f4f6' }}
+    ;
+
+  }
+</style>
 
 <!DOCTYPE html>
 <html lang="es">

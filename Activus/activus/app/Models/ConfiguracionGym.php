@@ -7,6 +7,8 @@ class ConfiguracionGym extends Model
 {
     protected $table = 'configuracion_gym';
     protected $primaryKey = 'ID_Configuracion_Gym';
+    public $incrementing = true;
+    protected $keyType = 'int';
     public $timestamps = false;
 
     protected $fillable = [

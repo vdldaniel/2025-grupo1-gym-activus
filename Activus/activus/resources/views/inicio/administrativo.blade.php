@@ -23,7 +23,7 @@
 
       <!-- Total de Socios -->
       <div class="col-12 col-md-6">
-        <div class="card bg-dark text-white shadow-sm rounded-2 h-100">
+        <div class="card text-white shadow-sm rounded-2 h-100">
           <div class="card-body text-start">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <h6 class="card-title mb-0">Total de Socios</h6>
@@ -41,7 +41,7 @@
 
       <!-- Clases Activas -->
       <div class="col-12 col-md-6">
-        <div class="card bg-dark text-white shadow-sm rounded-2 h-100">
+        <div class="card  text-white shadow-sm rounded-2 h-100">
           <div class="card-body text-start">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <h6 class="card-title mb-0">Clases Activas</h6>
@@ -59,7 +59,7 @@
 
       <!-- Acciones Rápidas -->
       <div class="col-12 col-md-6">
-        <div class="card bg-dark text-white shadow-sm rounded-2 h-100">
+        <div class="card text-white shadow-sm rounded-2 h-100">
           <div class="card-body text-start">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <h6 class="card-title mb-0">Acciones Rápidas</h6>
@@ -68,7 +68,8 @@
             <p class="card-subtitle text-secondary small mb-3">
               Tareas comunes y accesos directos
             </p>
-
+            <!-- btn-outline-light estos botones se ven bien en el fondo oscuro pero en los claros se pierden (podes agregarle la clase btn-agregar o
+                                                                             armate una clase y dales estilos propios  con colore nos tan claros )-->
             <div class="d-grid gap-2">
               <a href="{{ route('socios.index') }}" class="btn btn-outline-light btn-sm text-start">
                 <i class="bi bi-people me-1"></i> Gestionar Socios
@@ -92,7 +93,7 @@
 
       <!-- Horario de Hoy -->
       <div class="col-12 col-md-6">
-        <div class="card bg-dark text-white shadow-sm rounded-2 h-100">
+        <div class="card  text-white shadow-sm rounded-2 h-100">
           <div class="card-body text-start">
             <div class="d-flex justify-content-between align-items-center mb-2">
               <h6 class="card-title mb-0">Horario de Hoy</h6>

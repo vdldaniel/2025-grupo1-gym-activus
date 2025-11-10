@@ -25,14 +25,14 @@
                         <h2 class="mb-0"><i data-lucide="map-pin"></i> Ubicación</h2>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <p class="text-white">Nombre del Gimnasio</p>
-                                <p class="text-secondary small text-capitalize">
+                                <p class="fw-bold">Nombre del Gimnasio</p>
+                                <p class="text-capitalize">
                                     {{ $configuracion->Nombre_Gym ?? 'Sin nombre configurado' }}
                                 </p>
                             </div>
                             <div class="col-md-6">
-                                <p class="text-white">Ubicación</p>
-                                <p class="text-secondary small text-capitalize">
+                                <p class="fw-bold">Ubicación</p>
+                                <p class=" text-capitalize">
                                     {{ $configuracion->Ubicacion ?? 'Sin dirección configurada' }}
                                 </p>
                             </div>
@@ -50,11 +50,11 @@
                         @if ($configuracion)
                             @forelse ($configuracion->horarios as $horario)
                                 @if ($horario->Habilitacion)
-                                    <div class="card mb-2 p-2 bg-card text-light shadow-sm">
+                                    <div class="card mb-2 p-2 bg-card  shadow-sm">
                                         <div class="d-flex align-items-center gap-3">
                                             <div style="width:100px;">{{ $horario->Dia_Semana }}</div>
-                                            <div>Apertura: <span class="text-gray">{{ $horario->Hora_Apertura }}</span></div>
-                                            <div>Cierre: <span class="text-gray">{{ $horario->Hora_Cierre }}</span></div>
+                                            <div>Apertura: <span class="">{{ $horario->Hora_Apertura }}</span></div>
+                                            <div>Cierre: <span class="">{{ $horario->Hora_Cierre }}</span></div>
                                         </div>
                                     </div>
                                 @endif

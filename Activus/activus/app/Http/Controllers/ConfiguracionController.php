@@ -7,10 +7,12 @@ use App\Models\ColorFondo;
 use App\Models\HorarioFuncionamiento;
 use Illuminate\Support\Facades\Storage;
 
+
 class ConfiguracionController extends Controller
 {
     public function index()
     {
+
         $configuracion = ConfiguracionGym::first();
         $coloresFondo = ColorFondo::all();
 
@@ -28,13 +30,18 @@ class ConfiguracionController extends Controller
 
         return view('configuraciones.index', compact('configuracion', 'coloresFondo', 'dias'));
     }
-
     public function storeOrUpdate(Request $request)
     {
 
-        $id_admin = 1; //temporal hasta tener login
-        $config = ConfiguracionGym::first() ?? new ConfiguracionGym(['ID_Admin' => $id_admin]);
 
+        $id_admin = 1; // temporal hasta tener login
+
+        // carga configuración existente o nueva
+        $config = ConfiguracionGym::first();
+        if (!$config) {
+            $config = new ConfiguracionGym();
+            $config->ID_Admin = $id_admin;
+        }
 
 
         $rules = [
@@ -44,15 +51,15 @@ class ConfiguracionController extends Controller
             'Color_Elemento' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/',
             'apertura' => 'required|array',
             'cierre' => 'required|array',
-            'apertura.*' => 'nullable|date_format:H:i',
-            'cierre.*' => 'nullable|date_format:H:i',
+            'apertura.*' => ['nullable', 'regex:/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/'],
+            'cierre.*' => ['nullable', 'regex:/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/'],
         ];
 
-
-        if (!$config->Logo_PNG) {
+        // logo: obligatorio solo si no hay uno guardado todavía
+        if (empty($config->Logo_PNG)) {
             $rules['Logo_PNG'] = 'required|image|mimes:png,jpg,jpeg|max:2048';
         } else {
-            $rules['Logo_PNG'] = 'nullable|image|mimes:png,jpg,jpeg|max:2048';
+            $rules['Logo_PNG'] = 'sometimes|nullable|image|mimes:png,jpg,jpeg|max:2048';
         }
 
         $validated = $request->validate($rules, [
@@ -61,11 +68,12 @@ class ConfiguracionController extends Controller
             'ID_Color_Fondo.required' => 'Debe seleccionar un color de fondo.',
             'Color_Elemento.regex' => 'El color del elemento debe ser un código hexadecimal válido (#RRGGBB).',
             'Logo_PNG.required' => 'Debe subir un logo del gimnasio.',
-            'apertura.*.date_format' => 'Las horas deben tener el formato HH:MM.',
-            'cierre.*.date_format' => 'Las horas deben tener el formato HH:MM.',
+            'apertura.*.regex' => 'Las horas de apertura deben tener formato HH:MM o HH:MM:SS.',
+            'cierre.*.regex' => 'Las horas de cierre deben tener formato HH:MM o HH:MM:SS.',
         ]);
 
 
+        // color elemento y fono no pueden ser iguales 
         $colorFondo = ColorFondo::find($validated['ID_Color_Fondo']);
         if ($colorFondo && strcasecmp($colorFondo->Codigo_Hex, $validated['Color_Elemento']) == 0) {
             return back()->withErrors([
@@ -74,33 +82,30 @@ class ConfiguracionController extends Controller
         }
 
 
+        $config->Nombre_Gym = $validated['Nombre_Gym'];
+        $config->Ubicacion = $validated['Ubicacion'];
+        $config->ID_Color_Fondo = $validated['ID_Color_Fondo'];
+        $config->Color_Elemento = $validated['Color_Elemento'];
 
-
-
-
-
-        $config->fill([
-            'Nombre_Gym' => $validated['Nombre_Gym'],
-            'Ubicacion' => $validated['Ubicacion'],
-            'ID_Color_Fondo' => $validated['ID_Color_Fondo'],
-            'Color_Elemento' => $validated['Color_Elemento'],
-        ]);
-
-        // guardar logo nuevo , si existia eliminar el anterior 
+        //nuevo logo
         if ($request->hasFile('Logo_PNG')) {
-
             if ($config->Logo_PNG && Storage::disk('public')->exists($config->Logo_PNG)) {
                 Storage::disk('public')->delete($config->Logo_PNG);
             }
-
-
             $path = $request->file('Logo_PNG')->store('logos', 'public');
             $config->Logo_PNG = $path;
+            \Log::debug('🖼️ Nuevo logo guardado en: ' . $path);
         }
 
+        // guardar
         $config->save();
 
 
+
+        cache()->forget('configuracion_activa');
+        cache()->rememberForever('configuracion_activa', fn() => $config->fresh(['colorFondo']));
+
+        // guardar horarios
         foreach ($request->apertura as $dia => $horaApertura) {
             $habilitado = isset($request->habilitado[$dia]);
             $horaCierre = $request->cierre[$dia] ?? null;
@@ -112,23 +117,19 @@ class ConfiguracionController extends Controller
                     ])->withInput();
                 }
 
-                if ($horaCierre <= $horaApertura) {
+
+                if (strtotime($horaCierre) <= strtotime($horaApertura)) {
                     return back()->withErrors([
                         "horarios.$dia" => "En $dia, la hora de cierre debe ser posterior a la de apertura."
                     ])->withInput();
                 }
-
             } else {
-
                 if (!empty($horaApertura) || !empty($horaCierre)) {
                     return back()->withErrors([
                         "horarios.$dia" => "El día $dia tiene horarios cargados pero no está habilitado."
                     ])->withInput();
                 }
             }
-
-
-
 
             HorarioFuncionamiento::updateOrCreate(
                 [
@@ -142,6 +143,7 @@ class ConfiguracionController extends Controller
                 ]
             );
         }
+
         if ($request->ajax()) {
             return response()->json(['success' => true]);
         }
@@ -149,10 +151,6 @@ class ConfiguracionController extends Controller
         return redirect()->route('configuracion.index')
             ->with('success', 'Configuración guardada correctamente.');
     }
-
-
-
-
 
     public function mostrar()
     {

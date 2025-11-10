@@ -1,15 +1,21 @@
-window.onload = function () {
+document.addEventListener("DOMContentLoaded", function () {
     const formConfiguracion = document.getElementById("formConfiguracionGym");
-
     if (formConfiguracion) {
         formConfiguracion.addEventListener("submit", function (evento) {
-            ValidarConfiguracionGym(evento);
+
+
+            if (!ValidarConfiguracionGym()) {
+                evento.preventDefault();
+
+
+            }
         });
     }
-};
+});
 
-function ValidarConfiguracionGym(evento) {
-    evento.preventDefault();
+
+function ValidarConfiguracionGym() {
+    //evento.preventDefault();
     LimpiarErrores();
 
     let okNombre = ValidarNombreGym();
@@ -18,10 +24,8 @@ function ValidarConfiguracionGym(evento) {
     let okHorarios = ValidarHorariosGym();
     let okColores = ValidarColoresGym();
 
-    if (okNombre && okUbicacion && okLogo && okHorarios && okColores) {
+    return okNombre && okUbicacion && okLogo && okHorarios && okColores;
 
-        document.getElementById("formConfiguracionGym").submit();
-    }
 }
 
 function ValidarNombreGym() {

@@ -3,7 +3,8 @@
   grid-template-columns: 120px 140px 1fr 1fr;
   align-items: center;
   gap: 12px;
-  background: #111827;
+  background: var(--secondary-componente-base-clr);
+  /*#111827;*/
   border-radius: 8px;
   padding: 10px 14px;
   flex-wrap: wrap;
@@ -13,7 +14,8 @@
   width: 100px;
   font-weight: 600;
   text-transform: capitalize;
-  color: #f3f4f6;
+  color: var(--text-clr);
+  /* #f3f4f6;*/
 }
 
 .horario-row input[type="time"] {
@@ -33,6 +35,7 @@
   display: inline-block;
   width: 36px;
   height: 20px;
+
 }
 
 .switch input {
@@ -72,7 +75,8 @@
 
 /* recuadro del horario */
 .horario-item {
-  background-color: #121826;
+  background-color: var(--base-clr);
+  /* #121826;*/
   border-radius: 8px;
 }
 
