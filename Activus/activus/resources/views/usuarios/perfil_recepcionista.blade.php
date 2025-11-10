@@ -1,7 +1,7 @@
 <!-- Columna lateral -->
 <div class="col-lg-4 d-flex flex-column gap-3">
     <!-- Resumen del Perfil -->
-    <div class="card bg-card text-light shadow-sm">
+    <div class="card bg-card  shadow-sm">
         <div class="card-header">
             <h5 class="mb-0">Resumen del Perfil</h5>
         </div>
@@ -11,30 +11,29 @@
                     style="width:64px; height:64px;">
                     <div class="position-relative d-inline-block">
                         @if($usuario->Foto_Perfil)
-                        <img src="{{ asset('storage/'.$usuario->Foto_Perfil) }}"
-                            alt="Foto de perfil"
-                            class="rounded-circle object-fit-cover"
-                            style="width:64px; height:64px;">
+                            <img src="{{ asset('storage/' . $usuario->Foto_Perfil) }}" alt="Foto de perfil"
+                                class="rounded-circle object-fit-cover" style="width:64px; height:64px;">
                         @else
-                        <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
-                            style="width:64px; height:64px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
-                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                            </svg>
-                        </div>
+                            <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
+                                style="width:64px; height:64px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                            </div>
                         @endif
 
                         <!-- Botón editar la foto -->
                         <button class="btn btn-sm btn-secondary position-absolute bottom-0 end-0 rounded-circle p-1"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalCambiarFoto"
-                            title="Editar foto"
+                            data-bs-toggle="modal" data-bs-target="#modalCambiarFoto" title="Editar foto"
                             style="width:24px; height:24px; line-height:0;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                class="lucide lucide-camera">
-                                <path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="lucide lucide-camera">
+                                <path
+                                    d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z" />
                                 <circle cx="12" cy="13" r="3" />
                             </svg>
                         </button>
@@ -47,11 +46,23 @@
             </div>
             <div class="d-flex flex-column gap-2">
                 <div class="d-flex align-items-center gap-2">
-                    <i data-lucide="mail" class="text-muted"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-mail-icon lucide-mail">
+                        <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
+                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                    </svg>
                     <span class="small">{{ $usuario->Email }}</span>
                 </div>
-                <div class="d-flex align-items-center gap-2"><i data-lucide="calendar"
-                        class="text-muted"></i> <span class="small">Miembro desde: {{ $usuario->Fecha_Alta }}</span>
+                <div class="d-flex align-items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="18"
+                        height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-calendar-icon lucide-calendar">
+                        <path d="M8 2v4" />
+                        <path d="M16 2v4" />
+                        <rect width="18" height="18" x="3" y="4" rx="2" />
+                        <path d="M3 10h18" />
+                    </svg> <span class="small">Miembro desde: {{ $usuario->Fecha_Alta }}</span>
                 </div>
             </div>
         </div>

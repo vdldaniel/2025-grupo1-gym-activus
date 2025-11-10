@@ -310,7 +310,9 @@ class UsuarioController extends Controller
         // Si el usuario es un socio (rol 4), traer sus datos de socio
         $socio = null;
         if ($rolId === 4) {
-            $socio = \App\Models\Socio::where('ID_Usuario', $usuario->ID_Usuario)->first();
+            $socio = \App\Models\Socio::where('ID_Usuario', $usuario->ID_Usuario)
+                ->with('usuario')
+                ->first();
         }
 
         // Usar los certificados ya cargados por la relación

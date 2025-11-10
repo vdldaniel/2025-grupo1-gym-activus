@@ -13,9 +13,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       icon,
       title,
       text,
-      confirmButtonColor: '#3085d6',
-      background: '#1e1e2f',
-      color: '#fff'
+      confirmButtonColor: "var(--primary-element)",/*'#3085d6',*/
+      background: "var(--base-clr)",  /*'#1e1e2f'*/
+      color: "var(--text-clr)" /*'#fff'*/
     });
   }
 
@@ -35,8 +35,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           title: 'Procesando...',
           allowOutsideClick: false,
           didOpen: () => Swal.showLoading(),
-          background: '#1e1e2f',
-          color: '#fff'
+          background: "var(--base-clr)",/* '#1e1e2f',*/
+          color: "var(--text-clr)"/* '#fff'*/
         });
       }
 
@@ -204,8 +204,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      background: '#1e1e2f',
-      color: '#fff'
+      background: "var(--base-clr)",  /* '#1e1e2f',*/
+      color: "var(--text-clr)"       /*'#fff'*/
     }).then(async (result) => {
       if (!result.isConfirmed) return;
 

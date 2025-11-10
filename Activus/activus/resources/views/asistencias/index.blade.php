@@ -51,4 +51,5 @@
         </div>
 
     </div>
+    @vite(['resources\js\asistencia.js'])
 @endsection

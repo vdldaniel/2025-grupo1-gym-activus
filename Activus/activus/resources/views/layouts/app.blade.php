@@ -2,6 +2,58 @@
 use App\Helpers\PermisoHelper;
 $idUsuario = Auth::user()->ID_Usuario ?? null;
 @endphp
+@php
+  $config = configuracion_activa();
+  $fondo = $config->colorFondo->Codigo_Hex ?? '#020817';
+  $elemento = $config->Color_Elemento ?? '#3198ff';
+  $esOscuro = es_color_oscuro($fondo);
+@endphp
+
+<style>
+  :root {
+    /* Variables base según la configuración */
+    --base-clr:
+      {{ $fondo }}
+    ;
+    --primary-element:
+      {{ $elemento }}
+    ;
+    --accent-clr:
+      {{ $elemento }}
+    ;
+
+    /* segun fondo  */
+    --text-clr:
+      {{ $esOscuro ? '#e6e6ef' : '#111827' }}
+    ;
+    --secondary-text-clr:
+      {{ $esOscuro ? '#b0b3c1' : '#4b5563' }}
+    ;
+
+    --line-clr:
+      {{ $esOscuro ? '#42434a' : '#d1d5db' }}
+    ;
+    --componente-base-clr:
+      {{ $esOscuro ? '#0b1322' : '#ffffff' }}
+    ;
+    --componente-border-clr:
+      {{ $esOscuro ? '#1f2937' : '#e5e7eb' }}
+    ;
+    --secondary-componente-base-clr:
+      {{ $esOscuro ? '#111827' : '#f9fafb' }}
+    ;
+    --secondary-componente-border-clr:
+      {{ $esOscuro ? '#1f2730' : '#d1d5db' }}
+    ;
+    --secondary-line-clr:
+      {{ $esOscuro ? '#858585' : '#9ca3af' }}
+    ;
+    --hover-clr:
+      {{ $esOscuro ? '#222533' : '#f3f4f6' }}
+    ;
+
+  }
+</style>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -25,8 +77,9 @@ $idUsuario = Auth::user()->ID_Usuario ?? null;
     crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-
+  {{-- calendario --}}
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
   {{-- DataTable --}}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
@@ -37,7 +90,7 @@ $idUsuario = Auth::user()->ID_Usuario ?? null;
 
 
   {{-- Resources --}}
-  @vite(['resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/css/configuraciones.css', 'resources/js/usuario.js', 'resources/js/asistencia.js', 'resources/js/profesores-socio.js', 'resources/js/profesores-administrativo.js', 'resources/js/membresias-socio.js', 'resources/js/membresias-administrativo.js', 'resources/js/socio.js', 'resources/js/validarPerfil.js'])
+  @vite(['resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/css/configuraciones.css', 'resources/js/usuario.js', 'resources/js/socio.js', 'resources/js/validarPerfil.js'])
 
 </head>
 

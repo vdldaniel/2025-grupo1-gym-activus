@@ -1,29 +1,29 @@
- <!-- Columna lateral -->
- <div class="col-lg-4 d-flex flex-column gap-3">
-     <!-- Resumen del Perfil -->
-     <div class="card bg-card text-light shadow-sm">
-         <div class="card-header">
-             <h5 class="mb-0">Resumen del Perfil</h5>
-         </div>
-         <div class="card-body">
-             <div class="d-flex align-items-center gap-3 mb-3">
-                 <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
-                     style="width:64px; height:64px;">
-                     <div class="position-relative d-inline-block">
-                         @if($usuario->Foto_Perfil)
-                         <img src="{{ asset('storage/'.$usuario->Foto_Perfil) }}"
-                             alt="Foto de perfil"
-                             class="rounded-circle object-fit-cover"
-                             style="width:64px; height:64px;">
-                         @else
-                         <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
-                             style="width:64px; height:64px;">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
-                                 <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                                 <circle cx="12" cy="7" r="4" />
-                             </svg>
-                         </div>
-                         @endif
+<!-- Columna lateral -->
+<div class="col-lg-4 d-flex flex-column gap-3">
+    <!-- Resumen del Perfil -->
+    <div class="card bg-card text-light shadow-sm">
+        <div class="card-header">
+            <h5 class="mb-0">Resumen del Perfil</h5>
+        </div>
+        <div class="card-body">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
+                    style="width:64px; height:64px;">
+                    <div class="position-relative d-inline-block">
+                        @if($usuario->Foto_Perfil)
+                            <img src="{{ asset('storage/' . $usuario->Foto_Perfil) }}" alt="Foto de perfil"
+                                class="rounded-circle object-fit-cover" style="width:64px; height:64px;">
+                        @else
+                            <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
+                                style="width:64px; height:64px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                            </div>
+                        @endif
 
                          <!-- Botón  editar la foto -->
                          <button class="btn btn-sm btn-secondary position-absolute bottom-0 end-0 rounded-circle p-1"
