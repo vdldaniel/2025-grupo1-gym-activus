@@ -14,6 +14,7 @@ use App\Http\Controllers\MembresiaSocioController;
 use App\Http\Controllers\SocioController;
 use App\Models\TipoMembresia;
 use App\Http\Controllers\PagoSocioController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InicioSocioController;
 use App\Http\Controllers\InicioAdminController;
 use App\Http\Controllers\ConfiguracionController;
@@ -163,6 +164,18 @@ Route::delete('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 
 Route::get('/pagos/socio', [PagoSocioController::class, 'index'])->name('pagos.socio');
 Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 
+
+
+
+Route::middleware(['web'])->group(function () {
+    Route::get('/', function () {
+        return view('inicio'); 
+    })->name('login');// tu vista de inicio
+
+    Route::post('/login', [AuthController::class, 'iniciarSesion'])->name('login.post');
+    Route::post('/logout', [AuthController::class, 'cerrarSesion'])->name('logout');
+
+});
 Route::get('/inicio-socio', [InicioSocioController::class, 'index']);
 Route::get('/inicio-socio/obtener-datos', [InicioSocioController::class, 'obtenerDatos']);
 
