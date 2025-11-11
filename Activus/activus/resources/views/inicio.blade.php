@@ -1,10 +1,26 @@
 @extends('layouts.app')
 
+
+
 @section('content')
 <div class="d-flex justify-content-center align-items-center min-vh-100">
     @if(Auth::check())
+    @php
+    $rol = Auth::user()->roles->first()->ID_Rol ?? null;
+    @endphp
+    @if($rol === 1)
+    @include('inicio.administrador')
+    @elseif($rol === 2)
+    @include('inicio.administrativo')
+    @elseif($rol === 3)
+    @include('inicio.profesor')
+    @elseif($rol === 4)
+    @include('inicio.socio')
+    @else
     <h2>Bienvenido Usuario👋</h2>
-    
+    @endif
+
+
     @else
 
     <div class="card bg-card  shadow-sm" style="width: 100%; max-width: 400px;">
