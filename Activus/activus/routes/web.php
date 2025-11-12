@@ -22,6 +22,7 @@ use App\Http\Controllers\InicioProfesorController;
 use App\Http\Controllers\SalaController;
 use App\Http\Controllers\InicioAdministradorController;
 use App\Http\Controllers\ClaseProgramadaController;
+use App\Http\Controllers\ClaseController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -43,6 +44,11 @@ Route::get('/socios', function () {
 Route::get('/clases', function () {
     return view('clases.index');
 })->name('clases.index');
+
+Route::get('/clases/gestion', function () {
+    return view('clases.gestion');
+})->name('clases.gestion');
+
 
 Route::get('/usuarios/perfil', function () {
     return view('usuarios.perfil');
@@ -169,7 +175,7 @@ Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 
 Route::middleware(['web'])->group(function () {
     Route::get('/', function () {
-        return view('inicio'); 
+        return view('inicio');
     })->name('login');// tu vista de inicio
 
     Route::post('/login', [AuthController::class, 'iniciarSesion'])->name('login.post');
@@ -197,5 +203,20 @@ Route::delete('/salas/{id}', [SalaController::class, 'destroy'])->name('salas.de
 Route::get('/inicio-administrador', [InicioAdministradorController::class, 'index'])->name('inicio.administrador');
 Route::get('/inicio-administrador/datos', [InicioAdministradorController::class, 'datos']);
 
-/// cargar el calendario con as clases programadas 
+/// cargar el calendario con las clases programadas 
 Route::get('/obtener/eventos', [ClaseProgramadaController::class, 'obtenerEventos']);
+
+
+Route::get('/clases/listar', [ClaseController::class, 'listar']);
+Route::post('/clases/guardar', [ClaseController::class, 'guardar']);
+Route::get('/clases/obtener/{id}', [ClaseController::class, 'obtener']);
+Route::put('/clases/actualizar/{id}', [ClaseController::class, 'actualizar']);
+Route::delete('/clases/eliminar/{id}', [ClaseController::class, 'eliminar']);
+Route::get('/profesores/activos', [ProfesoresController::class, 'obtenerProfesoresActivos']);
+
+Route::get('/clases-programadas/listar', [ClaseProgramadaController::class, 'listar']);
+Route::delete('/clases-programadas/eliminar/{id}', [ClaseProgramadaController::class, 'eliminar']);
+Route::get('/clases-programadas/obtener/{id}', [ClaseProgramadaController::class, 'obtener']);
+Route::post('/clases-programadas/guardar', [ClaseProgramadaController::class, 'guardar']);
+Route::put('/clases-programadas/actualizar/{id}', [ClaseProgramadaController::class, 'actualizar']);
+Route::get('/clases/metricas', [ClaseController::class, 'obtenerMetricas']);

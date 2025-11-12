@@ -69,12 +69,12 @@
               Tareas comunes y accesos directos
             </p>
             <!-- btn-outline-light estos botones se ven bien en el fondo oscuro pero en los claros se pierden (podes agregarle la clase btn-agregar o
-                                                                             armate una clase y dales estilos propios  con colore nos tan claros )-->
+                                                                                 armate una clase y dales estilos propios  con colore nos tan claros )-->
             <div class="d-grid gap-2">
               <a href="{{ route('socios.index') }}" class="btn btn-outline-light btn-sm text-start">
                 <i class="bi bi-people me-1"></i> Gestionar Socios
               </a>
-              <a href="{{ route('clases.index') }}" class="btn btn-outline-light btn-sm text-start">
+              <a href="{{ route('clases.gestion') }}" class="btn btn-outline-light btn-sm text-start">
                 <i class="bi bi-calendar-plus me-1"></i> Programar Clases
               </a>
               <a href="{{ route('membresias.gestion') }}" class="btn btn-outline-light btn-sm text-start">
