@@ -25,12 +25,16 @@ class MembresiaSocio extends Model
 
     public function socio()
     {
-        return $this->belongsTo(User::class, 'ID_Usuario_Socio', 'ID_Usuario');
+        return $this->belongsTo(Socio::class, 'ID_Usuario_Socio', 'ID_Usuario');
+    }
+
+    public function tipo()
+    {
+        return $this->belongsTo(TipoMembresia::class, 'ID_TipoMembresia', 'ID_TipoMembresia');
     }
 
     public function tipoMembresia()
     {
         return $this->belongsTo(TipoMembresia::class, 'ID_Tipo_Membresia', 'ID_Tipo_Membresia');
     }
-
 }

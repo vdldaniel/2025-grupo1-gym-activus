@@ -21,4 +21,8 @@ class Clase extends Model
     {
         return $this->belongsTo(Usuario::class, 'ID_Profesor', 'ID_Usuario');
     }
+    public function clasesProgramadas()
+    {
+        return $this->hasMany(ClaseProgramada::class, 'ID_Clase', 'ID_Clase');
+    }
 }

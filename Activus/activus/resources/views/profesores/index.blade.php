@@ -47,4 +47,6 @@
 
 
     </div>
+
+    @vite(['resources\js\profesores-socio.js'])
 @endsection

@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use App\Models\Clase;
 
 class Usuario extends Authenticatable
 {
     use HasFactory;
+    use Notifiable;
 
     protected $table = 'usuario';
     protected $primaryKey = 'ID_Usuario';
@@ -28,11 +30,33 @@ class Usuario extends Authenticatable
         'Fecha_Alta',
     ];
 
-    public function setContrasenaAttribute($value)
+    protected $hidden = [
+        'Contrasena', // 👈 para que no se muestre en Auth::user()
+    ];
+
+    // Laravel usa este método internamente para validar el password
+    public function getAuthPassword()
     {
-        $this->attributes['Contrasena'] = Hash::make($value);
+        return $this->Contrasena;
     }
 
+    // Para que Auth reconozca el campo del email correctamente
+    public function getAuthIdentifierName()
+    {
+        return 'Email';
+    }
+
+    public function setContrasenaAttribute($value)
+    {
+        // Si ya está hasheada, no la vuelve a hashear.
+        if (!empty($value) && !str_starts_with($value, '$2y$')) {
+            $this->attributes['Contrasena'] = Hash::make($value);
+        } else {
+            $this->attributes['Contrasena'] = $value;
+        }
+    }
+
+    // ------------------- RELACIONES -------------------
     public function roles()
     {
         return $this->belongsToMany(Rol::class, 'usuario_rol', 'ID_Usuario', 'ID_Rol');
@@ -59,5 +83,18 @@ class Usuario extends Authenticatable
         return $this->belongsTo(EstadoUsuario::class, 'ID_Estado_Usuario', 'ID_Estado_Usuario');
     }
 
+    public function socio()
+    {
+        return $this->hasOne(Socio::class, 'ID_Usuario', 'ID_Usuario');
+    }
 
+    public function certificados()
+    {
+        return $this->hasMany(Certificado::class, 'ID_Usuario_Socio', 'ID_Usuario');
+    }
+
+    public function membresia()
+    {
+        return $this->hasOne(MembresiaSocio::class, 'ID_Usuario_Socio', 'ID_Usuario');
+    }
 }

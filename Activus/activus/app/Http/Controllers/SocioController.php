@@ -30,9 +30,9 @@ class SocioController extends Controller
             })->count();
 
         $totalSociosNuevosMes = Socio::join('usuario', 'socio.ID_Usuario', '=', 'usuario.ID_Usuario')
-        ->whereMonth('usuario.Fecha_Alta', now()->month)
-        ->whereYear('usuario.Fecha_Alta', now()->year)
-        ->count();
+            ->whereMonth('usuario.Fecha_Alta', now()->month)
+            ->whereYear('usuario.Fecha_Alta', now()->year)
+            ->count();
 
         return view('socios.index', compact('socios', 'membresias','membresiasSocio', 'estadosMembresiaSocio', 'totalSocios', 'totalSociosActivos', 'totalSociosNuevosMes'));
     }
@@ -119,14 +119,14 @@ class SocioController extends Controller
                 'Fecha_Nacimiento' => $fechaNacimiento,
             ]);
 
-            
+
 
             MembresiaSocio::create([
-            "ID_Usuario_Socio" => $usuario->ID_Usuario,
-            "ID_Tipo_Membresia" => $membresia,
-            "Fecha_Inicio" => null,
-            "Fecha_Fin" => null,
-            "ID_Estado_Membresia_Socio" => $estadoMembresia,
+                "ID_Usuario_Socio" => $usuario->ID_Usuario,
+                "ID_Tipo_Membresia" => $membresia,
+                "Fecha_Inicio" => null,
+                "Fecha_Fin" => null,
+                "ID_Estado_Membresia_Socio" => $estadoMembresia,
             ]);
 
             $usuario->roles()->sync($rol);
@@ -136,7 +136,6 @@ class SocioController extends Controller
                 'message' => "Usuario creado correctamente",
                 'usuario' => $usuario->load('roles'),
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -163,9 +162,9 @@ class SocioController extends Controller
             'telefonoSocioEditar' => ['required', 'digits:10', 'regex:/^[0-9]+$/', Rule::unique('usuario', 'Telefono')->ignore($id, 'ID_Usuario')],
             'emailSocioEditar' => ['required', 'email', Rule::unique('usuario', 'Email')->ignore($id, 'ID_Usuario'),],
             'fechaNacSocioEditar' => [
-                    'required',
-                    'date',
-                    'before_or_equal:' . now()->subYears(18)->format('Y-m-d')
+                'required',
+                'date',
+                'before_or_equal:' . now()->subYears(18)->format('Y-m-d')
             ],
         ], [
             'nombreSocioEditar.required' => 'Nombre no ingresado',
@@ -220,10 +219,6 @@ class SocioController extends Controller
                 'success' => true,
                 'message' => "Usuario editado correctamente",
             ], 200);
-
-
-
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -247,10 +242,22 @@ class SocioController extends Controller
     }
 
 
+    // Método para ver un socio específico
+    public function mostrar($id)
+    {
+        
+        $usuario = Usuario::with(['roles', 'socio'])->findOrFail($id);
 
+        
+        $rol = $usuario->roles->first();
 
+        
+        $rolId = $rol ? $rol->ID_Rol : null;
 
+        
+        $socio = $usuario->socio;
 
-
-
+        
+        return view('usuarios.perfil', compact('usuario', 'rolId', 'socio'));
+    }
 }
