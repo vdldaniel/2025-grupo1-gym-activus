@@ -258,4 +258,25 @@
     margin-top: 5px !important;
   }
 }
+/* ===== FIX: Evita solapamiento de días en pantallas reducidas ===== */
+.fc-col-header-cell-cushion {
+  white-space: nowrap !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .fc .fc-col-header-cell-cushion {
+    font-size: 0.8rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .fc .fc-toolbar-title {
+    font-size: 0.9rem !important;
+  }
+  .fc .fc-col-header-cell-cushion {
+    font-size: 0.7rem !important;
+  }
+}
 
