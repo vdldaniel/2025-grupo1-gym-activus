@@ -115,7 +115,7 @@
                     <button type="button" class="btn text-secondary small mt-2 p-0 border-0 d-none" id="btnLimpiarFiltro">
                         <small>Limpiar filtros</small>
                     </button>
-                </div>
+                    </div>
                 </div>
             </div> 
         </div>
@@ -136,7 +136,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        @if($socios->count())
+                        @if($socios->count() && $membresiasSocio->count())
                         @foreach($socios as $s)
                         <tr>
                             <td>{{ $s->usuario->ID_Usuario }}</td>
@@ -192,9 +192,14 @@
                             <td>
                                 @php
                                     $membresia = $s->membresiaSocio->first();
-                                    $fecha = $membresia->Fecha_Fin;
                                 @endphp
-                                {{ $fecha }}
+                                @if($membresia === null || $membresia->Fecha_Fin === null)
+                                    <span class="text-danger">
+                                        Sin fecha
+                                    </span>
+                                @else
+                                {{ $membresia->Fecha_Fin}}
+                                @endif
                             </td>
 
                             <td class="text-end">
@@ -253,11 +258,11 @@
     <div class="modal fade" id="modalSocio" tabindex="-1" aria-hidden="true"  data-bs-backdrop="static">
         <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content small">
-            <div class="modal-header">
+            <div class="modal-header border-0">
             <h5 class="modal-title" id="modalTitulo">Registrar Nuevo Socio</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body mb-4 mt-3">
             <form id="formSocio" action="{{ route('socios.crear') }}" method="POST">
                 @csrf
                 <div class="row g-2">

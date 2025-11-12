@@ -20,6 +20,7 @@ class SocioController extends Controller
         $socios = Socio::with(['membresias', 'usuario'])->get();
         $membresias = TipoMembresia::all();
         $estadosMembresiaSocio = EstadoMembresiaSocio::all();
+        $membresiasSocio = MembresiaSocio::all();
 
         $totalSocios = Socio::distinct('ID_Usuario')->count();
         $totalSociosActivos = MembresiaSocio::where('ID_Estado_Membresia_Socio', 1)
@@ -33,7 +34,7 @@ class SocioController extends Controller
             ->whereYear('usuario.Fecha_Alta', now()->year)
             ->count();
 
-        return view('socios.index', compact('socios', 'membresias', 'estadosMembresiaSocio', 'totalSocios', 'totalSociosActivos', 'totalSociosNuevosMes'));
+        return view('socios.index', compact('socios', 'membresias','membresiasSocio', 'estadosMembresiaSocio', 'totalSocios', 'totalSociosActivos', 'totalSociosNuevosMes'));
     }
 
 
