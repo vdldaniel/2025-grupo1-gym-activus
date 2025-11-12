@@ -121,7 +121,7 @@
                          @csrf
                          <div class="mb-3">
                              <label for="nuevoCorreo" class="form-label">Nuevo Correo</label>
-                             <input type="email" class="form-control" id="nuevoCorreo" name="nuevoCorreo" required>
+                             <input type="email" class="form-control card-input" id="nuevoCorreo" name="nuevoCorreo" required>
                          </div>
                          <div class="text-end">
                              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -171,18 +171,18 @@
 
                          <div class="mb-3">
                              <label for="contraseniaActual" class="form-label">Contraseña Actual</label>
-                             <input type="password" class="form-control" id="contraseniaActual" name="contraseniaActual" required>
+                             <input type="password" class="form-control card-input" id="contraseniaActual" name="contraseniaActual" required>
                          </div>
                          <div class="mb-3">
                              <label for="nuevaContrasenia" class="form-label">Nueva Contraseña</label>
-                             <input type="password" class="form-control" id="nuevaContrasenia" name="nuevaContrasenia" required>
+                             <input type="password" class="form-control card-input" id="nuevaContrasenia" name="nuevaContrasenia" required>
                              <div class="form-text text-secondary">
                                  Debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula, un número y un símbolo.
                              </div>
                          </div>
                          <div class="mb-3">
                              <label for="confirmarContrasenia" class="form-label">Confirmar Nueva Contraseña</label>
-                             <input type="password" class="form-control" id="confirmarContrasenia" name="repetirContrasenia" required>
+                             <input type="password" class="form-control card-input" id="confirmarContrasenia" name="repetirContrasenia" required>
                          </div>
 
                          <div class="text-end">
@@ -225,7 +225,7 @@
 
                          <div class="mb-3 text-center">
                              <label for="foto" class="form-label">Seleccionar nueva foto</label>
-                             <input type="file" name="foto" id="foto" class="form-control" accept="image/*" required>
+                             <input type="file" name="foto" id="foto" class="form-control card-input" accept="image/*" required>
 
                              <div id="preview" class="mt-3">
                                  @if ($usuario->Foto_Perfil)

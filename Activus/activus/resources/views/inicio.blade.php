@@ -11,9 +11,9 @@
     @if($rol === 1)
     @include('inicio.administrador')
     @elseif($rol === 2)
-    @include('inicio.administrativo')
-    @elseif($rol === 3)
     @include('inicio.profesor')
+    @elseif($rol === 3)
+    @include('inicio.administrativo')
     @elseif($rol === 4)
     @include('inicio.socio')
     @else
