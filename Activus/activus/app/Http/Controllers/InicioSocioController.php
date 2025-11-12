@@ -10,7 +10,7 @@ use Carbon\Carbon;
 class InicioSocioController extends Controller
 {
     /**
-     * Vista principal
+     * Vista principal del socio.
      */
     public function index()
     {
@@ -23,8 +23,17 @@ class InicioSocioController extends Controller
     public function obtenerDatos()
     {
         try {
-            // ID del socio logueado (temporal para pruebas)
-            $idSocio = Auth::id() ?? 9; // ← Cambiar según ID real de prueba
+            // ================================
+            // VALIDAR SESIÓN
+            // ================================
+            $idSocio = Auth::id();
+
+            if (!$idSocio) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'No hay sesión activa.'
+                ], 401);
+            }
 
             // ================================
             // MEMBRESÍA ACTIVA
@@ -54,6 +63,7 @@ class InicioSocioController extends Controller
             if ($ultimoPago) {
                 $vencimiento = Carbon::parse($ultimoPago->Fecha_Vencimiento);
                 $diasRestantes = Carbon::now()->diffInDays($vencimiento, false);
+
                 $proximoPago = [
                     'vencimiento' => $vencimiento->format('d/m/Y'),
                     'diasRestantes' => $diasRestantes >= 0 ? $diasRestantes : 0
@@ -66,7 +76,7 @@ class InicioSocioController extends Controller
             }
 
             // ================================
-            //  CLASES DE HOY (ejemplo)
+            // CLASES RESERVADAS HOY
             // ================================
             $clasesHoy = DB::table('reserva AS r')
                 ->join('clase AS c', 'r.ID_Clase_Programada', '=', 'c.ID_Clase')
@@ -79,19 +89,21 @@ class InicioSocioController extends Controller
             // RESPUESTA JSON
             // ================================
             return response()->json([
-                'success' => true,
-                'membresia' => $membresia ?? [
-                    'tipo' => 'Sin membresía',
+                'success'      => true,
+                'membresia'    => $membresia ?? [
+                    'tipo'   => 'Sin membresía',
                     'precio' => 0,
                     'estado' => 'Inactiva'
                 ],
-                'proximoPago' => $proximoPago,
-                'clasesHoy' => $clasesHoy
+                'proximoPago'  => $proximoPago,
+                'clasesHoy'    => $clasesHoy
             ]);
+
         } catch (\Throwable $e) {
+
             return response()->json([
                 'success' => false,
-                'error' => $e->getMessage()
+                'error'   => $e->getMessage()
             ]);
         }
     }
