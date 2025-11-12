@@ -17,8 +17,7 @@ use Carbon\Carbon;
 
 
 class UsuarioController extends Controller
-{
-    // 🔒 Este constructor se ejecuta para control de rutas 
+{ 
     public function __construct()
     {
         $this->middleware('auth');

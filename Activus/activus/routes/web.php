@@ -149,7 +149,7 @@ Route::post('/usuarios/crear', [UsuarioController::class, 'crearUsuario'])->name
 Route::put('/usuarios/{id}', [UsuarioController::class, 'editarUsuario'])->name('usuarios.editar');
 Route::get('/usuarios/{id}/editar', [UsuarioController::class, 'editarPerfil'])->name('usuarios.editarPerfil');
 Route::delete('/usuarios/{id}', [UsuarioController::class, 'eliminarUsuario'])->name('usuarios.eliminar');
-Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuarios.enviarEdicion');
+Route::put('/usuarios/{id}/enviar', [UsuarioController::class, 'update'])->name('usuarios.enviarEdicion');
 Route::get('/usuarios/{id}', [UsuarioController::class, 'obtenerUsuario']);
 Route::post('/usuarios/{id}/cambiar-estado', [UsuarioController::class, 'cambiarEstado'])->name('usuarios.cambiarEstado');
 Route::post('/usuario/{id}/cambiar-correo', [UsuarioController::class, 'cambiarCorreo'])->name('usuarios.cambiarCorreo');

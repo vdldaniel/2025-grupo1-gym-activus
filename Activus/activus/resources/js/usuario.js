@@ -174,10 +174,10 @@ modalEditar.addEventListener('show.bs.modal', function (e) {
             const formData = new FormData(formEditarUsuario);
             formData.append("_method", "PUT"); 
 
-            const res = await fetch(ruta, {
-                method: "POST", 
+            const res = await fetch(`/usuarios/${id}`, {
+                method: "POST",
                 headers: {
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: formData
             });
