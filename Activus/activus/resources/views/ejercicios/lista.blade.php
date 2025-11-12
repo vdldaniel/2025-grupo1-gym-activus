@@ -1,13 +1,10 @@
-@php
-    use App\Helpers\PermisoHelper;
-    $idUsuarioPrueba = 5; //Usuario autenticado de prueba - 1-Admin 2-Recepcionista 3-Profesor 4-Socio 5-Superadmin
-@endphp
+
 
 <div class="row mt-4" id="contenedor-lista">
     @if($ejercicios->count())
         @foreach($ejercicios as $e)
             <div class="col-sm-12 mb-3">
-                <div class="card h-100 shadow-sm tarjeta-rutina">
+                <div class="card shadow-sm tarjeta-rutina">
                 <div class="card-header d-flex justify-content-between align-items-start mt-3">
                         <div class="flex-grow-1">
                         <h6 class="card-title mb-1">{{ $e->Nombre_Ejercicio}}</h6>
@@ -77,5 +74,5 @@
                 </div>
             </div>
         @endforeach
-     @endif
+    @endif
 </div>

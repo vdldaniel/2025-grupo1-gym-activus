@@ -1,6 +1,6 @@
 @php
     use App\Helpers\PermisoHelper;
-    $idUsuarioPrueba = 5; //Usuario autenticado de prueba - 1-Admin 2-Recepcionista 3-Profesor 4-Socio 5-Superadmin
+    $idUsuario = Auth::user()->ID_Usuario ?? null;
 @endphp
 
 @extends('layouts.app')
@@ -16,7 +16,7 @@
                 <span class="text-secondary small">Gestiona y organiza todos los ejercicios</span>
             </div>
         </div>
-    @if(PermisoHelper::tienePermiso('Gestionar Ejercicios', $idUsuarioPrueba))     
+    @if(PermisoHelper::tienePermiso('Gestionar Ejercicios', $idUsuario))     
         <div class="d-flex justify-content-end mt-3 mt-md-0">
             <button class="btn btn-agregar py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalEjercicio">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
@@ -25,6 +25,7 @@
         </div>
     @endif
     </div>
+    
 
     <div class="row g-4">
         <div class="col-12 col-md-4">
@@ -65,7 +66,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap flex-shrink-0"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
             Lista de Ejercicios
         </button>
-        @if(PermisoHelper::tienePermiso('Gestionar Ejercicios', $idUsuarioPrueba))
+        @if(PermisoHelper::tienePermiso('Gestionar Ejercicios', $idUsuario))
         <button id="btnTablaEjercicios" class="btn btn-ejercicio btn-secundario">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-cog-icon lucide-user-cog"><path d="M10 15H6a4 4 0 0 0-4 4v2"/><path d="m14.305 16.53.923-.382"/><path d="m15.228 13.852-.923-.383"/><path d="m16.852 12.228-.383-.923"/><path d="m16.852 17.772-.383.924"/><path d="m19.148 12.228.383-.923"/><path d="m19.53 18.696-.382-.924"/><path d="m20.772 13.852.924-.383"/><path d="m20.772 16.148.924.383"/><circle cx="18" cy="15" r="3"/><circle cx="9" cy="7" r="4"/></svg>
             Gestión de Ejercicios

@@ -1,8 +1,3 @@
-@php
-    use App\Helpers\PermisoHelper;
-    $idUsuarioPrueba = 1; //Usuario autenticado de prueba - 1-Admin 2-Recepcionista 3-Profesor 4-Socio 5-Superadmin
-@endphp
-
 @extends('layouts.app')
 @section('content')
 <div class="container py-4 vista-rutinas">

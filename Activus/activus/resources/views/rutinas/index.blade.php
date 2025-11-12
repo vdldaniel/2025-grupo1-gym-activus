@@ -1,3 +1,8 @@
+@php
+    use App\Helpers\PermisoHelper;
+    $idUsuario = Auth::user()->ID_Usuario ?? null;
+@endphp
+
 @extends('layouts.app')
 @section('content')
 <div class="container py-4">
@@ -12,12 +17,14 @@
             </div>
         </div>
 
+        @if(PermisoHelper::tienePermiso('Gestionar Rutinas', $idUsuario))
         <div class="d-flex justify-content-end mt-3 mt-md-0">
             <button class="btn btn-agregar py-2 px-4" data-bs-toggle="modal" data-bs-target="#modalRutina">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                 <span class="ms-2 small h6">Nueva Rutina</span>
             </button>
         </div>
+        @endif
     </div>
 
     <div class="row g-4">
