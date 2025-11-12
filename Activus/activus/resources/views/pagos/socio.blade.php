@@ -23,7 +23,7 @@
   <div class="row g-3 mb-4">
     <!-- Membresía -->
     <div class="col-md-6">
-      <div class="card bg-dark border-secondary h-100">
+      <div class="card  border-secondary h-100">
         <div class="card-body">
           <h5 class="card-title mb-3">Membresía</h5>
           <p class="mb-1 text-secondary">Precio:</p>
@@ -40,7 +40,7 @@
 
     <!-- Próximo Pago -->
     <div class="col-md-6">
-      <div class="card bg-dark border-secondary h-100 text-center">
+      <div class="card  border-secondary h-100 text-center">
         <div class="card-body">
           <h5 class="card-title mb-3">Próximo Pago</h5>
           <p id="diasRestantes" class="display-5 mb-1 text-accent">--</p>
@@ -51,7 +51,7 @@
   </div>
 
   <!-- Historial de Pagos -->
-  <div class="card bg-dark border-secondary">
+  <div class="card  border-secondary">
     <div class="card-body">
       <h5 class="card-title">Historial de Pagos</h5>
       <p class="text-secondary small mb-3">Registro completo de tus transacciones</p>
@@ -59,10 +59,10 @@
       <!-- Filtro -->
       <div class="row g-2 mb-3">
         <div class="col-md-4">
-          <input type="date" id="fechaDesde" class="form-control bg-dark text-light border-secondary" placeholder="Desde">
+          <input type="date" id="fechaDesde" class="form-control  text-light border-secondary" placeholder="Desde">
         </div>
         <div class="col-md-4">
-          <input type="date" id="fechaHasta" class="form-control bg-dark text-light border-secondary" placeholder="Hasta">
+          <input type="date" id="fechaHasta" class="form-control  text-light border-secondary" placeholder="Hasta">
         </div>
         <div class="col-md-4 text-md-end">
           <button id="btnFiltrar" class="btn btn-outline-light w-100 w-md-auto">Filtrar</button>
