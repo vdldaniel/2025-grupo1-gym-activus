@@ -26,8 +26,10 @@ class PagoSocioController extends Controller
     public function listar()
     {
         try {
-            //  ID del socio (usar Auth::id() cuando esté activo el login)
-            $idSocio = Auth::id() ?? 10; // Cambiá este número para probar con otro socio
+            // ================================
+            // ID DEL SOCIO LOGUEADO
+            // ================================
+            $idSocio = Auth::id();
 
             if (!$idSocio) {
                 return response()->json([
@@ -38,13 +40,17 @@ class PagoSocioController extends Controller
 
             $hoy = Carbon::now()->toDateString();
 
-            //  Actualizar membresías vencidas
+            // ================================
+            // ACTUALIZAR MEMBRESÍAS VENCIDAS
+            // ================================
             DB::table('membresia_socio')
                 ->where('ID_Usuario_Socio', $idSocio)
                 ->whereDate('Fecha_Fin', '<', $hoy)
                 ->update(['Estado_Membresia' => 'Vencida']);
 
-            //  Obtener membresía actual o más reciente
+            // ================================
+            // OBTENER MEMBRESÍA ACTUAL
+            // ================================
             $membresia = DB::table('membresia_socio AS ms')
                 ->join('tipo_membresia AS tm', 'tm.ID_Tipo_Membresia', '=', 'ms.ID_Tipo_Membresia')
                 ->where('ms.ID_Usuario_Socio', $idSocio)
@@ -73,12 +79,16 @@ class PagoSocioController extends Controller
                 ]);
             }
 
-            //  Calcular días restantes
+            // ================================
+            // CÁLCULO DE DÍAS RESTANTES
+            // ================================
             $vencimiento = new \DateTime($membresia->vencimiento);
             $diff = (new \DateTime($hoy))->diff($vencimiento);
             $diasRestantes = (int)$diff->format('%r%a');
 
-            //  Historial de pagos
+            // ================================
+            // HISTORIAL DE PAGOS
+            // ================================
             $pagos = DB::table('pago AS p')
                 ->join('membresia_socio AS ms', 'p.ID_Membresia_Socio', '=', 'ms.ID_Membresia_Socio')
                 ->join('tipo_membresia AS tm', 'ms.ID_Tipo_Membresia', '=', 'tm.ID_Tipo_Membresia')
@@ -93,7 +103,6 @@ class PagoSocioController extends Controller
                 )
                 ->get();
 
-            // 🔹 Respuesta al frontend
             return response()->json([
                 'success' => true,
                 'membresia' => [
@@ -109,6 +118,7 @@ class PagoSocioController extends Controller
             ]);
 
         } catch (\Throwable $e) {
+
             return response()->json([
                 'success' => false,
                 'error' => 'Error al obtener los datos del socio.',
