@@ -17,7 +17,7 @@
 
                 <div>
                     <h2 class="fw-bold mb-0">Clases</h2>
-                    <span class="text-secondary small">Administra las clases y horarios </span>
+                    <span class="text-secondary small">vista socio () </span>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2 mt-3 mt-md-0">

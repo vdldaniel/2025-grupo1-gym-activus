@@ -6,53 +6,113 @@ use App\Models\ClaseProgramada;
 use Illuminate\Http\Request;
 use App\Models\Reserva;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class ClaseProgramadaController extends Controller
 {
     public function obtenerEventos()
     {
 
-        $eventos = ClaseProgramada::with('clase')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'title' => $item->clase->Nombre_Clase ?? 'Clase sin nombre',
-                    'start' => $item->Fecha . 'T' . $item->Hora_Inicio,
-                    'end' => $item->Fecha . 'T' . $item->Hora_Fin,
-                ];
+
+        $user = Auth::user();
+
+        $query = ClaseProgramada::with('clase');
+
+
+        $rolesUsuario = $user->roles()->pluck('Nombre_Rol')->toArray();
+
+        if (in_array('Profesor', $rolesUsuario)) {
+            // Si es profesor solo sus clases
+            $query->whereHas('clase', function ($q) use ($user) {
+                $q->where('ID_Profesor', $user->ID_Usuario);
             });
+        }
+
+
+        $eventos = $query->get()->map(function ($item) {
+            return [
+                'title' => $item->clase->Nombre_Clase ?? 'Clase sin nombre',
+                'start' => $item->Fecha . 'T' . $item->Hora_Inicio,
+                'end' => $item->Fecha . 'T' . $item->Hora_Fin,
+            ];
+        });
 
         return response()->json($eventos);
+        /* $eventos = ClaseProgramada::with('clase')
+             ->get()
+             ->map(function ($item) {
+                 return [
+                     'title' => $item->clase->Nombre_Clase ?? 'Clase sin nombre',
+                     'start' => $item->Fecha . 'T' . $item->Hora_Inicio,
+                     'end' => $item->Fecha . 'T' . $item->Hora_Fin,
+                 ];
+             });
+
+         return response()->json($eventos);*/
     }
 
 
 
     public function listar()
     {
-        $clasesProgramadas = ClaseProgramada::with(['clase.profesor', 'clase', 'sala'])
-            ->get()
-            ->map(function ($item) {
 
-                // cantidad de reservas estado=confirmada === inscriptos
-                $inscriptos = Reserva::where('ID_Clase_Programada', $item->ID_Clase_Programada)
-                    ->where('Estado_Reserva', 'Confirmada')
-                    ->count();
+        $user = Auth::user();
+        $rolesUsuario = $user->roles()->pluck('Nombre_Rol')->toArray();
 
-                $capacidadTotal = $item->clase->Capacidad_Maxima ?? 0;
+        $query = ClaseProgramada::with(['clase.profesor', 'sala']);
 
-                return [
-                    'id' => $item->ID_Clase_Programada,
-                    'nombre_clase' => $item->clase->Nombre_Clase ?? 'Sin nombre',
-                    'profesor' => $item->clase->profesor->Nombre ?? '—',
-                    'capacidad' => "{$inscriptos} / {$capacidadTotal}",
-                    'sala' => $item->sala->Nombre_Sala ?? '—',
-                    'fecha' => $item->Fecha,
-                    'hora_inicio' => \Carbon\Carbon::parse($item->Hora_Inicio)->format('H:i'),
-                    'hora_fin' => \Carbon\Carbon::parse($item->Hora_Fin)->format('H:i'),
-                ];
+
+        if (in_array('Profesor', $rolesUsuario)) {
+            $query->whereHas('clase', function ($q) use ($user) {
+                $q->where('ID_Profesor', $user->ID_Usuario);
             });
+        }
+
+        $clasesProgramadas = $query->get()->map(function ($item) {
+            $inscriptos = Reserva::where('ID_Clase_Programada', $item->ID_Clase_Programada)
+                ->where('Estado_Reserva', 'Confirmada')
+                ->count();
+
+            $capacidadTotal = $item->clase->Capacidad_Maxima ?? 0;
+
+            return [
+                'id' => $item->ID_Clase_Programada,
+                'nombre_clase' => $item->clase->Nombre_Clase ?? 'Sin nombre',
+                'profesor' => $item->clase->profesor->Nombre ?? '—',
+                'capacidad' => "{$inscriptos} / {$capacidadTotal}",
+                'sala' => $item->sala->Nombre_Sala ?? '—',
+                'fecha' => $item->Fecha,
+                'hora_inicio' => Carbon::parse($item->Hora_Inicio)->format('H:i'),
+                'hora_fin' => Carbon::parse($item->Hora_Fin)->format('H:i'),
+            ];
+        });
 
         return response()->json($clasesProgramadas);
+        /* $clasesProgramadas = ClaseProgramada::with(['clase.profesor', 'clase', 'sala'])
+             ->get()
+             ->map(function ($item) {
+
+                 // cantidad de reservas estado=confirmada === inscriptos
+                 $inscriptos = Reserva::where('ID_Clase_Programada', $item->ID_Clase_Programada)
+                     ->where('Estado_Reserva', 'Confirmada')
+                     ->count();
+
+                 $capacidadTotal = $item->clase->Capacidad_Maxima ?? 0;
+
+                 return [
+                     'id' => $item->ID_Clase_Programada,
+                     'nombre_clase' => $item->clase->Nombre_Clase ?? 'Sin nombre',
+                     'profesor' => $item->clase->profesor->Nombre ?? '—',
+                     'capacidad' => "{$inscriptos} / {$capacidadTotal}",
+                     'sala' => $item->sala->Nombre_Sala ?? '—',
+                     'fecha' => $item->Fecha,
+                     'hora_inicio' => \Carbon\Carbon::parse($item->Hora_Inicio)->format('H:i'),
+                     'hora_fin' => \Carbon\Carbon::parse($item->Hora_Fin)->format('H:i'),
+                 ];
+             });
+
+         return response()->json($clasesProgramadas);*/
     }
 
 
@@ -152,7 +212,7 @@ class ClaseProgramadaController extends Controller
         $horaFin = strlen($request->Hora_Fin) === 5 ? $request->Hora_Fin . ':00' : $request->Hora_Fin;
 
 
-        // NO PERMITE USAR LA MIMA SALA EN EL MISMO HORARIO
+        // NO PERMITE USAR LA MISMA SALA EN EL MISMO HORARIO
         $solapada = ClaseProgramada::where('ID_Sala', $request->ID_Sala)
             ->where('Fecha', $request->Fecha)
             ->where(function ($q) use ($horaInicio, $horaFin) {
@@ -216,7 +276,7 @@ class ClaseProgramadaController extends Controller
         $horaInicio = strlen($request->Hora_Inicio) === 5 ? $request->Hora_Inicio . ':00' : $request->Hora_Inicio;
         $horaFin = strlen($request->Hora_Fin) === 5 ? $request->Hora_Fin . ':00' : $request->Hora_Fin;
 
-        // NO PERMITE USAR LA MIMA SALA EN EL MISMO HORARIO
+        // NO PERMITE USAR LA MISSMA SALA EN EL MISMO HORARIO
         $solapada = ClaseProgramada::where('ID_Sala', $request->ID_Sala)
             ->where('Fecha', $request->Fecha)
             ->where('ID_Clase_Programada', '!=', $id)
@@ -252,6 +312,22 @@ class ClaseProgramadaController extends Controller
             'message' => 'Clase programada actualizada correctamente.'
         ]);
     }
+
+    public function obtenerAlumnos($id)
+    {
+        $alumnos = Reserva::with('usuario')
+            ->where('ID_Clase_Programada', $id)
+            ->where('Estado_Reserva', 'Confirmada')
+            ->get()
+            ->map(fn($r) => [
+                'nombre' => trim($r->usuario->Nombre . ' ' . $r->usuario->Apellido)
+            ]);
+
+        return response()->json($alumnos);
+    }
+
+
+
 
 }
 

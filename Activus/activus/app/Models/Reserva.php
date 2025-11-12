@@ -20,9 +20,13 @@ class Reserva extends Model
         'Estado_Reserva',
     ];
 
-    // Relación con ClaseProgramada
     public function claseProgramada()
     {
         return $this->belongsTo(ClaseProgramada::class, 'ID_Clase_Programada', 'ID_Clase_Programada');
+    }
+
+    public function usuario()
+    {
+        return $this->belongsTo(Usuario::class, 'ID_Socio', 'ID_Usuario');
     }
 }

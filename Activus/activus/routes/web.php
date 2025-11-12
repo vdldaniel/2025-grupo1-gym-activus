@@ -51,6 +51,10 @@ Route::get('/clases/gestion', function () {
 })->name('clases.gestion');
 
 
+Route::get('/clases/mis-clases', function () {
+    return view('clases.mis-clases');
+})->name('clases.mis-clases');
+
 Route::get('/usuarios/perfil', function () {
     return view('usuarios.perfil');
 });
@@ -250,3 +254,4 @@ Route::get('/clases-programadas/obtener/{id}', [ClaseProgramadaController::class
 Route::post('/clases-programadas/guardar', [ClaseProgramadaController::class, 'guardar']);
 Route::put('/clases-programadas/actualizar/{id}', [ClaseProgramadaController::class, 'actualizar']);
 Route::get('/clases/metricas', [ClaseController::class, 'obtenerMetricas']);
+Route::get('/clases-programadas/{id}/alumnos', [ClaseProgramadaController::class, 'obtenerAlumnos']);

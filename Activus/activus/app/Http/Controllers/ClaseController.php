@@ -7,13 +7,39 @@ use App\Models\ClaseProgramada;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class ClaseController extends Controller
 {
     //listar todas las clases con el profesor y capacidad maxima
     public function listar()
     {
-        $clases = Clase::with('profesor')
+
+        $user = Auth::user();
+
+        $query = Clase::with('profesor');
+
+        // si es profe envia solo sus clases 
+        $rolesUsuario = $user->roles()->pluck('Nombre_Rol')->toArray();
+
+        if (in_array('Profesor', $rolesUsuario)) {
+            $query->where('ID_Profesor', $user->ID_Usuario);
+        }
+
+        $clases = $query->get()->map(function ($item) {
+            return [
+                'id' => $item->ID_Clase,
+                'nombre_clase' => $item->Nombre_Clase ?? 'Sin nombre',
+                'profesor' => $item->profesor->Nombre ?? '—',
+                'capacidad' => $item->Capacidad_Maxima ?? 0,
+            ];
+        });
+
+        return response()->json($clases);
+
+
+
+        /*$clases = Clase::with('profesor')
             ->get()
             ->map(function ($item) {
                 return [
@@ -24,23 +50,48 @@ class ClaseController extends Controller
                 ];
             });
 
-        return response()->json($clases);
+        return response()->json($clases);*/
     }
 
     //total de clases , cantidad de clases programadas para el dia actual
     public function obtenerMetricas()
     {
+        $user = Auth::user();
+        $rolesUsuario = $user->roles()->pluck('Nombre_Rol')->toArray();
 
-        $totalClases = Clase::count();
+
+        $claseQuery = Clase::query();
+        $claseProgQuery = ClaseProgramada::query();
 
 
-        $clasesHoy = ClaseProgramada::whereDate('Fecha', now()->toDateString())->count();
+        $esProfesor = in_array('Profesor', $rolesUsuario);
+
+        if ($esProfesor) {
+            $claseQuery->where('ID_Profesor', $user->ID_Usuario);
+            $claseProgQuery->whereHas('clase', function ($q) use ($user) {
+                $q->where('ID_Profesor', $user->ID_Usuario);
+            });
+        }
+
+        $totalClases = $claseQuery->count();
+
+        $clasesHoy = $claseProgQuery
+            ->whereDate('Fecha', now()->toDateString())
+            ->count();
 
         return response()->json([
             'ok' => true,
             'totalClases' => $totalClases,
             'clasesHoy' => $clasesHoy,
         ]);
+
+        /*$totalClases = Clase::count();
+        $clasesHoy = ClaseProgramada::whereDate('Fecha', now()->toDateString())->count();
+        return response()->json([
+            'ok' => true,
+            'totalClases' => $totalClases,
+            'clasesHoy' => $clasesHoy,
+        ]);*/
     }
 
     public function guardar(Request $request)

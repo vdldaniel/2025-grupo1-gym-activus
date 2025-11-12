@@ -61,7 +61,7 @@
                             </svg>
                         </div>
                     </div>
-                    <h4 id="metricTotalClases" class="display-6 fw-bold mt-4 mb-0">28</h4>
+                    <h4 id="metricTotalClases" class="display-6 fw-bold mt-4 mb-0"></h4>
                 </div>
             </div>
             <div class="col-md-4">
@@ -78,7 +78,7 @@
                         </div>
 
                     </div>
-                    <h4 id="metricClasesHoy" class="display-6 fw-bold mt-4 mb-0">8</h4>
+                    <h4 id="metricClasesHoy" class="display-6 fw-bold mt-4 mb-0"></h4>
                 </div>
 
             </div>
