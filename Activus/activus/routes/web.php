@@ -22,6 +22,7 @@ use App\Http\Controllers\InicioProfesorController;
 use App\Http\Controllers\SalaController;
 use App\Http\Controllers\InicioAdministradorController;
 use App\Http\Controllers\ClaseProgramadaController;
+use App\Http\Controllers\ClaseSocioController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -199,3 +200,9 @@ Route::get('/inicio-administrador/datos', [InicioAdministradorController::class,
 
 /// cargar el calendario con as clases programadas 
 Route::get('/obtener/eventos', [ClaseProgramadaController::class, 'obtenerEventos']);
+
+Route::get('/clases-socio', [ClaseSocioController::class, 'index']);
+Route::get('/clases-socio/eventos', [ClaseSocioController::class, 'eventos']);
+Route::get('/clases-socio/disponibles', [ClaseSocioController::class, 'disponibles']);
+Route::post('/clases-socio/inscribirse/{id}', [ClaseSocioController::class, 'inscribirse']);
+Route::get('/clases-socio/metricas', [ClaseSocioController::class, 'metricas']);
