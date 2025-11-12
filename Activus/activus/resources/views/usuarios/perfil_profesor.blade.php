@@ -1,3 +1,9 @@
+@php
+  use App\Helpers\PermisoHelper;
+  $idUsuario = Auth::user()->ID_Usuario ?? null;
+@endphp
+
+
 <!-- Columna lateral -->
 <div class="col-lg-4 d-flex flex-column gap-3">
     <!-- Resumen del Perfil -->
@@ -26,6 +32,7 @@
                         @endif
 
                          <!-- Botón  editar la foto -->
+                        @if($idUsuario == $usuario->ID_Usuario)
                          <button class="btn btn-sm btn-secondary position-absolute bottom-0 end-0 rounded-circle p-1"
                              data-bs-toggle="modal"
                              data-bs-target="#modalCambiarFoto"
@@ -38,6 +45,7 @@
                                  <circle cx="12" cy="13" r="3" />
                              </svg>
                          </button>
+                         @endif
                      </div>
                  </div>
                  <div>
@@ -56,8 +64,9 @@
              </div>
          </div>
      </div>
-     @if (!Str::contains(Route::currentRouteName(), 'editarPerfil'))
+    @if (!Str::contains(Route::currentRouteName(), 'editarPerfil'))
      <!-- Configuración de Cuenta -->
+    @if($idUsuario == $usuario->ID_Usuario)
      <div class="card bg-card text-light shadow-sm">
          <div class="card-header">
              <h5 class="mb-0">Configuración de Cuenta</h5>
@@ -79,7 +88,8 @@
                  </form>
              </div>
          </div>
-         @endif
+    @endif
+    @endif
      </div>
 
      @section('modales')

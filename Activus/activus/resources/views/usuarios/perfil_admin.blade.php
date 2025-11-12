@@ -1,3 +1,9 @@
+@php
+  use App\Helpers\PermisoHelper;
+  $idUsuario = Auth::user()->ID_Usuario ?? null;
+@endphp
+
+
 <!-- Columna lateral -->
 <div class="col-lg-4 d-flex flex-column gap-3">
     <!-- Resumen del Perfil -->

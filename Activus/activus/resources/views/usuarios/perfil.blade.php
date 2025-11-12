@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 @section('content')
     <div class="container py-4">
@@ -14,7 +15,7 @@
                             <circle cx="12" cy="7" r="4" />
                         </svg>
                         <div>
-                            <h1 class="fw-bold mb-0">Mi Perfil</h1>
+                            <h1 class="fw-bold mb-0">{{ $usuario->Nombre }} {{ $usuario->Apellido }}</h1>
                             <small class="text-secondary small">Gestiona tu información personal</small>
                         </div>
                     </div>
