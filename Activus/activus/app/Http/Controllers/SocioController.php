@@ -12,29 +12,58 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use App\Models\Asistencia;
 
 class SocioController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Datos actuales
         $socios = Socio::with(['membresias', 'usuario'])->get();
         $membresias = TipoMembresia::all();
         $estadosMembresiaSocio = EstadoMembresiaSocio::all();
 
         $totalSocios = Socio::distinct('ID_Usuario')->count();
+
         $totalSociosActivos = MembresiaSocio::where('ID_Estado_Membresia_Socio', 1)
             ->whereIn('ID_Usuario_Socio', function ($query) {
-                $query->select('ID_Usuario')
-                    ->from('socio');
-            })->count();
+                $query->select('ID_Usuario')->from('socio');
+            })
+            ->count();
 
         $totalSociosNuevosMes = Socio::join('usuario', 'socio.ID_Usuario', '=', 'usuario.ID_Usuario')
             ->whereMonth('usuario.Fecha_Alta', now()->month)
             ->whereYear('usuario.Fecha_Alta', now()->year)
             ->count();
 
-        return view('socios.index', compact('socios', 'membresias', 'estadosMembresiaSocio', 'totalSocios', 'totalSociosActivos', 'totalSociosNuevosMes'));
+        $ingresos = Asistencia::select(
+            'asistencia.ID_Asistencia',
+            'asistencia.ID_Socio',
+            'asistencia.Fecha',
+            'asistencia.Hora',
+            'usuario.Nombre',
+            'usuario.Apellido',
+            'usuario.DNI'
+        )
+            ->join('socio', 'asistencia.ID_Socio', '=', 'socio.ID_Usuario') 
+            ->join('usuario', 'socio.ID_Usuario', '=', 'usuario.ID_Usuario')
+            ->orderBy('asistencia.Fecha', 'DESC')
+            ->orderBy('asistencia.Hora', 'DESC')
+            ->get();
+
+       
+
+        return view('socios.index', compact(
+            'socios',
+            'membresias',
+            'estadosMembresiaSocio',
+            'totalSocios',
+            'totalSociosActivos',
+            'totalSociosNuevosMes',
+            'ingresos'   
+        ));
     }
+
 
 
     public function crearSocio(Request $request)
@@ -244,19 +273,19 @@ class SocioController extends Controller
     // Método para ver un socio específico
     public function mostrar($id)
     {
-        
+
         $usuario = Usuario::with(['roles', 'socio'])->findOrFail($id);
 
-        
+
         $rol = $usuario->roles->first();
 
-        
+
         $rolId = $rol ? $rol->ID_Rol : null;
 
-        
+
         $socio = $usuario->socio;
 
-        
+
         return view('usuarios.perfil', compact('usuario', 'rolId', 'socio'));
     }
 }
