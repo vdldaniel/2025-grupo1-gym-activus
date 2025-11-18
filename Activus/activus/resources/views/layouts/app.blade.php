@@ -163,7 +163,24 @@
             </a>
           </li>
         @endif
+        {{-- CLASES – SOCIO --}}
+        @if(PermisoHelper::tienePermiso('Clases Socio', $idUsuario))
+          <li>
+            <a href="/clases-socio">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-calendar-icon lucide-calendar">
+                <path d="M8 2v4" />
+                <path d="M16 2v4" />
+                <rect width="18" height="18" x="3" y="4" rx="2" />
+                <path d="M3 10h18" />
+              </svg>
+              <span class="sidebar-span">Mis Clases</span>
+            </a>
+          </li>
+        @endif
         @if(PermisoHelper::tienePermiso('Gestionar Clases', $idUsuario))
+        
           <li>
             <a href="/clases/gestion">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -298,6 +315,7 @@
             </a>
           </li>
         @endif
+        {{-- PAGOS – ADMINISTRATIVO / ADMIN --}}
         @if(PermisoHelper::tienePermiso('Pagos', $idUsuario))
           <li>
             <a href="/pagos">
@@ -311,6 +329,22 @@
             </a>
           </li>
         @endif
+
+        {{-- PAGOS – SOCIO --}}
+        @if(PermisoHelper::tienePermiso('Pagos Socio', $idUsuario))
+          <li>
+            <a href="/pagos/socio">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-credit-card-icon lucide-credit-card">
+                <rect width="20" height="14" x="2" y="5" rx="2" />
+                <line x1="2" x2="22" y1="10" y2="10" />
+              </svg>
+              <span class="sidebar-span">Pagos</span>
+            </a>
+          </li>
+        @endif
+
         @if(PermisoHelper::tienePermiso('Donde Entrenar', $idUsuario))
           <li>
             <a href="/donde-entrenar">
