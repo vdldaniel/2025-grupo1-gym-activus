@@ -26,9 +26,6 @@ class PagoSocioController extends Controller
     public function listar()
     {
         try {
-            // ================================
-            // ID DEL SOCIO LOGUEADO
-            // ================================
             $idSocio = Auth::id();
 
             if (!$idSocio) {
@@ -40,25 +37,22 @@ class PagoSocioController extends Controller
 
             $hoy = Carbon::now()->toDateString();
 
-            // ================================
-            // ACTUALIZAR MEMBRESÍAS VENCIDAS
-            // ================================
+            // CORREGIDO: actualizar vencidas
             DB::table('membresia_socio')
                 ->where('ID_Usuario_Socio', $idSocio)
                 ->whereDate('Fecha_Fin', '<', $hoy)
-                ->update(['Estado_Membresia' => 'Vencida']);
+                ->update(['ID_Estado_Membresia_Socio' => 2]); // 2 = Vencida
 
-            // ================================
-            // OBTENER MEMBRESÍA ACTUAL
-            // ================================
+            //  CORREGIDO: obtener membresía actual
             $membresia = DB::table('membresia_socio AS ms')
                 ->join('tipo_membresia AS tm', 'tm.ID_Tipo_Membresia', '=', 'ms.ID_Tipo_Membresia')
+                ->join('estado_membresia_socio AS ems', 'ems.ID_Estado_Membresia_Socio', '=', 'ms.ID_Estado_Membresia_Socio')
                 ->where('ms.ID_Usuario_Socio', $idSocio)
                 ->orderByDesc('ms.ID_Membresia_Socio')
                 ->select(
                     'tm.Nombre_Tipo_Membresia AS tipo',
                     'tm.Precio AS precio',
-                    'ms.Estado_Membresia AS estado',
+                    'ems.Nombre_Estado_Membresia_Socio AS estado',
                     'ms.Fecha_Fin AS vencimiento'
                 )
                 ->first();
@@ -79,19 +73,15 @@ class PagoSocioController extends Controller
                 ]);
             }
 
-            // ================================
-            // CÁLCULO DE DÍAS RESTANTES
-            // ================================
             $vencimiento = new \DateTime($membresia->vencimiento);
             $diff = (new \DateTime($hoy))->diff($vencimiento);
             $diasRestantes = (int)$diff->format('%r%a');
 
-            // ================================
-            // HISTORIAL DE PAGOS
-            // ================================
+            //  CORREGIDO: historial de pagos
             $pagos = DB::table('pago AS p')
                 ->join('membresia_socio AS ms', 'p.ID_Membresia_Socio', '=', 'ms.ID_Membresia_Socio')
                 ->join('tipo_membresia AS tm', 'ms.ID_Tipo_Membresia', '=', 'tm.ID_Tipo_Membresia')
+                ->join('estado_membresia_socio AS ems', 'ems.ID_Estado_Membresia_Socio', '=', 'ms.ID_Estado_Membresia_Socio')
                 ->where('p.ID_Usuario_Socio', $idSocio)
                 ->orderByDesc('p.Fecha_Pago')
                 ->select(
@@ -99,7 +89,7 @@ class PagoSocioController extends Controller
                     'tm.Nombre_Tipo_Membresia AS plan',
                     'p.Metodo_Pago AS metodo',
                     'p.Monto AS monto',
-                    'ms.Estado_Membresia AS estado'
+                    'ems.Nombre_Estado_Membresia_Socio AS estado'
                 )
                 ->get();
 
@@ -118,7 +108,6 @@ class PagoSocioController extends Controller
             ]);
 
         } catch (\Throwable $e) {
-
             return response()->json([
                 'success' => false,
                 'error' => 'Error al obtener los datos del socio.',
@@ -126,4 +115,5 @@ class PagoSocioController extends Controller
             ], 500);
         }
     }
+
 }
