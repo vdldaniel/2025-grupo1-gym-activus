@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  if (!window.location.pathname.includes("/clases-socio")) return;
+  if (!window.location.pathname.includes("/clases")) return;
 
   inicializarCambioDeVista();
   mostrarCalendario();
