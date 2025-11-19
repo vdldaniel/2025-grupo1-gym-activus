@@ -8,22 +8,15 @@ use Illuminate\Support\Facades\DB;
 
 class ClaseSocioController extends Controller
 {
-    /**
-     * Vista principal del módulo de clases del socio.
-     */
     public function index()
     {
         return view('clases.socio.index');
     }
 
-    /**
-     * Devuelve las clases reservadas del socio logueado para mostrar en el calendario.
-     */
     public function eventos()
     {
-        $idSocio = Auth::id() ?? 6; // reemplazá con Auth real si ya tenemos sesión
+        $idSocio = Auth::user()->ID_Usuario;
 
-        // Une reservas con clases programadas y clases
         $eventos = DB::table('reserva as r')
             ->join('clase_programada as cp', 'r.ID_Clase_Programada', '=', 'cp.ID_Clase_Programada')
             ->join('clase as c', 'cp.ID_Clase', '=', 'c.ID_Clase')
@@ -48,12 +41,9 @@ class ClaseSocioController extends Controller
         return response()->json($eventos);
     }
 
-    /**
-     * Devuelve las clases disponibles (no reservadas por el socio).
-     */
     public function disponibles()
     {
-        $idSocio = Auth::id() ?? 6;
+        $idSocio = Auth::user()->ID_Usuario;
 
         $clases = DB::table('clase_programada as cp')
             ->join('clase as c', 'cp.ID_Clase', '=', 'c.ID_Clase')
@@ -75,18 +65,15 @@ class ClaseSocioController extends Controller
                 DB::raw('(SELECT COUNT(*) FROM reserva WHERE ID_Clase_Programada = cp.ID_Clase_Programada AND Estado_Reserva = "Confirmada") as Capacidad_Usada'),
                 'r.ID_Reserva'
             )
-            ->whereNull('r.ID_Reserva') // no mostrar las que ya reservó
+            ->whereNull('r.ID_Reserva')
             ->get();
 
         return response()->json($clases);
     }
 
-    /**
-     * Permite al socio inscribirse en una clase (reserva confirmada).
-     */
     public function inscribirse($idClase)
     {
-        $idSocio = auth()->id() ?? 6; // usar el socio logueado (6 para pruebas)
+        $idSocio = Auth::user()->ID_Usuario;
 
         try {
             // Verificar capacidad
@@ -109,7 +96,7 @@ class ClaseSocioController extends Controller
                 ]);
             }
 
-            // Verificar si ya tiene reserva
+            // Verificar reserva duplicada
             $yaReservada = DB::table('reserva')
                 ->where('ID_Clase_Programada', $idClase)
                 ->where('ID_Socio', $idSocio)
@@ -123,8 +110,7 @@ class ClaseSocioController extends Controller
                 ]);
             }
 
-      
-           // Registrar reserva 
+            // Insertar reserva
             DB::table('reserva')->insert([
                 'ID_Clase_Programada' => $idClase,
                 'ID_Socio' => $idSocio,
@@ -132,11 +118,11 @@ class ClaseSocioController extends Controller
                 'Estado_Reserva' => 'Confirmada'
             ]);
 
-
             return response()->json([
                 'success' => true,
                 'message' => 'Inscripción exitosa.'
             ]);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -146,49 +132,45 @@ class ClaseSocioController extends Controller
     }
 
     public function metricas()
-{
-    $idSocio = Auth::id() ?? 6;
+    {
+        $idSocio = Auth::user()->ID_Usuario;
 
-    $total = DB::table('reserva')
-        ->where('ID_Socio', $idSocio)
-        ->where('Estado_Reserva', 'Confirmada')
-        ->count();
+        $total = DB::table('reserva')
+            ->where('ID_Socio', $idSocio)
+            ->where('Estado_Reserva', 'Confirmada')
+            ->count();
 
-    $hoy = DB::table('reserva as r')
-        ->join('clase_programada as cp', 'r.ID_Clase_Programada', '=', 'cp.ID_Clase_Programada')
-        ->where('r.ID_Socio', $idSocio)
-        ->where('r.Estado_Reserva', 'Confirmada')
-        ->whereDate('cp.Fecha', now()->format('Y-m-d'))
-        ->count();
+        $hoy = DB::table('reserva as r')
+            ->join('clase_programada as cp', 'r.ID_Clase_Programada', '=', 'cp.ID_Clase_Programada')
+            ->where('r.ID_Socio', $idSocio)
+            ->where('r.Estado_Reserva', 'Confirmada')
+            ->whereDate('cp.Fecha', now()->format('Y-m-d'))
+            ->count();
 
-    return response()->json([
-        'total' => $total,
-        'hoy'   => $hoy
-    ]);
-}
-/**
- * Devuelve las clases en las que el socio está inscripto para mostrar en el calendario.
- */
-public function misClasesCalendario()
-{
-    $idSocio = Auth::id() ?? 6;
+        return response()->json([
+            'total' => $total,
+            'hoy'   => $hoy
+        ]);
+    }
 
-    $clases = DB::table('reserva as r')
-        ->join('clase_programada as cp', 'r.ID_Clase_Programada', '=', 'cp.ID_Clase_Programada')
-        ->join('clase as c', 'cp.ID_Clase', '=', 'c.ID_Clase')
-        ->join('sala as s', 'cp.ID_Sala', '=', 's.ID_Sala')
-        ->where('r.ID_Socio', $idSocio)
-        ->where('r.Estado_Reserva', 'Confirmada')
-        ->select(
-            'c.Nombre_Clase as title',
-            DB::raw('CONCAT(cp.Fecha, " ", cp.Hora_Inicio) as start'),
-            DB::raw('CONCAT(cp.Fecha, " ", cp.Hora_Fin) as end'),
-            's.Nombre_Sala as sala'
-        )
-        ->get();
+    public function misClasesCalendario()
+    {
+        $idSocio = Auth::user()->ID_Usuario;
 
-    return response()->json($clases);
-}
+        $clases = DB::table('reserva as r')
+            ->join('clase_programada as cp', 'r.ID_Clase_Programada', '=', 'cp.ID_Clase_Programada')
+            ->join('clase as c', 'cp.ID_Clase', '=', 'c.ID_Clase')
+            ->join('sala as s', 'cp.ID_Sala', '=', 's.ID_Sala')
+            ->where('r.ID_Socio', $idSocio)
+            ->where('r.Estado_Reserva', 'Confirmada')
+            ->select(
+                'c.Nombre_Clase as title',
+                DB::raw('CONCAT(cp.Fecha, " ", cp.Hora_Inicio) as start'),
+                DB::raw('CONCAT(cp.Fecha, " ", cp.Hora_Fin) as end'),
+                's.Nombre_Sala as sala'
+            )
+            ->get();
 
-
+        return response()->json($clases);
+    }
 }
