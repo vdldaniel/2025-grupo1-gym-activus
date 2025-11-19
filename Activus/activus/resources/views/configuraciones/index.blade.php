@@ -45,10 +45,10 @@
 
                                  <div class="col-md-6">
                                     <label for="logogym" class="form-label">Logo del gimnasio</label>
-                                    <div class="input-group">
+                                   <div class="input-group">
                                         <input type="file" name="Logo_PNG" id="logogym" accept="image/*"
-                                            class="form-control card-input @error('Logo_PNG') is-invalid @enderror"
-                                            data-existe-logo="{{ $configuracion?->Logo_PNG ? '1' : '0' }}">
+                                            class="form-control card-input @error('Logo_PNG') is-invalid @enderror">
+
                                         @if(!empty($configuracion?->Logo_PNG))
                                             <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalLogoActual">
                                                 Ver actual
@@ -57,9 +57,9 @@
                                     </div>
 
                                     @error('Logo_PNG')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
-                                    <div id="ErrorLogoGym" class="invalid-feedback"></div>
+
                                 </div>
                                 
                                 <div class="col-md-6">
@@ -143,7 +143,7 @@
                     </div> 
                         <div class="d-flex justify-content-end gap-2"> <a href="{{ url()->previous() }}"
                                 class="btn btn-outline-secondary">Cancelar</a> <button type="submit"
-                                class="btn btn-primary">Guardar configuración</button> </div>
+                                class="btn btn-agregar">Guardar configuración</button> </div>
                     </form>
                 </div>
             </main>

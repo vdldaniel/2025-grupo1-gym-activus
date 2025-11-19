@@ -1,4 +1,4 @@
-window.onload = function () {
+document.addEventListener("DOMContentLoaded", () => {
     const btnNueva = document.getElementById("btnNuevaMembresia");
     const formMembresia = document.getElementById("formMembresia");
     const botonConfirmarEliminacion = document.getElementById("btnConfirmarEliminarMembresia");
@@ -64,7 +64,7 @@ window.onload = function () {
     });
 
 
-};
+});
 
 
 function CargarMembresias() {
