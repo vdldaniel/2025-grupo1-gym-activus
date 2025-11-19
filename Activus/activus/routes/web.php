@@ -205,7 +205,12 @@ Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 
 Route::middleware(['web'])->group(function () {
     Route::get('/', function () {
-        return view('inicio');
+        // Llamo al controlador manualmente
+    $controller = app(\App\Http\Controllers\InicioAdministrativoController::class);
+    $data = $controller->index()->getData();
+
+    
+    return view('inicio', $data);
     })->name('login');// tu vista de inicio
 
     Route::post('/login', [AuthController::class, 'iniciarSesion'])->name('login.post');
