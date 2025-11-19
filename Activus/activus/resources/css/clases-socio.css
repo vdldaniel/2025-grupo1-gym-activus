@@ -1,0 +1,282 @@
+/* ================================
+   CALENDARIO – SOCIO (Estilo Maqueta Final)
+================================ */
+#calendar {
+  width: 100%;
+  max-width: 950px;
+  margin: 40px auto 30px auto; /* 🔹 espacio arriba y abajo */
+  background-color: var(--secondary-componente-base-clr);
+  border: 1px solid var(--componente-border-clr);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  padding: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 560px; /* 🔹 altura fija */
+  scroll-behavior: smooth;
+  transition: all 0.3s ease;
+}
+
+/* ====== Toolbar del calendario ====== */
+.fc-header-toolbar {
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 1rem !important;
+  flex-wrap: wrap;
+}
+
+.fc-toolbar-title {
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  color: var(--text-clr);
+  text-transform: capitalize;
+}
+
+/* ====== Botones del calendario ====== */
+.fc-button {
+  border-radius: 8px !important;
+  padding: 5px 10px !important;
+  font-size: 0.85rem !important;
+  font-weight: 500;
+  background-color: var(--btn-bg-clr);
+  color: var(--btn-text-clr);
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.fc-button:hover {
+  background-color: var(--btn-hover-bg-clr);
+  color: var(--btn-hover-text-clr);
+}
+
+.fc-button-primary:not(:disabled).fc-button-active {
+  background-color: var(--accent-clr) !important;
+  color: #fff !important;
+}
+
+/* ====== Celdas del calendario ====== */
+.fc-timegrid-slot {
+  height: 1.8em !important;
+  border-color: var(--componente-border-clr);
+}
+
+/* ====== Eventos ====== */
+.fc-event {
+  font-size: 0.9rem !important;
+  font-weight: 500;
+  border-radius: 8px !important;
+  padding: 3px 6px !important;
+  color: #fff !important;
+  text-align: center;
+  border: none;
+  background-color: var(--accent-clr) !important;
+  transition: transform 0.15s ease;
+}
+
+.fc-event:hover {
+  transform: scale(1.03);
+  cursor: pointer;
+}
+
+/* 🔹 Eventos pasados */
+.past-event {
+  background-color: #555 !important;
+  opacity: 0.6;
+}
+
+/* ====== Encabezados de días ====== */
+.fc-col-header-cell-cushion {
+  color: var(--text-clr);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 992px) {
+  #calendar {
+    max-width: 90%;
+    height: 520px;
+    margin: 35px auto;
+    padding: 15px;
+  }
+  .fc-toolbar-title {
+    font-size: 1.1rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  #calendar {
+    height: 460px;
+    margin: 25px auto;
+    padding: 10px;
+  }
+  .fc-toolbar-title {
+    font-size: 1rem !important;
+  }
+  .fc-event {
+    font-size: 0.8rem !important;
+  }
+}
+
+/* ====== Loader y error ====== */
+.calendar-loader {
+  text-align: center;
+  padding: 25px;
+}
+
+.calendar-error {
+  font-weight: 500;
+  padding: 15px;
+  color: #ff6b6b;
+  text-align: center;
+}
+
+/* ================================
+   VISTA CLASES – AJUSTE GLOBAL
+================================ */
+#vistaClasesSocio {
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1.2rem;
+  overflow-x: hidden;
+  padding-top: 1rem !important;
+}
+
+/* 🔹 Compacta las métricas */
+#vistaClasesSocio .row.g-4 {
+  margin-bottom: 1rem !important;
+  gap: 1rem !important;
+}
+
+#vistaClasesSocio .card.p-3.text-center {
+  padding: 1rem !important;
+  min-height: 120px;
+}
+
+/* 🔹 Ajusta el título */
+#vistaClasesSocio h2 {
+  font-size: 1.6rem;
+  margin-bottom: 0;
+}
+
+#vistaClasesSocio .text-secondary.small {
+  font-size: 0.85rem;
+}
+
+/* 🔹 Botones más compactos */
+#vistaClasesSocio .btn-tab {
+  padding: 0.4rem 1rem !important;
+  font-size: 0.9rem !important;
+}
+
+/* 🔹 Margen inferior más corto entre secciones */
+#vistaClasesSocio .mb-5,
+#vistaClasesSocio .mb-4 {
+  margin-bottom: 1.5rem !important;
+}
+
+/* 🔹 En pantallas medianas y chicas */
+@media (max-width: 768px) {
+  #vistaClasesSocio {
+    padding: 0.8rem !important;
+    gap: 0.8rem;
+  }
+
+  #vistaClasesSocio h2 {
+    font-size: 1.3rem;
+  }
+
+  #vistaClasesSocio .card.p-3.text-center {
+    min-height: 100px;
+  }
+}
+
+/* ================================
+   VISTA CLASES – AJUSTE EN PANTALLAS GRANDES
+================================ */
+@media (min-width: 1200px) {
+  #vistaClasesSocio {
+    min-height: auto; /* 🔹 evita que se expanda a la altura total de la ventana */
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  /* 🔹 Título y métricas más arriba y cerca entre sí */
+  #vistaClasesSocio > .d-flex:first-child {
+    margin-bottom: 0.8rem !important;
+  }
+
+  #vistaClasesSocio .row.g-4 {
+    margin-bottom: 1rem !important;
+  }
+
+  /* 🔹 Botones más pegados al calendario */
+  #vistaClasesSocio .btn-tab {
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* 🔹 Calendario sin tanto margen superior */
+  #calendar {
+    margin-top: 10px !important;
+    margin-bottom: 20px !important;
+    height: 520px !important;
+  }
+}
+/* ================================
+   AJUSTE FINAL – POSICIÓN GENERAL EN PANTALLAS GRANDES
+================================ */
+@media (min-width: 1200px) {
+  #vistaClasesSocio {
+    margin-top: -40px !important; /* 🔹 sube todo el contenido */
+    padding-top: 0 !important;
+  }
+
+  /* 🔹 reduce espacio entre el título y las métricas */
+  #vistaClasesSocio > .d-flex:first-child {
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* 🔹 métricas más cerca del calendario */
+  #vistaClasesSocio .row.g-4 {
+    margin-bottom: 0.8rem !important;
+  }
+
+  /* 🔹 botones bien alineados y más arriba */
+  #vistaClasesSocio .d-flex.flex-wrap.gap-2 {
+    margin-top: 0 !important;
+    margin-bottom: 0.6rem !important;
+  }
+
+  /* 🔹 mantiene proporción del calendario */
+  #calendar {
+    height: 500px !important;
+    margin-top: 5px !important;
+  }
+}
+/* ===== FIX: Evita solapamiento de días en pantallas reducidas ===== */
+.fc-col-header-cell-cushion {
+  white-space: nowrap !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .fc .fc-col-header-cell-cushion {
+    font-size: 0.8rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .fc .fc-toolbar-title {
+    font-size: 0.9rem !important;
+  }
+  .fc .fc-col-header-cell-cushion {
+    font-size: 0.7rem !important;
+  }
+}
+

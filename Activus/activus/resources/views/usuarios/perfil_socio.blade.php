@@ -1,4 +1,9 @@
- <!-- Columna lateral -->
+@php
+  use App\Helpers\PermisoHelper;
+  $idUsuario = Auth::user()->ID_Usuario ?? null;
+@endphp
+
+<!-- Columna lateral -->
  <div class="col-lg-4 d-flex flex-column gap-3">
      <!-- Resumen del Perfil -->
      <div class="card bg-card text-light shadow-sm">
@@ -25,7 +30,9 @@
                          </div>
                          @endif
 
+                         
                          <!-- Botón  editar la foto -->
+                         @if($idUsuario == $usuario->ID_Usuario)
                          <button class="btn btn-sm btn-secondary position-absolute bottom-0 end-0 rounded-circle p-1"
                              data-bs-toggle="modal"
                              data-bs-target="#modalCambiarFoto"
@@ -38,6 +45,7 @@
                                  <circle cx="12" cy="13" r="3" />
                              </svg>
                          </button>
+                        @endif 
                      </div>
                  </div>
                  <div>
@@ -64,6 +72,7 @@
      </div>
      @if (!Str::contains(Route::currentRouteName(), 'editarPerfil'))
      <!-- Configuración de Cuenta -->
+    @if($idUsuario == $usuario->ID_Usuario)
      <div class="card bg-card text-light shadow-sm">
          <div class="card-header">
              <h5 class="mb-0">Configuración de Cuenta</h5>
@@ -96,6 +105,8 @@
 
          </div>
      </div>
+     
+     @endif
      @endif
  </div>
 
@@ -138,7 +149,7 @@
                      @csrf
                      <div class="mb-3">
                          <label for="nuevoCorreo" class="form-label">Nuevo Correo</label>
-                         <input type="email" class="form-control" id="nuevoCorreo" name="nuevoCorreo" required>
+                         <input type="email" class="form-control card-input" id="nuevoCorreo" name="nuevoCorreo" required>
                      </div>
                      <div class="text-end">
                          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -188,18 +199,18 @@
 
                      <div class="mb-3">
                          <label for="contraseniaActual" class="form-label">Contraseña Actual</label>
-                         <input type="password" class="form-control" id="contraseniaActual" name="contraseniaActual" required>
+                         <input type="password" class="form-control card-input" id="contraseniaActual" name="contraseniaActual" required>
                      </div>
                      <div class="mb-3">
                          <label for="nuevaContrasenia" class="form-label">Nueva Contraseña</label>
-                         <input type="password" class="form-control" id="nuevaContrasenia" name="nuevaContrasenia" required>
+                         <input type="password" class="form-control card-input" id="nuevaContrasenia" name="nuevaContrasenia" required>
                          <div class="form-text text-secondary">
                              Debe tener al menos 8 caracteres, incluir una mayúscula, una minúscula, un número y un símbolo.
                          </div>
                      </div>
                      <div class="mb-3">
                          <label for="confirmarContrasenia" class="form-label">Confirmar Nueva Contraseña</label>
-                         <input type="password" class="form-control" id="confirmarContrasenia" name="repetirContrasenia" required>
+                         <input type="password" class="form-control card-input" id="confirmarContrasenia" name="repetirContrasenia" required>
                      </div>
 
                      <div class="text-end">
@@ -303,8 +314,8 @@
                      <div class="mb-3">
 
                          <div class="mb-3">
-                             <label for="imagen_certificado" class="form-label">Subir nuevo certificado</label>
-                             <input type="file" class="form-control" name="certificado" required>
+                             <label for="imagen_certificado" class="form-label ">Subir nuevo certificado</label>
+                             <input type="file" class="form-control card-input" name="certificado" required>
 
                          </div>
                      </div>
@@ -347,7 +358,7 @@
 
                      <div class="mb-3 text-center">
                          <label for="foto" class="form-label">Seleccionar nueva foto</label>
-                         <input type="file" name="foto" id="foto" class="form-control" accept="image/*" required>
+                         <input type="file" name="foto" id="foto" class="form-control card-input" accept="image/*" required>
 
                          <div id="preview" class="mt-3">
                              @if ($usuario->Foto_Perfil)

@@ -22,6 +22,7 @@ class SocioController extends Controller
         $socios = Socio::with(['membresias', 'usuario'])->get();
         $membresias = TipoMembresia::all();
         $estadosMembresiaSocio = EstadoMembresiaSocio::all();
+        $membresiasSocio = MembresiaSocio::all();
 
         $totalSocios = Socio::distinct('ID_Usuario')->count();
 

@@ -161,6 +161,11 @@
                             </div>
                         </div>
                     </div>
+                    <div class="d-flex justify-content-end m-0">
+                    <button type="button" class="btn text-secondary small mt-2 p-0 border-0 d-none" id="btnLimpiarFiltro">
+                        <small>Limpiar filtros</small>
+                    </button>
+                    </div>
                 </div>
 
 
@@ -179,10 +184,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if($socios->count())
-                            @foreach($socios as $s)
-                            <tr>
-                                <td>{{ $s->usuario->ID_Usuario }}</td>
+                        @if($socios->count() && $membresiasSocio->count())
+                        @foreach($socios as $s)
+                        <tr>
+                            <td>{{ $s->usuario->ID_Usuario }}</td>
                                 <td> <a href="{{ route('usuarios.perfil', $s->usuario->ID_Usuario) }}" class="me-3 text-decoration-none">
                                         <img src="{{ $s->usuario->Foto_Perfil ?? 'images/default/profile-default.jpg' }}" class="rounded-circle" alt="Foto de {{ $s->usuario->Nombre }}" width="28" height="28">
                                     </a>
@@ -246,11 +251,15 @@
                                 <td>
                                     @php
                                     $membresia = $s->membresiaSocio->first();
-                                    $fecha = $membresia?->Fecha_Fin ?? 'Sin membresía';
-                                    @endphp
-
-                                    {{ $fecha }}
-                                </td>
+                                @endphp
+                                @if($membresia === null || $membresia->Fecha_Fin === null)
+                                    <span class="text-danger">
+                                        Sin fecha
+                                    </span>
+                                @else
+                                {{ $membresia->Fecha_Fin}}
+                                @endif
+                            </td>
 
                                 <td class="text-end">
                                     <div class="dropdown">
@@ -309,12 +318,21 @@
 
 
 
-            <div class="modal fade" id="modalSocio" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content small">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modalTitulo">Registrar Nuevo Socio</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <div class="modal fade" id="modalSocio" tabindex="-1" aria-hidden="true"  data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content small">
+            <div class="modal-header border-0">
+            <h5 class="modal-title" id="modalTitulo">Registrar Nuevo Socio</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body mb-4 mt-3">
+            <form id="formSocio" action="{{ route('socios.crear') }}" method="POST">
+                @csrf
+                <div class="row g-2">
+                        <div class="mb-3 col-12 col-md-6">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" id="nombreSocio" name="nombreSocio" class="form-control card-input" placeholder="Primer nombre del socio..." >
+                        <div class="invalid-feedback" id="error-nombreSocio"></div>
                         </div>
                         <div class="modal-body">
                             <form id="formSocio" action="{{ route('socios.crear') }}" method="POST">

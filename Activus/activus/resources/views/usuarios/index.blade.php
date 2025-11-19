@@ -248,7 +248,7 @@
             <h5 class="modal-title" id="modalTitulo">Registrar Nuevo Usuario</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div id="modal-body-crear" class="modal-body my-4 p-4">        
+            <div id="modal-body-crear" class="modal-body mt-3 mb-4 p-4">        
             <form id="formUsuario"action="{{ route('usuarios.crear') }}" method="POST">
                 @csrf
                 <div class="row g-3">

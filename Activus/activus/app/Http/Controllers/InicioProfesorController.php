@@ -16,11 +16,20 @@ class InicioProfesorController extends Controller
     public function datos()
     {
         try {
-            // ID del profesor logueado o fijo para pruebas
-            $idProfesor = Auth::id() ?? 10;
+            // ================================
+            // ID DEL PROFESOR LOGUEADO
+            // ================================
+            $idProfesor = Auth::id();
+
+            if (!$idProfesor) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'No hay sesión activa.'
+                ], 401);
+            }
 
             // ================================
-            // TOTAL DE ESTUDIANTES (reservas confirmadas hoy)
+            // TOTAL DE ESTUDIANTES CONFIRMADOS HOY
             // ================================
             $totalEstudiantes = DB::table('reserva as r')
                 ->join('clase_programada as cp', 'r.ID_Clase_Programada', '=', 'cp.ID_Clase_Programada')
@@ -39,7 +48,7 @@ class InicioProfesorController extends Controller
                 ->count();
 
             // ================================
-            // CLASES PROGRAMADAS PARA HOY (detalle)
+            // CLASES PROGRAMADAS PARA HOY (DETALLE)
             // ================================
             $clasesHoy = DB::table('clase_programada as cp')
                 ->join('clase as c', 'cp.ID_Clase', '=', 'c.ID_Clase')
@@ -75,7 +84,9 @@ class InicioProfesorController extends Controller
                     'clasesHoy' => $clasesHoy
                 ]
             ]);
+
         } catch (\Throwable $e) {
+
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage()

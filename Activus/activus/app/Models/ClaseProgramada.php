@@ -25,4 +25,13 @@ class ClaseProgramada extends Model
     {
         return $this->belongsTo(Clase::class, 'ID_Clase', 'ID_Clase');
     }
+
+    public function sala()
+    {
+        return $this->belongsTo(Sala::class, 'ID_Sala', 'ID_Sala');
+    }
+    public function reservas()
+    {
+        return $this->hasMany(Reserva::class, 'ID_Clase_Programada', 'ID_Clase_Programada');
+    }
 }

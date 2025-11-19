@@ -1,9 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     const tablaUsuarios = new DataTable("#tablaUsuarios", {
-        language: {
-            url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
-        },
+        language: { url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" },
         responsive: true,
         pageLength: 5,
         lengthMenu: [5, 10, 25, 50],
@@ -176,10 +174,10 @@ modalEditar.addEventListener('show.bs.modal', function (e) {
             const formData = new FormData(formEditarUsuario);
             formData.append("_method", "PUT"); 
 
-            const res = await fetch(ruta, {
-                method: "POST", 
+            const res = await fetch(`/usuarios/${id}`, {
+                method: "POST",
                 headers: {
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: formData
             });

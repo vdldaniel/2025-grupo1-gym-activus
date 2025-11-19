@@ -9,7 +9,7 @@ use Carbon\Carbon;
 class PagoController extends Controller
 {
     /**
-     * Vista principal del módulo de pagos (Administrativo)
+     * Vista del módulo de pagos (Administrativo)
      */
     public function index()
     {
@@ -24,7 +24,7 @@ class PagoController extends Controller
         try {
             $hoy = Carbon::now()->toDateString();
 
-            // Actualizar estados de membresías según fecha
+            // Actualizar estados de membresías
             $membresias = DB::table('membresia_socio')->get();
 
             foreach ($membresias as $m) {
@@ -45,7 +45,7 @@ class PagoController extends Controller
                 }
             }
 
-            // Consultar pagos con relaciones
+            // Consultar pagos
             $pagos = DB::table('pago')
                 ->join('membresia_socio', 'pago.ID_Membresia_Socio', '=', 'membresia_socio.ID_Membresia_Socio')
                 ->join('usuario', 'membresia_socio.ID_Usuario_Socio', '=', 'usuario.ID_Usuario')
@@ -77,7 +77,7 @@ class PagoController extends Controller
     }
 
     /**
-     * Listar tipos de membresías disponibles
+     * Tipos de membresías
      */
     public function listar_membresias()
     {
@@ -97,14 +97,14 @@ class PagoController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al cargar las membresías',
+                'message' => 'Error al cargar membresías',
                 'error' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Buscar socio por DNI o ID
+     * Buscar socio
      */
     public function buscar_socio(Request $request)
     {
@@ -146,7 +146,7 @@ class PagoController extends Controller
     }
 
     /**
-     * Registrar nuevo pago
+     * Registrar pago
      */
     public function agregar(Request $request)
     {
@@ -162,7 +162,8 @@ class PagoController extends Controller
             DB::beginTransaction();
 
             foreach ($request->membresias as $idMembresia) {
-                // Verificar si el socio ya tiene esa membresía
+
+                // Membresía del socio
                 $membresiaSocio = DB::table('membresia_socio')
                     ->where([
                         ['ID_Usuario_Socio', $request->idSocio],
@@ -180,6 +181,7 @@ class PagoController extends Controller
                     ]);
                 } else {
                     $idMembresiaSocio = $membresiaSocio->ID_Membresia_Socio;
+
                     DB::table('membresia_socio')
                         ->where('ID_Membresia_Socio', $idMembresiaSocio)
                         ->update([
@@ -189,7 +191,7 @@ class PagoController extends Controller
                         ]);
                 }
 
-                // Obtener el precio actual
+                // Precio actual
                 $precio = DB::table('tipo_membresia')
                     ->where('ID_Tipo_Membresia', $idMembresia)
                     ->value('Precio');
@@ -198,7 +200,7 @@ class PagoController extends Controller
                 DB::table('pago')->insert([
                     'ID_Membresia_Socio' => $idMembresiaSocio,
                     'ID_Usuario_Socio' => $request->idSocio,
-                    'ID_Usuario_Registro' => auth()->id() ?? 1,
+                    'ID_Usuario_Registro' => auth()->id(), // ← CORREGIDO
                     'Monto' => $precio,
                     'Fecha_Pago' => $request->fechaPago,
                     'Fecha_Vencimiento' => $request->fechaVencimiento,
@@ -208,13 +210,16 @@ class PagoController extends Controller
             }
 
             DB::commit();
+
             return response()->json([
                 'success' => true,
                 'message' => 'Pago registrado con éxito',
             ]);
 
         } catch (\Exception $e) {
+
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error al registrar el pago',

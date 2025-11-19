@@ -5,23 +5,30 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\AsistenciaController;
-use App\Http\Controllers\ProfesoresController;
+use App\Http\Controllers\EjercicioController;
+use App\http\Controllers\ProfesoresController;
 use App\Http\Controllers\TipoMembresiaController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\GestionTipoMembresiaController;
 use App\Http\Controllers\EstadoMembresiaSocioController;
-use App\Http\Controllers\MembresiaSocioController;
 use App\Http\Controllers\SocioController;
+use App\Http\Controllers\EquipoController;
+use App\Http\Controllers\RutinaController;
+use App\Http\Controllers\NivelDificultadController;
+use App\Helpers\PermisoHelper;
+
 use App\Models\TipoMembresia;
 use App\Http\Controllers\PagoSocioController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InicioSocioController;
-use App\Http\Controllers\InicioAdminController;
+use App\Http\Controllers\InicioAdministrativoController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\InicioProfesorController;
 use App\Http\Controllers\SalaController;
 use App\Http\Controllers\InicioAdministradorController;
 use App\Http\Controllers\ClaseProgramadaController;
+use App\Http\Controllers\ClaseSocioController;
+use App\Http\Controllers\ClaseController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -31,11 +38,6 @@ Route::get('/rutinas', function () {
     return view('rutinas.index');
 });
 
-Route::get('/ejercicios', function () {
-    return view('ejercicios.index');
-});
-
-
 Route::get('/socios', function () {
     return view('socios.index');
 });
@@ -43,6 +45,15 @@ Route::get('/socios', function () {
 Route::get('/clases', function () {
     return view('clases.index');
 })->name('clases.index');
+
+Route::get('/clases/gestion', function () {
+    return view('clases.gestion');
+})->name('clases.gestion');
+
+
+Route::get('/clases/mis-clases', function () {
+    return view('clases.mis-clases');
+})->name('clases.mis-clases');
 
 Route::get('/usuarios/perfil', function () {
     return view('usuarios.perfil');
@@ -120,8 +131,14 @@ Route::get('/asistencia', [AsistenciaController::class, 'obtenerAsistenciasHoy']
 Route::get('/profesores/socio', [ProfesoresController::class, 'obtenerProfesoresSocio']);
 Route::get('/profesores/admin', [ProfesoresController::class, 'obtenerProfesoresAdmin']);
 Route::get('/profesoresMetricas', [ProfesoresController::class, 'obtenerMetricas']);
+Route::get('/profesor/{id}/clasesBase', [ProfesoresController::class, 'obtenerClasesBaseProfesor']);
 Route::get('/membresias/socio', [TipoMembresiaController::class, 'obtenerMembresias']);
 Route::get('/estadosMembresiaSocio', [EstadoMembresiaSocioController::class, 'index']);
+Route::get('/socios', [SocioController::class, 'index']);
+Route::get('/ejercicios', [EjercicioController::class, 'index']);
+Route::get('/rutinas', [RutinaController::class, 'index']);
+Route::get('/nivelesDificultad', [NivelDificultadController::class, 'index']);
+
 Route::get('/socios', [SocioController::class, 'index'])->name('socios.index');
 //Route::get('/membresias', [TipoMembresiaController::class, 'index'])->name('membresias.index');
 Route::get('/configuraciones', [ConfiguracionController::class, 'index'])
@@ -133,7 +150,7 @@ Route::post('/usuarios/crear', [UsuarioController::class, 'crearUsuario'])->name
 Route::put('/usuarios/{id}', [UsuarioController::class, 'editarUsuario'])->name('usuarios.editar');
 Route::get('/usuarios/{id}/editar', [UsuarioController::class, 'editarPerfil'])->name('usuarios.editarPerfil');
 Route::delete('/usuarios/{id}', [UsuarioController::class, 'eliminarUsuario'])->name('usuarios.eliminar');
-Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuarios.enviarEdicion');
+Route::put('/usuarios/{id}/enviar', [UsuarioController::class, 'update'])->name('usuarios.enviarEdicion');
 Route::get('/usuarios/{id}', [UsuarioController::class, 'obtenerUsuario']);
 Route::post('/usuarios/{id}/cambiar-estado', [UsuarioController::class, 'cambiarEstado'])->name('usuarios.cambiarEstado');
 Route::post('/usuario/{id}/cambiar-correo', [UsuarioController::class, 'cambiarCorreo'])->name('usuarios.cambiarCorreo');
@@ -150,6 +167,25 @@ Route::delete('/socios/{id}', [SocioController::class, 'eliminarSocio'])->name('
 Route::get('/socios/ingresos', [SocioController::class, 'filtrarIngresos'])
     ->name('socios.ingresos.filtrar');
     
+
+Route::get('/ejercicios/gestion', [EjercicioController::class, 'gestion'])->name('ejercicios.gestion');
+Route::get('/ejercicios/lista', [EjercicioController::class, 'lista'])->name('ejercicios.lista');
+Route::post('/ejercicios/crear', [EjercicioController::class, 'crearEjercicio'])->name('ejercicio.crear');
+Route::put('/ejercicios/{id}', [EjercicioController::class, 'editarEjercicio'])->name('ejercicio.editar');
+Route::delete('/ejercicios/{id}', [EjercicioController::class, 'eliminarEjercicio'])->name('ejercicio.eliminar');
+
+
+
+
+Route::post('/rutinas/crear', [RutinaController::class, 'crearRutina'])->name('rutinas.crear');
+Route::put('/rutinas/{id}', [RutinaController::class, 'editarRutina'])->name('rutinas.editar');
+Route::delete('/rutinas/{id}', [RutinaController::class, 'eliminarRutina'])->name('rutinas.eliminar');
+Route::get('/rutinas/lista', [RutinaController::class, 'lista'])->name('rutinas.lista');
+Route::get('/rutinas/{id}', [RutinaController::class, 'verRutina'])->name('rutinas.ver');
+
+
+
+
 Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
 Route::get('/pagos/listar', [PagoController::class, 'listar'])->name('pagos.listar');
 Route::get('/pagos/listar_membresias', [PagoController::class, 'listar_membresias'])->name('pagos.listar_membresias');
@@ -163,6 +199,7 @@ Route::get('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'sh
 Route::put('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'update']);
 Route::delete('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'destroy']);
 
+
 Route::get('/pagos/socio', [PagoSocioController::class, 'index'])->name('pagos.socio');
 Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 
@@ -172,11 +209,11 @@ Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 Route::middleware(['web'])->group(function () {
     Route::get('/', function () {
         // Llamo al controlador manualmente
-    $controller = app(\App\Http\Controllers\InicioAdminController::class);
+    $controller = app(\App\Http\Controllers\InicioAdministrativoController::class);
     $data = $controller->index()->getData();
 
-    // Retorno la vista inicio con los datos
-    return view('inicio', $data); 
+    
+    return view('inicio', $data);
     })->name('login');// tu vista de inicio
 
     Route::post('/login', [AuthController::class, 'iniciarSesion'])->name('login.post');
@@ -186,8 +223,13 @@ Route::middleware(['web'])->group(function () {
 Route::get('/inicio-socio', [InicioSocioController::class, 'index']);
 Route::get('/inicio-socio/obtener-datos', [InicioSocioController::class, 'obtenerDatos']);
 
-Route::get('/inicio/administrativo', [InicioAdminController::class, 'index'])->name('inicio.admin');
-Route::get('/inicio/administrativo/resumen', [InicioAdminController::class, 'resumen'])->name('inicio.admin.resumen');
+Route::get('/inicio/administrativo', [InicioAdministrativoController::class, 'index'])
+    ->name('inicio.administrativo');
+
+Route::get('/inicio/administrativo/resumen', [InicioAdministrativoController::class, 'resumen'])
+    ->name('inicio.administrativo.resumen');
+
+
 Route::post('/configuraciones', [ConfiguracionController::class, 'storeOrUpdate'])
     ->name('configuracion.storeOrUpdate');
 
@@ -204,5 +246,26 @@ Route::delete('/salas/{id}', [SalaController::class, 'destroy'])->name('salas.de
 Route::get('/inicio-administrador', [InicioAdministradorController::class, 'index'])->name('inicio.administrador');
 Route::get('/inicio-administrador/datos', [InicioAdministradorController::class, 'datos']);
 
-/// cargar el calendario con as clases programadas 
+/// cargar el calendario con las clases programadas 
 Route::get('/obtener/eventos', [ClaseProgramadaController::class, 'obtenerEventos']);
+
+Route::get('/clases', [ClaseSocioController::class, 'index']);
+Route::get('/clases-socio/eventos', [ClaseSocioController::class, 'eventos']);
+Route::get('/clases-socio/disponibles', [ClaseSocioController::class, 'disponibles']);
+Route::post('/clases-socio/inscribirse/{id}', [ClaseSocioController::class, 'inscribirse']);
+Route::get('/clases-socio/metricas', [ClaseSocioController::class, 'metricas']);
+
+Route::get('/clases/listar', [ClaseController::class, 'listar']);
+Route::post('/clases/guardar', [ClaseController::class, 'guardar']);
+Route::get('/clases/obtener/{id}', [ClaseController::class, 'obtener']);
+Route::put('/clases/actualizar/{id}', [ClaseController::class, 'actualizar']);
+Route::delete('/clases/eliminar/{id}', [ClaseController::class, 'eliminar']);
+Route::get('/profesores/activos', [ProfesoresController::class, 'obtenerProfesoresActivos']);
+
+Route::get('/clases-programadas/listar', [ClaseProgramadaController::class, 'listar']);
+Route::delete('/clases-programadas/eliminar/{id}', [ClaseProgramadaController::class, 'eliminar']);
+Route::get('/clases-programadas/obtener/{id}', [ClaseProgramadaController::class, 'obtener']);
+Route::post('/clases-programadas/guardar', [ClaseProgramadaController::class, 'guardar']);
+Route::put('/clases-programadas/actualizar/{id}', [ClaseProgramadaController::class, 'actualizar']);
+Route::get('/clases/metricas', [ClaseController::class, 'obtenerMetricas']);
+Route::get('/clases-programadas/{id}/alumnos', [ClaseProgramadaController::class, 'obtenerAlumnos']);

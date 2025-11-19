@@ -13,7 +13,8 @@
   --accent-clr: #5e63ff;
   --secondary-text-clr: #b0b3c1;
   --primary-element: #3198ff;
-}*/
+}
+*/
 
 * {
   margin: 0;
@@ -186,8 +187,10 @@ thead {
 
 
 /* dropdowns */
-.dropdown-acciones {
-
+.dropdown-acciones,
+.select2-selection,
+.select2-results__options,
+.select2-selection__choice {
   background-color: var(--secondary-componente-base-clr) !important;
   color: var(--text-clr) !important;
   border: 1px solid var(--componente-border-clr) !important;
@@ -195,6 +198,11 @@ thead {
 
 .dropdown-item-acciones {
   border: none !important;
+}
+
+.select2-selection__clear,
+.select2-search__field {
+  color: var(--text-clr) !important;
 }
 
 .dropdown-item-acciones:hover {
@@ -273,6 +281,11 @@ thead {
   color: var(--base-clr);
 }*/
 
+.btn-secundario {
+  background: var(--secondary-element);
+  color: var(--text-clr);
+  border: 1px solid var(--componente-border-clr) !important;
+}
 
 .modal-content {
   background-color: var(--componente-base-clr);
@@ -440,14 +453,15 @@ thead {
 }
 
 /* Si no hay nav (usuario no logueado), centramos todo */
-    body:not(:has(#sidebar)) main {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      padding: 0;
-      text-align: center;
-    }
+body:not(:has(#sidebar)) main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 0;
+  text-align: center;
+}
+
 #vistaSala table tbody td,
 #vistaSala table thead th {
   vertical-align: middle;
@@ -462,4 +476,34 @@ thead {
 #vistaSala table th,
 #vistaSala table td {
   white-space: normal !important;
+}
+
+
+.vista-rutinas table tbody td,
+.vista-rutinas table thead th {
+  vertical-align: middle;
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+  background-color: var(--componente-base-clr) !important;
+  border-bottom: 1px solid #1e293b !important;
+
+}
+
+.vista-rutinas a {
+  color: var(--text-clr);
+}
+
+.clase-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 0.9rem;
+  color: var(--primary-element) !important;
+  border: 1px solid var(--primary-element);
+  background: transparent !important;
+  border-radius: 10px;
+  text-decoration: none;
+  margin-left: 0 !important;
+
 }

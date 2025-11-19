@@ -16,25 +16,29 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        $usuario = \App\Models\Usuario::where('Email', $request->email)->first();
-
+        $usuario = Usuario::where('Email', $request->email)->first();
+        
         if (!$usuario) {
             return back()->with('error', 'El usuario no existe.');
         }
 
-        // Compara hash o texto plano
-        $passwordOk = \Illuminate\Support\Facades\Hash::check($request->password, $usuario->Contrasena)
+        if ($usuario->ID_Estado_Usuario != 1) {
+            return back()->with('error', 'Tu cuenta está inactiva. Contacta al administrador.');
+        }
+
+        $passwordOk = Hash::check($request->password, $usuario->Contrasena)
             || $usuario->Contrasena === $request->password;
 
         if ($passwordOk) {
 
             Auth::login($usuario);
             $request->session()->regenerate();
-            return redirect()->intended('/')->with('status', 'Sesión iniciada ✅');
+            return redirect()->intended('/')->with('status', 'Sesión iniciada');
         }
 
         return back()->with('error', 'Las credenciales no son válidas.');
     }
+
 
     public function cerrarSesion(Request $request)
     {
