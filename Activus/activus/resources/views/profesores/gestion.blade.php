@@ -68,7 +68,19 @@
 
 
         </div>
-
+        <div class="modal fade" id="modalClasesBase" data-url="{{ route('clases.gestion') }}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Clases asignadas</h5>
+                        <button type="button" class="btn-close btn-agregar" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body" id="contenidoClasesBase">
+                        Cargando...
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     @vite(['resources\js\profesores-administrativo.js'])
 @endsection

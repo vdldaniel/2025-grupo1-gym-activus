@@ -131,6 +131,7 @@ Route::get('/asistencia', [AsistenciaController::class, 'obtenerAsistenciasHoy']
 Route::get('/profesores/socio', [ProfesoresController::class, 'obtenerProfesoresSocio']);
 Route::get('/profesores/admin', [ProfesoresController::class, 'obtenerProfesoresAdmin']);
 Route::get('/profesoresMetricas', [ProfesoresController::class, 'obtenerMetricas']);
+Route::get('/profesor/{id}/clasesBase', [ProfesoresController::class, 'obtenerClasesBaseProfesor']);
 Route::get('/membresias/socio', [TipoMembresiaController::class, 'obtenerMembresias']);
 Route::get('/estadosMembresiaSocio', [EstadoMembresiaSocioController::class, 'index']);
 Route::get('/socios', [SocioController::class, 'index']);

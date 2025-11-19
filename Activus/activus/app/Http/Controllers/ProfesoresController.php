@@ -85,4 +85,24 @@ class ProfesoresController extends Controller
         return response()->json($profesores);
     }
 
+
+
+
+    public function obtenerClasesBaseProfesor($idProfesor)
+    {
+        $clasesBase = Clase::where('ID_Profesor', $idProfesor)
+            ->withCount('clasesProgramadas')
+            ->get()
+            ->map(function ($c) {
+                return [
+                    'Nombre_Clase' => $c->Nombre_Clase,
+                    'Capacidad_Maxima' => $c->Capacidad_Maxima,
+                    'Clases_Programadas' => $c->clases_programadas_count,
+                ];
+            });
+
+        return response()->json($clasesBase);
+    }
+
+
 }

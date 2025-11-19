@@ -20,33 +20,9 @@
                     <span class="text-secondary small">vista socio () </span>
                 </div>
             </div>
-            <div class="d-flex align-items-center gap-2 mt-3 mt-md-0">
-                <button id="btnNuevaClase" class="btn  btn-nuevaClase py-2 px-4" data-bs-toggle="modal"
-                    data-bs-target="#modalClase">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="lucide lucide-plus">
-                        <line x1="12" x2="12" y1="5" y2="19" />
-                        <line x1="5" x2="19" y1="12" y2="12" />
-                    </svg>
-                    <span class="ms-2 small h6">Nueva Clase</span>
-                </button>
 
-                <button id="btnProgramarClase" class="btn btn-agregar py-2 px-4" data-bs-toggle="modal"
-                    data-bs-target="#modalClaseProgramada">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="lucide lucide-calendar">
-                        <path d="M8 2v4" />
-                        <path d="M16 2v4" />
-                        <rect width="18" height="18" x="3" y="4" rx="2" />
-                        <path d="M3 10h18" />
-                    </svg>
-                    <span class="ms-2 small h6">Programar Clase</span>
-                </button>
-            </div>
         </div>
-
+        <p>es solo una base hay que modificarle para que quede lo del socio </p>
         <div class="row g-4 mb-4">
             <div class="col-md-4">
                 <div class="card p-3">
