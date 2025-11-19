@@ -1,12 +1,13 @@
+@php
+  use App\Helpers\PermisoHelper;
+  $idUsuario = Auth::user()->ID_Usuario ?? null;
+@endphp
 
 @extends('layouts.app')
 @section('content')
     <div class="container py-4">
-        <div
-            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 gap-3">
-
-            <main class="flex-grow-1">
-                <header class="p-4">
+        
+            <div class="mb-5">
                     <div class="d-flex align-items-center gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -19,9 +20,9 @@
                             <small class="text-secondary small">Gestiona tu información personal</small>
                         </div>
                     </div>
-                </header>
 
-                <div class="container-fluid px-4">
+
+                <div class="container-fluid px-4 my-5">
 
                     @if($rolId === 4)
                         <!-- Próximo Pago -->
@@ -75,8 +76,9 @@
                                         <h5 class="mb-0">Información Personal</h5>
                                         <small class="text-secondary small mb-2">Gestiona tu información de perfil</small>
                                     </div>
+                                    @if($idUsuario == $usuario->ID_Usuario)
                                     <a href="{{ route('usuarios.editarPerfil', ['id' => $usuario->ID_Usuario]) }}"
-                                        class="btn btn-outline-primary btn-sm position-absolute top-0 end-0 m-2">
+                                        class="btn btn-agregar btn-sm position-absolute top-0 end-0 m-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round" class="lucide lucide-square-pen-icon lucide-square-pen">
@@ -85,6 +87,7 @@
                                                 d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" />
                                         </svg>Editar
                                     </a>
+                                    @endif
                                 </div>
                                 <div class="card-body">
                                     <div class="row g-3">
@@ -127,7 +130,7 @@
                     </div>
 
                 </div>
-            </main>
+        
         </div>
     </div>
 
