@@ -4,6 +4,7 @@
 @endphp
 @php
   $config = configuracion_activa();
+  $logo = $config->Logo_PNG ? asset('storage/' . $config->Logo_PNG) : null;
   $fondo = $config->colorFondo->Codigo_Hex ?? '#020817';
   $elemento = $config->Color_Elemento ?? '#3198ff';
   $esOscuro = es_color_oscuro($fondo);
@@ -53,8 +54,6 @@
     ;
 
   }
-
-  
 </style>
 
 <!DOCTYPE html>
@@ -108,8 +107,15 @@
     <nav id="sidebar">
       <ul>
         <li>
+          <div class="logo d-flex align-items-center gap-2" style="padding: 10px 0;">
+            @if ($logo)
+              <img src="{{ $logo }}" alt="Logo del gimnasio" class="logo-gym">
+            @endif
 
-          <span class="logo">Gym</span>
+            <span>{{ $config->Nombre_Gym ?? 'Gym' }}</span>
+          </div>
+
+          <!--<span class="logo">Gym</span>---->
 
         </li>
         @if(PermisoHelper::tienePermiso('Ingresar Inicio', $idUsuario))
@@ -188,7 +194,7 @@
           </li>
         @endif
         @if(PermisoHelper::tienePermiso('Gestionar Clases', $idUsuario))
-        
+
           <li>
             <a href="/clases/gestion">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"

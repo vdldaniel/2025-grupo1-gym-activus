@@ -68,6 +68,9 @@ class ConfiguracionController extends Controller
             'ID_Color_Fondo.required' => 'Debe seleccionar un color de fondo.',
             'Color_Elemento.regex' => 'El color del elemento debe ser un código hexadecimal válido (#RRGGBB).',
             'Logo_PNG.required' => 'Debe subir un logo del gimnasio.',
+            'Logo_PNG.max' => 'El logo no puede superar los 2MB.',
+            'Logo_PNG.image' => 'El archivo debe ser una imagen válida.',
+            'Logo_PNG.mimes' => 'Solo se permiten imágenes PNG, JPG o JPEG.',
             'apertura.*.regex' => 'Las horas de apertura deben tener formato HH:MM o HH:MM:SS.',
             'cierre.*.regex' => 'Las horas de cierre deben tener formato HH:MM o HH:MM:SS.',
         ]);
@@ -94,7 +97,7 @@ class ConfiguracionController extends Controller
             }
             $path = $request->file('Logo_PNG')->store('logos', 'public');
             $config->Logo_PNG = $path;
-            \Log::debug('🖼️ Nuevo logo guardado en: ' . $path);
+
         }
 
         // guardar
