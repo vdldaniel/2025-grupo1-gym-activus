@@ -21,7 +21,7 @@ use App\Models\TipoMembresia;
 use App\Http\Controllers\PagoSocioController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InicioSocioController;
-use App\Http\Controllers\InicioAdminController;
+use App\Http\Controllers\InicioAdministrativoController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\InicioProfesorController;
 use App\Http\Controllers\SalaController;
@@ -214,8 +214,13 @@ Route::middleware(['web'])->group(function () {
 Route::get('/inicio-socio', [InicioSocioController::class, 'index']);
 Route::get('/inicio-socio/obtener-datos', [InicioSocioController::class, 'obtenerDatos']);
 
-Route::get('/inicio/administrativo', [InicioAdminController::class, 'index'])->name('inicio.admin');
-Route::get('/inicio/administrativo/resumen', [InicioAdminController::class, 'resumen'])->name('inicio.admin.resumen');
+Route::get('/inicio/administrativo', [InicioAdministrativoController::class, 'index'])
+    ->name('inicio.administrativo');
+
+Route::get('/inicio/administrativo/resumen', [InicioAdministrativoController::class, 'resumen'])
+    ->name('inicio.administrativo.resumen');
+
+
 Route::post('/configuraciones', [ConfiguracionController::class, 'storeOrUpdate'])
     ->name('configuracion.storeOrUpdate');
 
