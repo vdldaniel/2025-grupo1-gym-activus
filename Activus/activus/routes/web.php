@@ -147,7 +147,9 @@ Route::post('/socios/crear', [SocioController::class, 'crearSocio'])->name('soci
 Route::get('/socios/{id}/perfil', [SocioController::class, 'mostrar'])->name('socios.perfil');
 Route::put('/socios/{id}', [SocioController::class, 'editarSocio'])->name('socios.editar');
 Route::delete('/socios/{id}', [SocioController::class, 'eliminarSocio'])->name('socios.eliminar');
-
+Route::get('/socios/ingresos', [SocioController::class, 'filtrarIngresos'])
+    ->name('socios.ingresos.filtrar');
+    
 Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
 Route::get('/pagos/listar', [PagoController::class, 'listar'])->name('pagos.listar');
 Route::get('/pagos/listar_membresias', [PagoController::class, 'listar_membresias'])->name('pagos.listar_membresias');
@@ -169,7 +171,12 @@ Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 
 Route::middleware(['web'])->group(function () {
     Route::get('/', function () {
-        return view('inicio'); 
+        // Llamo al controlador manualmente
+    $controller = app(\App\Http\Controllers\InicioAdminController::class);
+    $data = $controller->index()->getData();
+
+    // Retorno la vista inicio con los datos
+    return view('inicio', $data); 
     })->name('login');// tu vista de inicio
 
     Route::post('/login', [AuthController::class, 'iniciarSesion'])->name('login.post');

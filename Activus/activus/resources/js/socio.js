@@ -2,7 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const tablaSocios = new DataTable("#tablaSocios", {
         language: {
-            url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+            url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+
         },
         responsive: true,
         pageLength: 5,
@@ -17,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
             tablaSocios.search(inputBuscarSocio.value).draw();
         });
     }
-    
+
     const inputEstadoMembresia = document.getElementById("estadoMembresiaFiltro");
     const inputMembresia = document.getElementById("membresiaFiltro");
     const btnLimpiarFiltro = document.getElementById("btnLimpiarFiltro");
@@ -25,8 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function aplicarFiltros() {
         const estado = inputEstadoMembresia.value;
         const membresia = inputMembresia.value;
-        const estadoColIndex = 5; 
-        const membresiaColIndex = 4; 
+        const estadoColIndex = 5;
+        const membresiaColIndex = 4;
         let filtrosActivos = false;
 
         tablaSocios.column(estadoColIndex).search('');
@@ -34,12 +35,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (estado !== "aEstadosMembresia") {
 
-            tablaSocios.column(estadoColIndex).search(estado, true, false); 
+            tablaSocios.column(estadoColIndex).search(estado, true, false);
             filtrosActivos = true;
         }
 
         if (membresia !== "aMembresias") {
-            tablaSocios.column(membresiaColIndex).search(membresia, true, false); 
+            tablaSocios.column(membresiaColIndex).search(membresia, true, false);
             filtrosActivos = true;
         }
 
@@ -61,8 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     inputEstadoMembresia.addEventListener("change", aplicarFiltros);
     inputMembresia.addEventListener("change", aplicarFiltros);
-    if(btnLimpiarFiltro)
-    {
+    if (btnLimpiarFiltro) {
         btnLimpiarFiltro.addEventListener("click", limpiarFiltros);
     }
 
@@ -75,12 +75,12 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
 
 
-            const campos = ["nombreSocio","apellidoSocio","dniSocio","telefonoSocio","emailSocio","fechaNacSocio","membresiaSocio"];
+            const campos = ["nombreSocio", "apellidoSocio", "dniSocio", "telefonoSocio", "emailSocio", "fechaNacSocio", "membresiaSocio"];
             campos.forEach(campo => {
                 const input = document.getElementById(campo);
                 const errorDiv = document.getElementById("error-" + campo);
-                if(input) input.classList.remove("is-invalid");
-                if(errorDiv) errorDiv.textContent = "";
+                if (input) input.classList.remove("is-invalid");
+                if (errorDiv) errorDiv.textContent = "";
             });
 
             try {
@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 } else if (res.status === 422) {
-                    
+
                     Object.entries(json.errors).forEach(([campo, mensajes]) => {
                         const input = document.getElementById(campo);
                         const errorDiv = document.getElementById("error-" + campo);
@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (errorDiv) errorDiv.textContent = mensajes.join(", ");
                     });
                 } else {
-                    
+
                     alert(json.message || "Error inesperado");
                 }
 
@@ -133,108 +133,125 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-const modalEditarSocio = document.getElementById('modalEditarSocio');
+    const modalEditarSocio = document.getElementById('modalEditarSocio');
 
-modalEditarSocio.addEventListener('show.bs.modal', function (e) {
-    const btnSocio = e.relatedTarget;
+    modalEditarSocio.addEventListener('show.bs.modal', function (e) {
+        const btnSocio = e.relatedTarget;
 
-    const id = btnSocio.getAttribute('data-id');
-    const nombre = btnSocio.getAttribute('data-nombre');
-    const apellido = btnSocio.getAttribute('data-apellido');
-    const email = btnSocio.getAttribute('data-email');
-    const dni = btnSocio.getAttribute('data-dni');
-    const telefono = btnSocio.getAttribute('data-telefono');
-    const fechaNac = btnSocio.getAttribute('data-fecha-nacimiento');
+        const id = btnSocio.getAttribute('data-id');
+        const nombre = btnSocio.getAttribute('data-nombre');
+        const apellido = btnSocio.getAttribute('data-apellido');
+        const email = btnSocio.getAttribute('data-email');
+        const dni = btnSocio.getAttribute('data-dni');
+        const telefono = btnSocio.getAttribute('data-telefono');
+        const fechaNac = btnSocio.getAttribute('data-fecha-nacimiento');
 
-    modalEditarSocio.querySelector('#nombreSocioEditar').value = nombre;
-    modalEditarSocio.querySelector('#apellidoSocioEditar').value = apellido;
-    modalEditarSocio.querySelector('#emailSocioEditar').value = email;
-    modalEditarSocio.querySelector('#dniSocioEditar').value = dni;
-    modalEditarSocio.querySelector('#telefonoSocioEditar').value = telefono;
-    modalEditarSocio.querySelector('#fechaNacSocioEditar').value = fechaNac;
+        modalEditarSocio.querySelector('#nombreSocioEditar').value = nombre;
+        modalEditarSocio.querySelector('#apellidoSocioEditar').value = apellido;
+        modalEditarSocio.querySelector('#emailSocioEditar').value = email;
+        modalEditarSocio.querySelector('#dniSocioEditar').value = dni;
+        modalEditarSocio.querySelector('#telefonoSocioEditar').value = telefono;
+        modalEditarSocio.querySelector('#fechaNacSocioEditar').value = fechaNac;
 
-    modalEditarSocio.querySelector('#formEditarSocio').action = `/socios/${id}`;
+        modalEditarSocio.querySelector('#formEditarSocio').action = `/socios/${id}`;
 
-    const ruta = modalEditarSocio.querySelector('#formEditarSocio').action;
+        const ruta = modalEditarSocio.querySelector('#formEditarSocio').action;
 
-    const formEditarSocio = document.getElementById("formEditarSocio");
-    
-    if (formEditarSocio) {
-        formEditarSocio.addEventListener("submit", async (e) => {
-            e.preventDefault();
+        const formEditarSocio = document.getElementById("formEditarSocio");
 
-            const campos = [
-                "nombreSocioEditar", "apellidoSocioEditar", "dniSocioEditar",
-                "telefonoSocioEditar", "emailSocioEditar", "fechaNacSocioEditar",
-            ];
+        if (formEditarSocio) {
+            formEditarSocio.addEventListener("submit", async (e) => {
+                e.preventDefault();
 
-        campos.forEach(campo => {
-            const input = document.getElementById(campo);
-            const errorDiv = document.getElementById("error-" + campo);
-            if (input) input.classList.remove("is-invalid");
-            if (errorDiv) errorDiv.textContent = "";
-        });
-        
-        try {
-            const formData = new FormData(formEditarSocio);
-            formData.append("_method", "PUT"); 
+                const campos = [
+                    "nombreSocioEditar", "apellidoSocioEditar", "dniSocioEditar",
+                    "telefonoSocioEditar", "emailSocioEditar", "fechaNacSocioEditar",
+                ];
 
-            const res = await fetch(ruta, {
-                method: "POST", 
-                headers: {
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
-                },
-                body: formData
-            });
-            
-
-            const json = await res.json();
-
-            if (res.ok && json.success) {
-                    const modalSocioEditar = bootstrap.Modal.getInstance(document.getElementById('modalEditarSocio'));
-                    modalSocioEditar.hide();
-
-                    const modalExitoEl = document.getElementById('modalExito');
-                    const modalExito = bootstrap.Modal.getOrCreateInstance(modalExitoEl);
-                    const modalExitoTitulo = document.getElementById("titulo-exito");
-                    const modalExitoBtn = document.getElementById("btn-exito");
-                    
-                    modalExitoTitulo.textContent = json.message;
-                    modalExito.show();
-
-                    modalExitoBtn.addEventListener("click", () => {
-                        window.location.reload();
-                    });
-            } else if (res.status === 422) {
-                Object.entries(json.errors).forEach(([campo, mensajes]) => {
+                campos.forEach(campo => {
                     const input = document.getElementById(campo);
                     const errorDiv = document.getElementById("error-" + campo);
-                    if (input) input.classList.add("is-invalid");
-                    if (errorDiv) errorDiv.textContent = mensajes.join(", ");
+                    if (input) input.classList.remove("is-invalid");
+                    if (errorDiv) errorDiv.textContent = "";
                 });
-            } else {
-                alert(json.message || "Error inesperado");
-            }
 
-        } catch (error) {
-            console.error(error);
-            alert("Error de conexión o del servidor.");
+                try {
+                    const formData = new FormData(formEditarSocio);
+                    formData.append("_method", "PUT");
+
+                    const res = await fetch(ruta, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+                        },
+                        body: formData
+                    });
+
+
+                    const json = await res.json();
+
+                    if (res.ok && json.success) {
+                        const modalSocioEditar = bootstrap.Modal.getInstance(document.getElementById('modalEditarSocio'));
+                        modalSocioEditar.hide();
+
+                        const modalExitoEl = document.getElementById('modalExito');
+                        const modalExito = bootstrap.Modal.getOrCreateInstance(modalExitoEl);
+                        const modalExitoTitulo = document.getElementById("titulo-exito");
+                        const modalExitoBtn = document.getElementById("btn-exito");
+
+                        modalExitoTitulo.textContent = json.message;
+                        modalExito.show();
+
+                        modalExitoBtn.addEventListener("click", () => {
+                            window.location.reload();
+                        });
+                    } else if (res.status === 422) {
+                        Object.entries(json.errors).forEach(([campo, mensajes]) => {
+                            const input = document.getElementById(campo);
+                            const errorDiv = document.getElementById("error-" + campo);
+                            if (input) input.classList.add("is-invalid");
+                            if (errorDiv) errorDiv.textContent = mensajes.join(", ");
+                        });
+                    } else {
+                        alert(json.message || "Error inesperado");
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                    alert("Error de conexión o del servidor.");
+                }
+            });
         }
     });
-}
-});
 
 
 
-    const modalEliminarSocio = document.getElementById('modalEliminarSocio');
+    document.getElementById("filtrarIngresos").addEventListener("click", async function () {
 
-    modalEliminarSocio.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        const id = button.getAttribute('data-id');
+        let buscar = document.getElementById("buscarIngreso").value;
+        let desde = document.getElementById("fechaDesde").value;
+        let hasta = document.getElementById("fechaHasta").value;
 
-        const form = modalEliminarSocio.querySelector('#formEliminarSocio');
-        form.action = `/socios/${id}`;
+        const res = await fetch(`/socios/ingresos?buscar=${buscar}&desde=${desde}&hasta=${hasta}`);
+        const json = await res.json();
+
+        if (json.success) {
+            const tbody = document.querySelector("#tablaIngresos tbody");
+            tbody.innerHTML = ""; // limpiar tabla
+
+            json.data.forEach(i => {
+                const row = `
+                <tr>
+                    <td>${i.ID_Socio}</td>
+                    <td>${i.Nombre} ${i.Apellido}</td>
+                    <td>${i.DNI}</td>
+                    <td>${i.Fecha}</td>
+                    <td>${i.Hora}</td>
+                </tr>
+            `;
+                tbody.insertAdjacentHTML("beforeend", row);
+            });
+        }
     });
-
-
 });
+

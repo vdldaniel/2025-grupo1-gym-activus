@@ -18,7 +18,7 @@ class SocioController extends Controller
 {
     public function index(Request $request)
     {
-        // Datos actuales
+        // Datos
         $socios = Socio::with(['membresias', 'usuario'])->get();
         $membresias = TipoMembresia::all();
         $estadosMembresiaSocio = EstadoMembresiaSocio::all();
@@ -36,7 +36,12 @@ class SocioController extends Controller
             ->whereYear('usuario.Fecha_Alta', now()->year)
             ->count();
 
-        $ingresos = Asistencia::select(
+        // ORDENAMIENTO
+        $sort = $request->get('sort', 'Fecha');
+        $direction = $request->get('direction', 'desc');
+
+        // QUERY INGRESOS
+        $ingresosQuery = Asistencia::select(
             'asistencia.ID_Asistencia',
             'asistencia.ID_Socio',
             'asistencia.Fecha',
@@ -45,13 +50,33 @@ class SocioController extends Controller
             'usuario.Apellido',
             'usuario.DNI'
         )
-            ->join('socio', 'asistencia.ID_Socio', '=', 'socio.ID_Usuario') 
-            ->join('usuario', 'socio.ID_Usuario', '=', 'usuario.ID_Usuario')
-            ->orderBy('asistencia.Fecha', 'DESC')
-            ->orderBy('asistencia.Hora', 'DESC')
-            ->get();
+            ->join('socio', 'asistencia.ID_Socio', '=', 'socio.ID_Usuario')
+            ->join('usuario', 'socio.ID_Usuario', '=', 'usuario.ID_Usuario');
 
-       
+        // FILTRO BUSCADOR
+        if ($request->filled('buscar')) {
+            $buscar = $request->buscar;
+
+            $ingresosQuery->where(function ($q) use ($buscar) {
+                $q->where('usuario.Nombre', 'LIKE', "%$buscar%")
+                    ->orWhere('usuario.Apellido', 'LIKE', "%$buscar%")
+                    ->orWhere('usuario.DNI', 'LIKE', "%$buscar%")
+                    ->orWhere('asistencia.ID_Socio', 'LIKE', "%$buscar%");
+            });
+        }
+
+        // FILTRO FECHA DESDE
+        if ($request->filled('desde')) {
+            $ingresosQuery->where('asistencia.Fecha', '>=', $request->desde);
+        }
+
+        // FILTRO FECHA HASTA
+        if ($request->filled('hasta')) {
+            $ingresosQuery->where('asistencia.Fecha', '<=', $request->hasta);
+        }
+
+        // ORDEN FINAL
+        $ingresos = $ingresosQuery->orderBy($sort, $direction)->get();
 
         return view('socios.index', compact(
             'socios',
@@ -60,9 +85,10 @@ class SocioController extends Controller
             'totalSocios',
             'totalSociosActivos',
             'totalSociosNuevosMes',
-            'ingresos'   
+            'ingresos'
         ));
     }
+
 
 
 
@@ -287,5 +313,53 @@ class SocioController extends Controller
 
 
         return view('usuarios.perfil', compact('usuario', 'rolId', 'socio'));
+    }
+
+    public function filtrarIngresos(Request $request)
+    {
+        $buscar = $request->buscar;
+        $desde  = $request->desde;
+        $hasta  = $request->hasta;
+
+        $query = Asistencia::select(
+            'asistencia.ID_Asistencia',
+            'asistencia.ID_Socio',
+            'asistencia.Fecha',
+            'asistencia.Hora',
+            'usuario.Nombre',
+            'usuario.Apellido',
+            'usuario.DNI'
+        )
+            ->join('socio', 'asistencia.ID_Socio', '=', 'socio.ID_Usuario')
+            ->join('usuario', 'socio.ID_Usuario', '=', 'usuario.ID_Usuario')
+            ->orderBy('asistencia.Fecha', 'DESC')
+            ->orderBy('asistencia.Hora', 'DESC');
+
+        // FILTRO BUSCAR
+        if ($buscar) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('usuario.Nombre', 'LIKE', "%$buscar%")
+                    ->orWhere('usuario.Apellido', 'LIKE', "%$buscar%")
+                    ->orWhere('usuario.DNI', 'LIKE', "%$buscar%")
+                    ->orWhere('asistencia.ID_Socio', 'LIKE', "%$buscar%");
+            });
+        }
+
+        // FILTRO FECHA DESDE
+        if ($desde) {
+            $query->whereDate('asistencia.Fecha', '>=', $desde);
+        }
+
+        // FILTRO FECHA HASTA
+        if ($hasta) {
+            $query->whereDate('asistencia.Fecha', '<=', $hasta);
+        }
+
+        $ingresos = $query->get();
+
+        return response()->json([
+            "success" => true,
+            "data" => $ingresos
+        ]);
     }
 }
