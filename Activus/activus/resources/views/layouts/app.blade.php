@@ -1,5 +1,6 @@
 @php
   use App\Helpers\PermisoHelper;
+  $usuarioAuth= Auth::user();
   $idUsuario = Auth::user()->ID_Usuario ?? null;
 @endphp
 @php
@@ -104,16 +105,40 @@
 <body>
 
   @auth
-    <nav id="sidebar">
+    <header>
+        <div class="sidenav">
+            <div class="menu-container">
+                <div class="menu" id="menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu-icon lucide-menu"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
+                </div>
+            </div>
+            <div class="logo-container">
+       {{--          <span class="logo" id="nombreLogo">Gym</span>
+                <img class="imgLogo" src="images/default/dumbbell.png" alt="" id="imgLogo"> --}}
+                <div class="logo d-flex align-items-center gap-2" style="padding: 10px 0;">
+                  @if ($logo)
+                    <img src="{{ $logo }}" alt="Logo del gimnasio" class="logo-gym">
+                  @endif
+            
+                  <span>{{ $config->Nombre_Gym ?? 'Gym' }}</span>
+                </div>
+              </div>
+        </div>
+        <div class="topnav">
+            @if(PermisoHelper::tienePermiso('Ver Perfil', $idUsuario))
+                <a href="/usuarios/{{ $idUsuario }}/perfil">
+                <img src="{{ $usuarioAuth->Foto_Perfil ? asset($usuarioAuth->Foto_Perfil) : asset('images/default/profile-default.jpg') }}" 
+                    class="user" width="28" height="28">
+                </a>
+            
+            @endif
+        </div>
+    </header>
+
+    <div class="sidebar menu-toggle" id="sidebar">
+    <nav>
       <ul>
         <li>
-          <div class="logo d-flex align-items-center gap-2" style="padding: 10px 0;">
-            @if ($logo)
-              <img src="{{ $logo }}" alt="Logo del gimnasio" class="logo-gym">
-            @endif
-
-            <span>{{ $config->Nombre_Gym ?? 'Gym' }}</span>
-          </div>
 
           <!--<span class="logo">Gym</span>---->
 
@@ -417,9 +442,27 @@
         @endif
       </ul>
     </nav>
-  @endauth
+    <div class="sidebar-footer d-flex align-items-center gap-2 px-3 py-2 justify-content-end">
+        <span class="text-secondary small">{{ $usuarioAuth->Nombre }}</span>
+        @php
+        $rol = $usuarioAuth->roles->first()->Nombre_Rol ?? null;
+        @endphp
 
-  <main>
+        @if($rol)
+            <span class="badge bg-danger bg-opacity-25 text-danger border border-danger">
+                {{ $rol }}
+            </span>
+        @endif
+    </div>
+</div>
+
+    @endauth
+    </div>
+    
+    
+    
+
+  <main id="main">
     @yield('content')
 
   </main>
