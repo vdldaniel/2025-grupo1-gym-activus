@@ -164,8 +164,9 @@ Route::post('/socios/crear', [SocioController::class, 'crearSocio'])->name('soci
 Route::get('/socios/{id}/perfil', [SocioController::class, 'mostrar'])->name('socios.perfil');
 Route::put('/socios/{id}', [SocioController::class, 'editarSocio'])->name('socios.editar');
 Route::delete('/socios/{id}', [SocioController::class, 'eliminarSocio'])->name('socios.eliminar');
-Route::get('/socios/ingresos', [SocioController::class, 'filtrarIngresos'])
-    ->name('socios.ingresos.filtrar');
+
+
+Route::get('/asistencias/filtrar', [SocioController::class, 'filtrarAsistencias']);
     
 
 Route::get('/ejercicios/gestion', [EjercicioController::class, 'gestion'])->name('ejercicios.gestion');
@@ -220,6 +221,7 @@ Route::middleware(['web'])->group(function () {
     Route::post('/logout', [AuthController::class, 'cerrarSesion'])->name('logout');
 
 });
+
 Route::get('/inicio-socio', [InicioSocioController::class, 'index']);
 Route::get('/inicio-socio/obtener-datos', [InicioSocioController::class, 'obtenerDatos']);
 

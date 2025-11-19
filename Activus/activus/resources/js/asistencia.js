@@ -1,47 +1,48 @@
-async function cargarAsistencias() {
-    try {
-        const response = await fetch('/asistencia');
-        const data = await response.json();
+document.addEventListener("DOMContentLoaded", () => {
 
-        const tablaAsistencias = document.getElementById('tablaAsistencias');
-        const total = document.getElementById('totalIngresos');
-        const fechaHoy = document.getElementById('fechaHoy');
+    let tabla = new DataTable("#tablaAsistencias", {
+        language: { url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json" },
+        pageLength: 10,
+        dom: "lrtip"
+    });
 
-        // fecha actual 
-        const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        fechaHoy.textContent = new Date().toLocaleDateString('es-AR', opcionesFecha);
+    async function cargarAsistencias() {
+        let buscar = document.getElementById("buscarAsistencia").value;
+        let desde = document.getElementById("desdeAsistencia").value;
+        let hasta = document.getElementById("hastaAsistencia").value;
+        let tipo = document.getElementById("tipoUsuario").value;
 
-        // limpiar tabla
-        tablaAsistencias.innerHTML = '';
+        const res = await fetch(`/asistencias/filtrar?buscar=${buscar}&desde=${desde}&hasta=${hasta}&tipo=${tipo}`);
+        const json = await res.json();
 
-        if (data.length > 0) {
-            data.forEach(a => {
-                const estadoClass = a.Resultado === 'Exitoso' ? 'badge-exitoso' : 'badge-denegado';
-                const fila = `
-                    <tr>
-                        <td data-label="Nombre"><strong>${a.Nombre} ${a.Apellido}</strong></td>
-                        <td data-label="DNI">${a.DNI}</td>
-                        <td  data-label="Hora">${a.Hora}</td>
-                        <td data-label="Estado"><span class="badge ${estadoClass}">${a.Resultado}</span></td>
-                    </tr>
-                `;
-                tablaAsistencias.innerHTML += fila;
+        if (json.success) {
+            tabla.clear();
+
+            json.data.forEach(a => {
+                tabla.row.add([
+                    `${a.Nombre} ${a.Apellido}`,
+                    a.DNI,
+                    a.Fecha,
+                    a.Hora,
+                    rolTexto(a.ID_Rol)
+                ]);
             });
-            total.textContent = data.length;
-        } else {
-            tablaAsistencias.innerHTML = '<tr><td colspan="4" class="text-center">No hay ingresos registrados hoy</td></tr>';
-            total.textContent = 0;
+
+            tabla.draw();
         }
-
-    } catch (error) {
-        console.error('Error al cargar asistencias:', error);
     }
-}
 
-// Carga inicial
-document.addEventListener('DOMContentLoaded', () => {
+    function rolTexto(id) {
+        switch (id) {
+            case 1: return "Administrador";
+            case 2: return "Profesor";
+            case 3: return "Administrativo";
+            case 4: return "Socio";
+            default: return "Desconocido";
+        }
+    }
+
+    document.getElementById("filtrarAsistencias").addEventListener("click", cargarAsistencias);
+
     cargarAsistencias();
-
-    //actualiza cada 10 segundos  (puede no estar) es para que se vayan actualizando los datos automaticamente,creo que hay una mejor forma con event en laravel
-    setInterval(cargarAsistencias, 10000);
 });

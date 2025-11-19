@@ -221,34 +221,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-
-
-    document.getElementById("filtrarIngresos").addEventListener("click", async function () {
-
-        let buscar = document.getElementById("buscarIngreso").value;
-        let desde = document.getElementById("fechaDesde").value;
-        let hasta = document.getElementById("fechaHasta").value;
-
-        const res = await fetch(`/socios/ingresos?buscar=${buscar}&desde=${desde}&hasta=${hasta}`);
-        const json = await res.json();
-
-        if (json.success) {
-            const tbody = document.querySelector("#tablaIngresos tbody");
-            tbody.innerHTML = ""; // limpiar tabla
-
-            json.data.forEach(i => {
-                const row = `
-                <tr>
-                    <td>${i.ID_Socio}</td>
-                    <td>${i.Nombre} ${i.Apellido}</td>
-                    <td>${i.DNI}</td>
-                    <td>${i.Fecha}</td>
-                    <td>${i.Hora}</td>
-                </tr>
-            `;
-                tbody.insertAdjacentHTML("beforeend", row);
-            });
-        }
-    });
 });
 

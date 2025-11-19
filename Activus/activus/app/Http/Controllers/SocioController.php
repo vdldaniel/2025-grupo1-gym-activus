@@ -316,11 +316,12 @@ class SocioController extends Controller
         return view('usuarios.perfil', compact('usuario', 'rolId', 'socio'));
     }
 
-    public function filtrarIngresos(Request $request)
+    public function filtrarAsistencias(Request $request)
     {
         $buscar = $request->buscar;
-        $desde  = $request->desde;
-        $hasta  = $request->hasta;
+        $desde = $request->desde;
+        $hasta = $request->hasta;
+        $tipo = $request->tipo;  
 
         $query = Asistencia::select(
             'asistencia.ID_Asistencia',
@@ -329,38 +330,36 @@ class SocioController extends Controller
             'asistencia.Hora',
             'usuario.Nombre',
             'usuario.Apellido',
-            'usuario.DNI'
+            'usuario.DNI',
+            'usuario.ID_Rol'
         )
-            ->join('socio', 'asistencia.ID_Socio', '=', 'socio.ID_Usuario')
-            ->join('usuario', 'socio.ID_Usuario', '=', 'usuario.ID_Usuario')
-            ->orderBy('asistencia.Fecha', 'DESC')
-            ->orderBy('asistencia.Hora', 'DESC');
+            ->join('usuario', 'asistencia.ID_Socio', '=', 'usuario.ID_Usuario');
+
+        // FILTRO TIPO DE USUARIO
+        if ($tipo && $tipo !== "todos") {
+            $query->where('usuario.ID_Rol', $tipo);
+        }
 
         // FILTRO BUSCAR
         if ($buscar) {
             $query->where(function ($q) use ($buscar) {
                 $q->where('usuario.Nombre', 'LIKE', "%$buscar%")
                     ->orWhere('usuario.Apellido', 'LIKE', "%$buscar%")
-                    ->orWhere('usuario.DNI', 'LIKE', "%$buscar%")
-                    ->orWhere('asistencia.ID_Socio', 'LIKE', "%$buscar%");
+                    ->orWhere('usuario.DNI', 'LIKE', "%$buscar%");
             });
         }
 
-        // FILTRO FECHA DESDE
-        if ($desde) {
-            $query->whereDate('asistencia.Fecha', '>=', $desde);
-        }
+        // FECHAS
+        if ($desde) $query->whereDate('asistencia.Fecha', '>=', $desde);
+        if ($hasta) $query->whereDate('asistencia.Fecha', '<=', $hasta);
 
-        // FILTRO FECHA HASTA
-        if ($hasta) {
-            $query->whereDate('asistencia.Fecha', '<=', $hasta);
-        }
-
-        $ingresos = $query->get();
+        $asistencias = $query->orderBy('asistencia.Fecha', 'DESC')
+            ->orderBy('asistencia.Hora', 'DESC')
+            ->get();
 
         return response()->json([
             "success" => true,
-            "data" => $ingresos
+            "data" => $asistencias
         ]);
     }
 }
