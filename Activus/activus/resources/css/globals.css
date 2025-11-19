@@ -514,3 +514,26 @@ body:not(:has(#sidebar)) main {
   margin-left: 0 !important;
 
 }
+
+
+/*para customizar  los botones que tiene btn-outline*/
+.btn-outline-primary-element {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 0.9rem;
+  color: var(--primary-element) !important;
+  border: 1px solid var(--primary-element) !important;
+  background: transparent !important;
+  border-radius: 10px;
+  text-decoration: none;
+  margin: 0;
+  transition: 0.2s ease;
+}
+
+.btn-outline-primary-element:hover {
+  background: var(--primary-element) !important;
+  color: #fff !important;
+  border-color: var(--primary-element) !important;
+}

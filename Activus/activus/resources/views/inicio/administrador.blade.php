@@ -43,7 +43,7 @@
             </div>
             <p class="card-subtitle text-secondary small mb-2">Tareas comunes y accesos directos</p>
             <div class="d-grid gap-2">
-              <a href="{{ url('/usuarios') }}" class="btn btn-outline-light btn-sm text-start">
+              <a href="{{ url('/usuarios') }}" class="btn btn-outline-primary-element btn-sm text-start">
                 <i class="bi bi-person-gear me-1"></i> Gestionar Usuarios
               </a>
             </div>

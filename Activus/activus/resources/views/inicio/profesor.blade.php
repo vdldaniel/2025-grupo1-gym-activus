@@ -59,7 +59,7 @@
             </div>
             <p class="card-subtitle text-secondary small mb-2">Tareas comunes y accesos directos</p>
             <div class="d-grid gap-2">
-              <a href="{{ url('/clases') }}" class="btn btn-outline-light btn-sm text-start">
+              <a href="{{ route('clases.mis-clases') }}" class="btn btn-outline-primary-element btn-sm text-start">
                 <!--se pierde en colores claros-->
                 <i class="bi bi-people me-1"></i> Gestionar Clases
               </a>
