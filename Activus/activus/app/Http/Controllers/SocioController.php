@@ -12,30 +12,85 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use App\Models\Asistencia;
 
 class SocioController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Datos
         $socios = Socio::with(['membresias', 'usuario'])->get();
         $membresias = TipoMembresia::all();
         $estadosMembresiaSocio = EstadoMembresiaSocio::all();
         $membresiasSocio = MembresiaSocio::all();
 
         $totalSocios = Socio::distinct('ID_Usuario')->count();
+
         $totalSociosActivos = MembresiaSocio::where('ID_Estado_Membresia_Socio', 1)
             ->whereIn('ID_Usuario_Socio', function ($query) {
-                $query->select('ID_Usuario')
-                    ->from('socio');
-            })->count();
+                $query->select('ID_Usuario')->from('socio');
+            })
+            ->count();
 
         $totalSociosNuevosMes = Socio::join('usuario', 'socio.ID_Usuario', '=', 'usuario.ID_Usuario')
             ->whereMonth('usuario.Fecha_Alta', now()->month)
             ->whereYear('usuario.Fecha_Alta', now()->year)
             ->count();
 
-        return view('socios.index', compact('socios', 'membresias','membresiasSocio', 'estadosMembresiaSocio', 'totalSocios', 'totalSociosActivos', 'totalSociosNuevosMes'));
+        // ORDENAMIENTO
+        $sort = $request->get('sort', 'Fecha');
+        $direction = $request->get('direction', 'desc');
+
+        // QUERY INGRESOS
+        $ingresosQuery = Asistencia::select(
+            'asistencia.ID_Asistencia',
+            'asistencia.ID_Socio',
+            'asistencia.Fecha',
+            'asistencia.Hora',
+            'usuario.Nombre',
+            'usuario.Apellido',
+            'usuario.DNI'
+        )
+            ->join('socio', 'asistencia.ID_Socio', '=', 'socio.ID_Usuario')
+            ->join('usuario', 'socio.ID_Usuario', '=', 'usuario.ID_Usuario');
+
+        // FILTRO BUSCADOR
+        if ($request->filled('buscar')) {
+            $buscar = $request->buscar;
+
+            $ingresosQuery->where(function ($q) use ($buscar) {
+                $q->where('usuario.Nombre', 'LIKE', "%$buscar%")
+                    ->orWhere('usuario.Apellido', 'LIKE', "%$buscar%")
+                    ->orWhere('usuario.DNI', 'LIKE', "%$buscar%")
+                    ->orWhere('asistencia.ID_Socio', 'LIKE', "%$buscar%");
+            });
+        }
+
+        // FILTRO FECHA DESDE
+        if ($request->filled('desde')) {
+            $ingresosQuery->where('asistencia.Fecha', '>=', $request->desde);
+        }
+
+        // FILTRO FECHA HASTA
+        if ($request->filled('hasta')) {
+            $ingresosQuery->where('asistencia.Fecha', '<=', $request->hasta);
+        }
+
+        // ORDEN FINAL
+        $ingresos = $ingresosQuery->orderBy($sort, $direction)->get();
+
+        return view('socios.index', compact(
+            'socios',
+            'membresias',
+            'estadosMembresiaSocio',
+            'totalSocios',
+            'totalSociosActivos',
+            'totalSociosNuevosMes',
+            'ingresos'
+        ));
     }
+
+
 
 
     public function crearSocio(Request $request)
@@ -245,19 +300,67 @@ class SocioController extends Controller
     // Método para ver un socio específico
     public function mostrar($id)
     {
-        
+
         $usuario = Usuario::with(['roles', 'socio'])->findOrFail($id);
 
-        
+
         $rol = $usuario->roles->first();
 
-        
+
         $rolId = $rol ? $rol->ID_Rol : null;
 
-        
+
         $socio = $usuario->socio;
 
-        
+
         return view('usuarios.perfil', compact('usuario', 'rolId', 'socio'));
+    }
+
+    public function filtrarIngresos(Request $request)
+    {
+        $buscar = $request->buscar;
+        $desde  = $request->desde;
+        $hasta  = $request->hasta;
+
+        $query = Asistencia::select(
+            'asistencia.ID_Asistencia',
+            'asistencia.ID_Socio',
+            'asistencia.Fecha',
+            'asistencia.Hora',
+            'usuario.Nombre',
+            'usuario.Apellido',
+            'usuario.DNI'
+        )
+            ->join('socio', 'asistencia.ID_Socio', '=', 'socio.ID_Usuario')
+            ->join('usuario', 'socio.ID_Usuario', '=', 'usuario.ID_Usuario')
+            ->orderBy('asistencia.Fecha', 'DESC')
+            ->orderBy('asistencia.Hora', 'DESC');
+
+        // FILTRO BUSCAR
+        if ($buscar) {
+            $query->where(function ($q) use ($buscar) {
+                $q->where('usuario.Nombre', 'LIKE', "%$buscar%")
+                    ->orWhere('usuario.Apellido', 'LIKE', "%$buscar%")
+                    ->orWhere('usuario.DNI', 'LIKE', "%$buscar%")
+                    ->orWhere('asistencia.ID_Socio', 'LIKE', "%$buscar%");
+            });
+        }
+
+        // FILTRO FECHA DESDE
+        if ($desde) {
+            $query->whereDate('asistencia.Fecha', '>=', $desde);
+        }
+
+        // FILTRO FECHA HASTA
+        if ($hasta) {
+            $query->whereDate('asistencia.Fecha', '<=', $hasta);
+        }
+
+        $ingresos = $query->get();
+
+        return response()->json([
+            "success" => true,
+            "data" => $ingresos
+        ]);
     }
 }

@@ -164,6 +164,9 @@ Route::post('/socios/crear', [SocioController::class, 'crearSocio'])->name('soci
 Route::get('/socios/{id}/perfil', [SocioController::class, 'mostrar'])->name('socios.perfil');
 Route::put('/socios/{id}', [SocioController::class, 'editarSocio'])->name('socios.editar');
 Route::delete('/socios/{id}', [SocioController::class, 'eliminarSocio'])->name('socios.eliminar');
+Route::get('/socios/ingresos', [SocioController::class, 'filtrarIngresos'])
+    ->name('socios.ingresos.filtrar');
+    
 
 Route::get('/ejercicios/gestion', [EjercicioController::class, 'gestion'])->name('ejercicios.gestion');
 Route::get('/ejercicios/lista', [EjercicioController::class, 'lista'])->name('ejercicios.lista');
