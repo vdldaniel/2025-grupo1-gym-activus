@@ -80,15 +80,23 @@ function inicializarCambioDeVista() {
 
 
 }
-
 function MostrarCalendario() {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
 
 
+    calendarEl.innerHTML = `
+        <div class="d-flex flex-column justify-content-center align-items-center py-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+            <p class="mt-3 mb-0">Cargando horario...</p>
+        </div>
+    `;
+
     fetch('/obtener/eventos')
         .then(response => response.json())
         .then(events => {
+
+            // Horarios por defecto
             let slotMin = '07:00:00';
             let slotMax = '21:00:00';
 
@@ -97,20 +105,20 @@ function MostrarCalendario() {
                 const horasInicio = events.map(e => new Date(e.start));
                 const horasFin = events.map(e => new Date(e.end));
 
-                // la hora minima y maxima del total de clases (para no mostras tantas horas y ni clases)
                 let minHora = Math.min(...horasInicio.map(h => h.getHours()));
                 let maxHora = Math.max(...horasFin.map(h => h.getHours()));
 
-
                 minHora = Math.max(minHora - 1, 0);
                 maxHora = Math.min(maxHora + 1, 23);
-
 
                 slotMin = `${minHora.toString().padStart(2, '0')}:00:00`;
                 slotMax = `${maxHora.toString().padStart(2, '0')}:00:00`;
             }
 
 
+            calendarEl.innerHTML = "";
+
+            // Inicializo el calendario
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 locale: 'es',
                 themeSystem: 'bootstrap5',
@@ -120,22 +128,18 @@ function MostrarCalendario() {
                 expandRows: true,
                 nowIndicator: true,
 
-
                 height: 'auto',
                 contentHeight: 'auto',
-
 
                 slotMinTime: slotMin,
                 slotMaxTime: slotMax,
                 slotDuration: '00:30:00',
-
 
                 headerToolbar: {
                     left: '',
                     center: 'title',
                     right: 'prev,next'
                 },
-
 
                 titleFormat: {
                     year: 'numeric',
@@ -153,18 +157,15 @@ function MostrarCalendario() {
                     today: 'Hoy'
                 },
 
-                eventDidMount: function (info) {
-
+                eventDidMount(info) {
                     info.el.style.whiteSpace = 'normal';
                     info.el.style.overflow = 'visible';
                     info.el.style.textOverflow = 'unset';
                 },
 
-
                 events: events,
 
-                // en pantallas chicas solo se ve por dia
-                windowResize: function () {
+                windowResize() {
                     if (window.innerWidth < 768) {
                         calendar.changeView('timeGridDay');
                     } else {
@@ -174,53 +175,119 @@ function MostrarCalendario() {
             });
 
             calendar.render();
+
         })
         .catch(error => {
             console.error('Error al cargar los eventos:', error);
+
+            calendarEl.innerHTML = `
+                <div class="text-center text-danger py-4">
+                    Error al cargar el calendario.
+                </div>
+            `;
         });
 }
 
 
-
 function cargarClases() {
+
+    const tbody = document.getElementById('tablaClases');
+    if (!tbody) return;
+
+
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="2" class="text-center py-4">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
+                    <p class="mt-3 mb-0">Cargando clases...</p>
+                </div>
+            </td>
+        </tr>
+    `;
+
     fetch('/clases/listar')
         .then(res => res.json())
         .then(data => {
-            const tbody = document.getElementById('tablaClases');
-            if (!tbody) return;
 
-            tbody.innerHTML = '';
+            tbody.innerHTML = "";
+
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="2" class="text-center py-4 text-muted">
+                            No hay clases registradas.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
 
             data.forEach(c => {
                 const fila = `
                     <tr>
                         <td>${c.nombre_clase}</td>
-                         <td>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" class="lucide lucide-users me-2">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                            <circle cx="9" cy="7" r="4" />
-                        </svg>
-                        ${c.capacidad}
-                    </td>
+                        <td>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="lucide lucide-users me-2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                <circle cx="9" cy="7" r="4" />
+                            </svg>
+                            ${c.capacidad}
+                        </td>
                     </tr>`;
                 tbody.insertAdjacentHTML('beforeend', fila);
             });
+
         })
-        .catch(err => console.error('Error al cargar clases:', err));
+        .catch(err => {
+            console.error('Error al cargar clases:', err);
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="2" class="text-center text-danger py-4">
+                        Error al cargar las clases.
+                    </td>
+                </tr>
+            `;
+        });
 }
 
 function cargarClasesProgramadasProfesor() {
+
+    const tbody = document.getElementById('tablaClasesProgramadas');
+    if (!tbody) return;
+
+
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="5" class="text-center py-4">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
+                    <p class="mt-3 mb-0">Cargando clases...</p>
+                </div>
+            </td>
+        </tr>
+    `;
+
     fetch('/clases-programadas/listar')
         .then(res => res.json())
         .then(data => {
-            const tbody = document.getElementById('tablaClasesProgramadas');
-            if (!tbody) return;
 
-            tbody.innerHTML = '';
+            tbody.innerHTML = "";
+
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            No hay clases programadas.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
 
             data.forEach(c => {
                 const fila = `
@@ -231,15 +298,25 @@ function cargarClasesProgramadasProfesor() {
                         <td>${c.fecha} &nbsp;|&nbsp; ${c.hora_inicio} - ${c.hora_fin}</td>
                         <td>
                             <button class="btn btn-sm btn-agregar btnVerAlumnos" 
-                                    data-id="${c.id}" >
+                                    data-id="${c.id}">
                                 Ver Alumnos
                             </button>
                         </td>
                     </tr>`;
                 tbody.insertAdjacentHTML('beforeend', fila);
             });
+
         })
-        .catch(err => console.error('Error al cargar clases programadas:', err));
+        .catch(err => {
+            console.error('Error al cargar clases programadas:', err);
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center text-danger py-4">
+                        Error al cargar las clases.
+                    </td>
+                </tr>
+            `;
+        });
 }
 async function cargarMetricas() {
     try {

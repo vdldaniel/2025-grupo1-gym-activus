@@ -488,129 +488,164 @@ function inicializarCambioDeVista() {
 
 }
 
+async function MostrarCalendario() {
 
-function MostrarCalendario() {
     const calendarEl = document.getElementById('calendar');
     if (!calendarEl) return;
 
 
-    fetch('/obtener/eventos')
-        .then(response => response.json())
-        .then(events => {
-            let slotMin = '07:00:00';
-            let slotMax = '21:00:00';
+    calendarEl.innerHTML = `
+        <div class="d-flex flex-column justify-content-center align-items-center py-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+            <p class="mt-3 mb-0">Cargando horario...</p>
+        </div>
+    `;
 
-            if (events.length > 0) {
-
-                const horasInicio = events.map(e => new Date(e.start));
-                const horasFin = events.map(e => new Date(e.end));
-
-                // la hora minima y maxima del total de clases (para no mostras tantas horas y ni clases)
-                let minHora = Math.min(...horasInicio.map(h => h.getHours()));
-                let maxHora = Math.max(...horasFin.map(h => h.getHours()));
+    try {
+        // Obtener eventos
+        const response = await fetch('/obtener/eventos');
+        const events = await response.json();
 
 
-                minHora = Math.max(minHora - 1, 0);
-                maxHora = Math.min(maxHora + 1, 23);
+        let slotMin = '07:00:00';
+        let slotMax = '21:00:00';
 
+        if (events.length > 0) {
+            const horasInicio = events.map(e => new Date(e.start));
+            const horasFin = events.map(e => new Date(e.end));
 
-                slotMin = `${minHora.toString().padStart(2, '0')}:00:00`;
-                slotMax = `${maxHora.toString().padStart(2, '0')}:00:00`;
-            }
+            let minHora = Math.min(...horasInicio.map(h => h.getHours()));
+            let maxHora = Math.max(...horasFin.map(h => h.getHours()));
 
+            minHora = Math.max(minHora - 1, 0);
+            maxHora = Math.min(maxHora + 1, 23);
 
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                locale: 'es',
-                themeSystem: 'bootstrap5',
-                initialView: 'timeGridWeek',
-                firstDay: 1,
-                allDaySlot: false,
-                expandRows: true,
-                nowIndicator: true,
+            slotMin = `${minHora.toString().padStart(2, '0')}:00:00`;
+            slotMax = `${maxHora.toString().padStart(2, '0')}:00:00`;
+        }
 
+        // Limpiar el spinner antes de crear el calendario
+        calendarEl.innerHTML = "";
 
-                height: 'auto',
-                contentHeight: 'auto',
+        // Crear el calendario nuevamente
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            locale: 'es',
+            themeSystem: 'bootstrap5',
+            initialView: 'timeGridWeek',
+            firstDay: 1,
+            allDaySlot: false,
+            expandRows: true,
+            nowIndicator: true,
 
+            height: 'auto',
+            contentHeight: 'auto',
 
-                slotMinTime: slotMin,
-                slotMaxTime: slotMax,
-                slotDuration: '00:30:00',
+            slotMinTime: slotMin,
+            slotMaxTime: slotMax,
+            slotDuration: '00:30:00',
 
+            headerToolbar: {
+                left: '',
+                center: 'title',
+                right: 'prev,next'
+            },
 
-                headerToolbar: {
-                    left: '',
-                    center: 'title',
-                    right: 'prev,next'
-                },
+            titleFormat: {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            },
+            slotLabelFormat: {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            },
+            dayHeaderFormat: { weekday: 'long' },
 
+            buttonText: {
+                today: 'Hoy'
+            },
 
-                titleFormat: {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                },
-                slotLabelFormat: {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                },
-                dayHeaderFormat: { weekday: 'long' },
+            eventDidMount: function (info) {
+                info.el.style.whiteSpace = 'normal';
+                info.el.style.overflow = 'visible';
+                info.el.style.textOverflow = 'unset';
+            },
 
-                buttonText: {
-                    today: 'Hoy'
-                },
+            events: events,
 
-                eventDidMount: function (info) {
-
-                    info.el.style.whiteSpace = 'normal';
-                    info.el.style.overflow = 'visible';
-                    info.el.style.textOverflow = 'unset';
-                },
-
-
-                events: events,
-
-                // en pantallas chicas solo se ve por dia
-                windowResize: function () {
-                    if (window.innerWidth < 768) {
-                        calendar.changeView('timeGridDay');
-                    } else {
-                        calendar.changeView('timeGridWeek');
-                    }
-                },
-            });
-
-            calendar.render();
-        })
-        .catch(error => {
-            console.error('Error al cargar los eventos:', error);
+            windowResize: function () {
+                if (window.innerWidth < 768) {
+                    calendar.changeView('timeGridDay');
+                } else {
+                    calendar.changeView('timeGridWeek');
+                }
+            },
         });
+
+        calendar.render();
+
+    } catch (error) {
+        console.error(error);
+
+        calendarEl.innerHTML = `
+            <div class="text-center text-danger py-4">
+                Error al cargar el calendario.
+            </div>
+        `;
+    }
 }
-
-
-
 
 /////Cargar tablas
 
+async function cargarClasesProgramadas() {
+    const tbody = document.getElementById('tablaClasesProgramadas');
 
 
-function cargarClasesProgramadas() {
-    fetch('/clases-programadas/listar')
-        .then(res => res.json())
-        .then(data => {
-            const tbody = document.getElementById('tablaClasesProgramadas');
-            tbody.innerHTML = '';
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="6" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2">Cargando clases programadas...</p>
+            </td>
+        </tr>
+    `;
 
-            data.forEach(c => {
-                const fila = `
+    try {
+        const res = await fetch('/clases-programadas/listar');
+
+        if (!res.ok) {
+            throw new Error("Respuesta no válida del servidor");
+        }
+
+        const data = await res.json();
+
+        // Limpiar tabla
+        tbody.innerHTML = "";
+
+        // Si está vacío mostrar mensaje
+        if (!data.length) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-3">
+                        No hay clases programadas.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        // Generar filas
+        data.forEach(c => {
+            const fila = `
                 <tr>
                     <td>${c.nombre_clase}</td>
                     <td>${c.profesor}</td>
                     <td>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" class="lucide lucide-users me-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-users me-2">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                             <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
@@ -619,18 +654,20 @@ function cargarClasesProgramadas() {
                         ${c.capacidad}
                     </td>
                     <td>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" class="lucide lucide-map-pin me-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-map-pin me-2">
                             <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0Z" />
                             <circle cx="12" cy="10" r="3" />
                         </svg>
                         ${c.sala}
                     </td>
                     <td>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" class="lucide lucide-calendar me-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-calendar me-2">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                             <line x1="16" y1="2" x2="16" y2="6" />
                             <line x1="8" y1="2" x2="8" y2="6" />
@@ -640,10 +677,12 @@ function cargarClasesProgramadas() {
                     </td>
                     <td>
                         <div class="dropdown">
-                            <button class="btn btn-sm dropdown-acciones" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="lucide lucide-user-pen">
+                            <button class="btn btn-sm dropdown-acciones" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    class="lucide lucide-user-pen">
                                     <path d="M11.5 15H7a4 4 0 0 0-4 4v2" />
                                     <path d="M21.378 16.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z" />
                                     <circle cx="10" cy="7" r="4" />
@@ -651,24 +690,26 @@ function cargarClasesProgramadas() {
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end dropdown-acciones">
                                 <li>
-                                    <button class="dropdown-item editar-btn dropdown-acciones dropdown-item-acciones  btnEditarClaseProgramada"  data-id="${c.id}">
+                                    <button class="dropdown-item editar-btn dropdown-acciones dropdown-item-acciones btnEditarClaseProgramada"
+                                        data-id="${c.id}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                                             class="lucide lucide-square-pen me-2">
                                             <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                                            <path
-                                                d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" />
+                                            <path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" />
                                         </svg>
                                         Editar
                                     </button>
                                 </li>
                                 <li>
-                                    <button class="dropdown-item text-danger dropdown-item-acciones  btnEliminarClaseProgramada"  data-id="${c.id}"  data-bs-toggle="modal"
-                data-bs-target="#modalConfirmarEliminar"">
+                                    <button class="dropdown-item text-danger dropdown-item-acciones btnEliminarClaseProgramada"
+                                        data-id="${c.id}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalConfirmarEliminar">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                                             class="lucide lucide-trash2 me-2">
                                             <path d="M10 11v6" />
                                             <path d="M14 11v6" />
@@ -682,21 +723,59 @@ function cargarClasesProgramadas() {
                             </ul>
                         </div>
                     </td>
-                </tr>`;
-                tbody.insertAdjacentHTML('beforeend', fila);
-            });
-        })
-        .catch(err => console.error('Error al cargar clases programadas:', err));
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', fila);
+        });
+
+    } catch (error) {
+        console.error("Error al cargar clases programadas:", error);
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-danger py-3">
+                    Error al cargar las clases programadas.
+                </td>
+            </tr>
+        `;
+    }
 }
 
+
+
+
 function cargarClases() {
+
+    const tbody = document.getElementById('tablaClases');
+    if (!tbody) return;
+
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="4" class="text-center py-4">
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
+                    <p class="mt-3 mb-0">Cargando clases...</p>
+                </div>
+            </td>
+        </tr>
+    `;
+
     fetch('/clases/listar')
         .then(res => res.json())
         .then(data => {
-            const tbody = document.getElementById('tablaClases');
-            if (!tbody) return;
 
             tbody.innerHTML = '';
+
+            // Si no hay clases
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">
+                            No hay clases registradas.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
 
             data.forEach(c => {
                 const fila = `
@@ -717,7 +796,7 @@ function cargarClases() {
                     </td>
                     <td>
                         <div class="dropdown">
-                            <button class="btn btn-sm dropdown-acciones" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn btn-sm dropdown-acciones" type="button" data-bs-toggle="dropdown">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" 
                                      viewBox="0 0 24 24" fill="none" stroke="currentColor" 
                                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
@@ -729,7 +808,7 @@ function cargarClases() {
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end dropdown-acciones">
                                 <li>
-                                    <button class="dropdown-item editar-btn dropdown-item-acciones btnEditarClase "  data-id="${c.id}" >
+                                    <button class="dropdown-item editar-btn dropdown-acciones dropdown-item-acciones btnEditarClase" data-id="${c.id}">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round"
@@ -742,8 +821,10 @@ function cargarClases() {
                                     </button>
                                 </li>
                                 <li>
-                                    <button class="dropdown-item text-danger dropdown-item-acciones btnEliminarClase"  data-id="${c.id}"  data-bs-toggle="modal"
-                data-bs-target="#modalConfirmarEliminar">
+                                    <button class="dropdown-item text-danger dropdown-item-acciones btnEliminarClase" 
+                                            data-id="${c.id}"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalConfirmarEliminar">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                             stroke-linecap="round" stroke-linejoin="round"
@@ -763,8 +844,18 @@ function cargarClases() {
                 </tr>`;
                 tbody.insertAdjacentHTML('beforeend', fila);
             });
+
         })
-        .catch(err => console.error('Error al cargar clases:', err));
+        .catch(err => {
+            console.error('Error al cargar clases:', err);
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-danger py-4">
+                        Error al cargar las clases.
+                    </td>
+                </tr>
+            `;
+        });
 }
 
 
