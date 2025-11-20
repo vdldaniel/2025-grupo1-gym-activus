@@ -1,8 +1,13 @@
+@php
+  use App\Helpers\PermisoHelper;
+  $idUsuario = Auth::user()->ID_Usuario ?? null;
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
   <div class="container py-4 ">
-    <h1 class="mb-4 fw-bold">Hola, Socio</h1>
+    <h1 class="mb-4 fw-bold">Hola, {{ Auth::user()->Nombre ?? 'Socio' }}</h1>
 
     <!-- Fila superior (3 tarjetas) -->
     <div class="row g-4 mb-4">
