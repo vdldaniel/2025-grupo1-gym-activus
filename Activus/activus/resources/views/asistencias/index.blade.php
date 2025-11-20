@@ -26,27 +26,27 @@
         <div class="row g-3">
             <div class="col-md-4">
                 <label class="form-label">Buscar</label>
-                <input type="text" id="buscarAsistencia" class="form-control" placeholder="Nombre, Apellido o DNI">
+                <input type="text" id="buscarAsistencia" class="form-control card-input input-left text-light border-secondary" placeholder="Nombre, Apellido o DNI">
             </div>
 
             <div class="col-md-3">
                 <label class="form-label">Desde</label>
-                <input type="date" id="desdeAsistencia" class="form-control">
+                <input type="date" id="desdeAsistencia" class="form-control card-input input-left text-light border-secondary">
             </div>
 
             <div class="col-md-3">
                 <label class="form-label">Hasta</label>
-                <input type="date" id="hastaAsistencia" class="form-control">
+                <input type="date" id="hastaAsistencia" class="form-control card-input input-left text-light border-secondary">
             </div>
 
             <div class="col-md-2">
                 <label class="form-label">Tipo Usuario</label>
-                <select id="tipoUsuario" class="form-select">
+                <select id="tipoUsuario" class="form-control card-input input-left text-light border-secondary">
                     <option value="todos">Todos</option>
-                    <option value="1">Administrador</option>
-                    <option value="2">Profesor</option>
-                    <option value="3">Administrativo</option>
-                    <option value="4">Socio</option>
+                    
+                    <option value="1">Profesor</option>
+                    <option value="2">Administrativo</option>
+                    <option value="3">Socio</option>
                 </select>
             </div>
         </div>
@@ -68,6 +68,7 @@
                     <th>Fecha</th>
                     <th>Hora</th>
                     <th>Rol</th>
+                    <th>Resultado</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -78,5 +79,5 @@
 @endsection
 
 @section('scripts')
-    @vite(['resources/js/asistencias.js'])
+    @vite(['resources/js/asistencia.js'])
 @endsection

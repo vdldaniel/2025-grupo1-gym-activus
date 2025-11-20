@@ -389,173 +389,116 @@
 
         <!-- PANEL 2 - INGRESOS -->
         <div class="tab-pane fade" id="panel-ingresos" role="tabpanel">
-
-            <div class="card shadow-sm border-secondary rounded-2">
+            <div class="card shadow-sm border-secondary rounded-2 mt-4 ">
+                
                 <div class="card-body">
+                    <input type="hidden" id="tipoUsuario" value="4"> {{-- Rol Socio --}}
+
                     <div class="row">
                         <h7 class="card-title mb-0">Ingresos de Socios</h7>
                         <span class="text-secondary small">Registro de ingreso al gimnasio</span>
                     </div>
 
-                    <!-- FILTROS -->
-                    <div class="row g-2 mt-2">
-
-                        <!-- BUSCADOR (misma estética que Directorio) -->
-                        <div class="col-sm-4">
-                            <div class="input-group flex-nowrap">
-                                <span class="input-group-text card-input icon-input text-secondary">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                        class="lucide lucide-search">
-                                        <path d="m21 21-4.34-4.34" />
-                                        <circle cx="11" cy="11" r="8" />
-                                    </svg>
-                                </span>
-                                <input type="text" id="buscarIngreso"
-                                    class="form-control card-input input-left text-light border-secondary"
-                                    placeholder="Buscar por nombre, DNI o ID...">
+                    {{-- FILTROS --}}
+                    
+                        <div class="row g-2 mt-2">
+                            <div class="col-md-4">
+                                <input id="buscarAsistencia" class="form-control card-input input-left text-light border-secondary" placeholder="Buscar nombre o DNI">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="date" id="desdeAsistencia" class="form-control card-input input-left text-light border-secondary">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="date" id="hastaAsistencia" class="form-control card-input input-left text-light border-secondary">
+                            </div>
+                            <div class="col-md-2 d-grid">
+                                <button id="filtrarAsistencias" class="btn btn-primary">Filtrar</button>
                             </div>
                         </div>
+                    
 
-
-
-                        <!-- FECHA DESDE/HASTA igual estética -->
-                        <div class="col-sm-3 mt-2">
-                            <input type="date" id="fechaDesde"
-                                class="form-control card-input" placeholder="Desde...">
-                            <label for="desde" class="text-secondary small"> Desde</label>
-                        </div>
-
-                        <div class="col-sm-3 mt-2">
-                            <input type="date" id="fechaHasta"
-                                class="form-control card-input" placeholder="Hasta...">
-                            <label for="hasta" class="text-secondary small"> Hasta</label>
-                        </div>
-
-                        <!-- BOTÓN FILTRAR -->
-                        <div class="col-sm-2 mt-2">
-                            <button class="btn btn-secondary w-100" id="filtrarIngresos">
-                                Filtrar
-                            </button>
-                        </div>
-
-                        <!-- BOTÓN LIMPIAR (igual que Directorio) -->
-                        <div class="d-flex justify-content-end mt-2">
-                            <button type="button" class="btn text-secondary small p-0 border-0 d-none"
-                                id="btnLimpiarFiltroIngresos">
-                                <small>Limpiar filtros</small>
-                            </button>
-                        </div>
-
-                    </div> <!-- row filtros -->
+                    {{-- TABLA --}}
+                    <div class="table-responsive p-3">
+                        <table id="tablaAsistencias" class="table tabla-asistencia">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>DNI</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Rol</th>
+                                    <th>Resultado</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
 
                 </div>
 
-                <!-- TABLA INGRESOS -->
-                <div class="table-responsive p-3">
-                    <table id="tablaIngresos" class="table table-striped mt-3 small border-round">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>
-                                    <a href="{{ route('socios.index', ['sort' => 'nombre', 'direction' => request('direction') === 'asc' ? 'desc' : 'asc']) }}">
-                                        Nombre
-                                        @if(request('sort') === 'nombre')
-                                        @if(request('direction') === 'asc')
-                                        ▲
-                                        @else
-                                        ▼
-                                        @endif
-                                        @endif
-                                    </a>
-                                </th>
+            </div>
 
-                                <th>DNI</th>
-                                <th>Fecha</th>
-                                <th>Hora</th>
-                            </tr>
-                        </thead>
+        </div>
+    </div>
 
-                        <tbody>
-                            @foreach($ingresos as $i)
-                            <tr>
-                                <td>{{ $i->ID_Socio }}</td>
-                                <td>{{ $i->Nombre }} {{ $i->Apellido }}</td>
-                                <td>{{ $i->DNI }}</td>
-                                <td>{{ $i->Fecha }}</td>
-                                <td>{{ $i->Hora }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
 
-                    </table>
+    <div class="modal fade" id="modalEditarSocio" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content small">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitulo">Editar Socio</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-
+                <div class="modal-body">
+                    <form id="formEditarSocio" method="POST" action="">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" id="idSocioEditar" name="idSocioEditar">
+                        <div class="row g-2">
+                            <div class="mb-3 col-12 col-md-6">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" id="nombreSocioEditar" class="form-control card-input" placeholder="Primer nombre del socio..." name="nombreSocioEditar">
+                                <div class="invalid-feedback" id="error-nombreSocioEditar"></div>
+                            </div>
+                            <div class="mb-3 col-12 col-md-6">
+                                <label class="form-label">Apellido</label>
+                                <input type="text" id="apellidoSocioEditar" class="form-control card-input" placeholder="Apellido del socio..." name="apellidoSocioEditar">
+                                <div class="invalid-feedback" id="error-apellidoSocioEditar"></div>
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="mb-3 col-12 col-md-6">
+                                <label class="form-label">DNI</label>
+                                <input type="text" id="dniSocioEditar" class="form-control card-input" placeholder="DNI (solo números)" name="dniSocioEditar">
+                                <div class="invalid-feedback" id="error-dniSocioEditar"></div>
+                            </div>
+                            <div class="mb-3 col-12 col-md-6">
+                                <label class="form-label">Fecha de Nacimiento</label>
+                                <input type="date" id="fechaNacSocioEditar" class="form-control card-input" placeholder="dd/mm/aaaa" name="fechaNacSocioEditar">
+                                <div class="invalid-feedback" id="error-fechaNacSocioEditar"></div>
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="mb-3 col-12 col-md-6">
+                                <label class="form-label">Telefono</label>
+                                <input type="text" id="telefonoSocioEditar" class="form-control card-input" placeholder="Telefono (solo números)" name="telefonoSocioEditar">
+                                <div class="invalid-feedback" id="error-telefonoSocioEditar"></div>
+                            </div>
+                            <div class="mb-3 col-12 col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="mail" id="emailSocioEditar" class="form-control card-input" placeholder="Correo Electronico..." name="emailSocioEditar">
+                                <div class="invalid-feedback" id="error-emailSocioEditar"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-agregar">Guardar</button>
+                        </div>
+                </div>
+                </form>
             </div>
         </div>
-
     </div>
-</div>
-
-
-<div class="modal fade" id="modalEditarSocio" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content small">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTitulo">Editar Socio</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formEditarSocio" method="POST" action="">
-                    @csrf
-                    @method('PUT')
-                    <input type="hidden" id="idSocioEditar" name="idSocioEditar">
-                    <div class="row g-2">
-                        <div class="mb-3 col-12 col-md-6">
-                            <label class="form-label">Nombre</label>
-                            <input type="text" id="nombreSocioEditar" class="form-control card-input" placeholder="Primer nombre del socio..." name="nombreSocioEditar">
-                            <div class="invalid-feedback" id="error-nombreSocioEditar"></div>
-                        </div>
-                        <div class="mb-3 col-12 col-md-6">
-                            <label class="form-label">Apellido</label>
-                            <input type="text" id="apellidoSocioEditar" class="form-control card-input" placeholder="Apellido del socio..." name="apellidoSocioEditar">
-                            <div class="invalid-feedback" id="error-apellidoSocioEditar"></div>
-                        </div>
-                    </div>
-                    <div class="row g-2">
-                        <div class="mb-3 col-12 col-md-6">
-                            <label class="form-label">DNI</label>
-                            <input type="text" id="dniSocioEditar" class="form-control card-input" placeholder="DNI (solo números)" name="dniSocioEditar">
-                            <div class="invalid-feedback" id="error-dniSocioEditar"></div>
-                        </div>
-                        <div class="mb-3 col-12 col-md-6">
-                            <label class="form-label">Fecha de Nacimiento</label>
-                            <input type="date" id="fechaNacSocioEditar" class="form-control card-input" placeholder="dd/mm/aaaa" name="fechaNacSocioEditar">
-                            <div class="invalid-feedback" id="error-fechaNacSocioEditar"></div>
-                        </div>
-                    </div>
-                    <div class="row g-2">
-                        <div class="mb-3 col-12 col-md-6">
-                            <label class="form-label">Telefono</label>
-                            <input type="text" id="telefonoSocioEditar" class="form-control card-input" placeholder="Telefono (solo números)" name="telefonoSocioEditar">
-                            <div class="invalid-feedback" id="error-telefonoSocioEditar"></div>
-                        </div>
-                        <div class="mb-3 col-12 col-md-6">
-                            <label class="form-label">Email</label>
-                            <input type="mail" id="emailSocioEditar" class="form-control card-input" placeholder="Correo Electronico..." name="emailSocioEditar">
-                            <div class="invalid-feedback" id="error-emailSocioEditar"></div>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-agregar">Guardar</button>
-                    </div>
-            </div>
-            </form>
-        </div>
-    </div>
-</div>
 </div>
 </div>
 

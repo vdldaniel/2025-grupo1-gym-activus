@@ -24,7 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     a.DNI,
                     a.Fecha,
                     a.Hora,
-                    rolTexto(a.ID_Rol)
+                    a.Rol,
+                    badgeResultado(a.Resultado)
                 ]);
             });
 
@@ -32,17 +33,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function rolTexto(id) {
-        switch (id) {
-            case 1: return "Administrador";
-            case 2: return "Profesor";
-            case 3: return "Administrativo";
-            case 4: return "Socio";
-            default: return "Desconocido";
-        }
-    }
-
     document.getElementById("filtrarAsistencias").addEventListener("click", cargarAsistencias);
 
     cargarAsistencias();
 });
+
+function badgeResultado(estado) {
+    let clase = {
+        "Exitoso": "success",
+        "Denegado": "danger"
+    }[estado] || "secondary";
+
+    return `<span class="badge bg-${clase}">${estado}</span>`;
+}

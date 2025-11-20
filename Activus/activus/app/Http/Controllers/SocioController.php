@@ -44,14 +44,14 @@ class SocioController extends Controller
         // QUERY INGRESOS
         $ingresosQuery = Asistencia::select(
             'asistencia.ID_Asistencia',
-            'asistencia.ID_Socio',
+            'asistencia.ID_Usuario',
             'asistencia.Fecha',
             'asistencia.Hora',
             'usuario.Nombre',
             'usuario.Apellido',
             'usuario.DNI'
         )
-            ->join('socio', 'asistencia.ID_Socio', '=', 'socio.ID_Usuario')
+            ->join('socio', 'asistencia.ID_Usuario', '=', 'socio.ID_Usuario')
             ->join('usuario', 'socio.ID_Usuario', '=', 'usuario.ID_Usuario');
 
         // FILTRO BUSCADOR
@@ -62,7 +62,7 @@ class SocioController extends Controller
                 $q->where('usuario.Nombre', 'LIKE', "%$buscar%")
                     ->orWhere('usuario.Apellido', 'LIKE', "%$buscar%")
                     ->orWhere('usuario.DNI', 'LIKE', "%$buscar%")
-                    ->orWhere('asistencia.ID_Socio', 'LIKE', "%$buscar%");
+                    ->orWhere('asistencia.ID_Usuario', 'LIKE', "%$buscar%");
             });
         }
 
@@ -321,23 +321,26 @@ class SocioController extends Controller
         $buscar = $request->buscar;
         $desde = $request->desde;
         $hasta = $request->hasta;
-        $tipo = $request->tipo;  
+        $tipo = $request->tipo;
 
         $query = Asistencia::select(
             'asistencia.ID_Asistencia',
-            'asistencia.ID_Socio',
+            'asistencia.ID_Usuario',
             'asistencia.Fecha',
             'asistencia.Hora',
+            'asistencia.Resultado',
             'usuario.Nombre',
             'usuario.Apellido',
             'usuario.DNI',
-            'usuario.ID_Rol'
+            'rol.Nombre_Rol as Rol'
         )
-            ->join('usuario', 'asistencia.ID_Socio', '=', 'usuario.ID_Usuario');
+            ->join('usuario', 'asistencia.ID_Usuario', '=', 'usuario.ID_Usuario')
+            ->join('usuario_rol', 'usuario.ID_Usuario', '=', 'usuario_rol.ID_Usuario')
+            ->join('rol', 'usuario_rol.ID_Rol', '=', 'rol.ID_Rol');
 
         // FILTRO TIPO DE USUARIO
         if ($tipo && $tipo !== "todos") {
-            $query->where('usuario.ID_Rol', $tipo);
+            $query->where('usuario_rol.ID_Rol', $tipo);
         }
 
         // FILTRO BUSCAR
@@ -349,7 +352,7 @@ class SocioController extends Controller
             });
         }
 
-        // FECHAS
+        // FILTRO FECHAS
         if ($desde) $query->whereDate('asistencia.Fecha', '>=', $desde);
         if ($hasta) $query->whereDate('asistencia.Fecha', '<=', $hasta);
 
