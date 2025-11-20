@@ -29,6 +29,7 @@ use App\Http\Controllers\InicioAdministradorController;
 use App\Http\Controllers\ClaseProgramadaController;
 use App\Http\Controllers\ClaseSocioController;
 use App\Http\Controllers\ClaseController;
+use App\Http\Controllers\IngresoFisicoController;
 
 Route::get('/', function () {
     return view('inicio');
@@ -122,6 +123,15 @@ if (!Route::has('profesores.index')) {
 // =====================================================================
 
 
+Route::get('/ingreso-gimnasio', function () {
+    return view('ingreso.index');
+})->name('ingreso.gimnasio');
+
+Route::post('/ingreso/verificar', [IngresoFisicoController::class, 'verificarIngreso']);
+
+
+
+
 Route::get('/estadosUsuario', [EstadoUsuarioController::class, 'index']);
 Route::get('/roles', [RolController::class, 'index']);
 Route::get('/usuarios', [UsuarioController::class, 'index']);
@@ -167,7 +177,7 @@ Route::delete('/socios/{id}', [SocioController::class, 'eliminarSocio'])->name('
 
 
 Route::get('/asistencias/filtrar', [SocioController::class, 'filtrarAsistencias']);
-    
+
 
 Route::get('/ejercicios/gestion', [EjercicioController::class, 'gestion'])->name('ejercicios.gestion');
 Route::get('/ejercicios/lista', [EjercicioController::class, 'lista'])->name('ejercicios.lista');
@@ -210,11 +220,11 @@ Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
 Route::middleware(['web'])->group(function () {
     Route::get('/', function () {
         // Llamo al controlador manualmente
-    $controller = app(\App\Http\Controllers\InicioAdministrativoController::class);
-    $data = $controller->index()->getData();
+        $controller = app(\App\Http\Controllers\InicioAdministrativoController::class);
+        $data = $controller->index()->getData();
 
-    
-    return view('inicio', $data);
+
+        return view('inicio', $data);
     })->name('login');// tu vista de inicio
 
     Route::post('/login', [AuthController::class, 'iniciarSesion'])->name('login.post');

@@ -11,7 +11,7 @@ class Asistencia extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'ID_Socio',
+        'ID_Usuario',
         'Fecha',
         'Hora',
         'Resultado'
