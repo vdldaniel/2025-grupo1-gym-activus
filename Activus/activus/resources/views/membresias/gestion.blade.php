@@ -41,7 +41,7 @@
                         <h6>Total Membresías</h6>
                         <i class="fa-solid fa-crown text-secondary small"></i>
                     </div>
-                    <h4 id="metricTotalMembresias"></h4>
+                    <h4 id="metricTotalMembresias">-</h4>
                 </div>
             </div>
             <div class="col-md-4">
@@ -50,7 +50,7 @@
                         <h6>Miembros Totales</h6>
                         <i class="bi bi-people text-secondary"></i>
                     </div>
-                    <h4 id="metricTotalMiembros"></h4>
+                    <h4 id="metricTotalMiembros">-</h4>
 
                 </div>
             </div>

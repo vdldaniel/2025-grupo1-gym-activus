@@ -61,7 +61,7 @@
                             </svg>
                         </div>
                     </div>
-                    <h4 id="metricTotalClases" class="display-6 fw-bold mt-4 mb-0"></h4>
+                    <h4 id="metricTotalClases" class="display-6 fw-bold mt-4 mb-0">-</h4>
                 </div>
             </div>
             <div class="col-md-4">
@@ -78,7 +78,7 @@
                         </div>
 
                     </div>
-                    <h4 id="metricClasesHoy" class="display-6 fw-bold mt-4 mb-0"></h4>
+                    <h4 id="metricClasesHoy" class="display-6 fw-bold mt-4 mb-0">-</h4>
                 </div>
 
             </div>
@@ -102,8 +102,8 @@
 
         <!-- seccion clases programadas-->
         <div id="seccionProgramadas" class="card p-3 d-none">
-            <div class="table-responsive ">
-                <h6 class="mb-3">Lista de Clases Programadas</h6>
+            <h6 class="mb-3">Lista de Clases Programadas</h6>
+            <div class="table-responsive">
                 <table class="table table-hover mt-3 small">
                     <thead>
                         <tr>
@@ -126,8 +126,8 @@
 
         <!--seccion de clases -->
         <div id="seccionClases" class="card p-3 d-none">
+            <h6 class="mb-3">Gestion de Clases </h6>
             <div class="table-responsive">
-                <h6 class="mb-3">Gestion de Clases </h6>
                 <table class="table table-hover small border-round">
                     <thead>
                         <tr>

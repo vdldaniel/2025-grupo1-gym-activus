@@ -138,3 +138,54 @@
         font-size: 0.9rem;
     }
 }
+
+#seccionClases .table-responsive,
+#seccionProgramadas .table-responsive {
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: visible !important;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+}
+
+#seccionClases table,
+#seccionProgramadas table {
+    min-width: 750px;
+}
+
+#seccionClases td,
+#seccionProgramadas td,
+#seccionClases th,
+#seccionProgramadas th {
+    white-space: nowrap;
+}
+
+
+#seccionClases .dropdown-menu,
+#seccionProgramadas .dropdown-menu {
+    z-index: 9999 !important;
+    white-space: nowrap;
+}
+
+
+
+@media (max-width: 767px) {
+
+    /* forzo scroll horizontal en pantallas chicas  */
+    #seccionClases .table-responsive,
+    #seccionProgramadas .table-responsive {
+        overflow-x: auto !important;
+        /* <--- vuelve el scroll */
+    }
+
+    /* asegurar vision  del dropdown */
+    #seccionClases .dropdown-menu,
+    #seccionProgramadas .dropdown-menu {
+        position: fixed !important;
+        right: 10px !important;
+        left: auto !important;
+        top: auto !important;
+        transform: none !important;
+        min-width: 150px;
+    }
+}

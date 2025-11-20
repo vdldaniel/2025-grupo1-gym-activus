@@ -509,22 +509,19 @@ async function MostrarCalendario() {
 
         let slotMin = '07:00:00';
         let slotMax = '21:00:00';
-
         if (events.length > 0) {
-            const horasInicio = events.map(e => new Date(e.start));
-            const horasFin = events.map(e => new Date(e.end));
+            const horasInicio = events.map(e => new Date(e.start).getHours());
+            const horasFin = events.map(e => new Date(e.end).getHours());
 
-            let minHora = Math.min(...horasInicio.map(h => h.getHours()));
-            let maxHora = Math.max(...horasFin.map(h => h.getHours()));
+            let minHora = Math.max(Math.min(...horasInicio) - 1, 0);
+            let maxHora = Math.min(Math.max(...horasFin) + 1, 23);
 
-            minHora = Math.max(minHora - 1, 0);
-            maxHora = Math.min(maxHora + 1, 23);
-
-            slotMin = `${minHora.toString().padStart(2, '0')}:00:00`;
-            slotMax = `${maxHora.toString().padStart(2, '0')}:00:00`;
+            slotMin = `${String(minHora).padStart(2, '0')}:00:00`;
+            slotMax = `${String(maxHora).padStart(2, '0')}:59:59`;
         }
 
-        // Limpiar el spinner antes de crear el calendario
+
+
         calendarEl.innerHTML = "";
 
         // Crear el calendario nuevamente
@@ -580,6 +577,11 @@ async function MostrarCalendario() {
                 } else {
                     calendar.changeView('timeGridWeek');
                 }
+
+                setTimeout(() => {
+                    calendar.updateSize();
+                    calendar.render();
+                }, 50);
             },
         });
 
@@ -796,7 +798,8 @@ function cargarClases() {
                     </td>
                     <td>
                         <div class="dropdown">
-                            <button class="btn btn-sm dropdown-acciones" type="button" data-bs-toggle="dropdown">
+                            <button class="btn btn-sm dropdown-acciones" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" 
                                      viewBox="0 0 24 24" fill="none" stroke="currentColor" 
                                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
@@ -1216,6 +1219,5 @@ function MostrarError(mensaje) {
     const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById("modalError"));
     modal.show();
 }
-
 
 

@@ -14,7 +14,6 @@ class ClaseProgramadaController extends Controller
     public function obtenerEventos()
     {
 
-
         $user = Auth::user();
 
         $query = ClaseProgramada::with('clase');
@@ -52,22 +51,27 @@ class ClaseProgramadaController extends Controller
          return response()->json($eventos);*/
     }
 
-
-
     public function listar()
     {
-
         $user = Auth::user();
         $rolesUsuario = $user->roles()->pluck('Nombre_Rol')->toArray();
 
         $query = ClaseProgramada::with(['clase.profesor', 'sala']);
 
-
+        // Si es profesor, solo sus clases
         if (in_array('Profesor', $rolesUsuario)) {
             $query->whereHas('clase', function ($q) use ($user) {
                 $q->where('ID_Profesor', $user->ID_Usuario);
             });
         }
+
+        $now = now()->format('Y-m-d H:i:s');
+
+        // Mostrar clases FUTURAS o EN CURSO
+        $query->where(function ($q) use ($now) {
+            $q->whereRaw("CONCAT(Fecha, ' ', Hora_Inicio) >= ?", [$now])  // futuras
+                ->orWhereRaw("CONCAT(Fecha, ' ', Hora_Inicio) <= ? AND CONCAT(Fecha, ' ', Hora_Fin) >= ?", [$now, $now]); // en curso
+        });
 
         $clasesProgramadas = $query->get()->map(function ($item) {
             $inscriptos = Reserva::where('ID_Clase_Programada', $item->ID_Clase_Programada)
@@ -89,30 +93,6 @@ class ClaseProgramadaController extends Controller
         });
 
         return response()->json($clasesProgramadas);
-        /* $clasesProgramadas = ClaseProgramada::with(['clase.profesor', 'clase', 'sala'])
-             ->get()
-             ->map(function ($item) {
-
-                 // cantidad de reservas estado=confirmada === inscriptos
-                 $inscriptos = Reserva::where('ID_Clase_Programada', $item->ID_Clase_Programada)
-                     ->where('Estado_Reserva', 'Confirmada')
-                     ->count();
-
-                 $capacidadTotal = $item->clase->Capacidad_Maxima ?? 0;
-
-                 return [
-                     'id' => $item->ID_Clase_Programada,
-                     'nombre_clase' => $item->clase->Nombre_Clase ?? 'Sin nombre',
-                     'profesor' => $item->clase->profesor->Nombre ?? '—',
-                     'capacidad' => "{$inscriptos} / {$capacidadTotal}",
-                     'sala' => $item->sala->Nombre_Sala ?? '—',
-                     'fecha' => $item->Fecha,
-                     'hora_inicio' => \Carbon\Carbon::parse($item->Hora_Inicio)->format('H:i'),
-                     'hora_fin' => \Carbon\Carbon::parse($item->Hora_Fin)->format('H:i'),
-                 ];
-             });
-
-         return response()->json($clasesProgramadas);*/
     }
 
 

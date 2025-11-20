@@ -27,7 +27,7 @@
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <h6>Total Profesores</h6><i class="bi bi-mortarboard text-secondary "></i>
                     </div>
-                    <h3 id="totalProfesores"></h3>
+                    <h3 id="totalProfesores">-</h3>
                 </div>
             </div>
             <div class="col-md-4">
@@ -35,7 +35,7 @@
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <h6>Profesores Activos</h6><i class="bi bi-people text-secondary "></i>
                     </div>
-                    <h3 id="profesoresActivos"></h3>
+                    <h3 id="profesoresActivos">-</h3>
                 </div>
             </div>
             <div class="col-md-4">
@@ -43,7 +43,7 @@
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <h6>Clases Asignadas</h6> <i class="bi bi-calendar4-event text-secondary "></i>
                     </div>
-                    <h3 id="clasesAsignadas"></h3>
+                    <h3 id="clasesAsignadas">-</h3>
                 </div>
             </div>
         </div>

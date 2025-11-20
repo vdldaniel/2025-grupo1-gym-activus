@@ -101,18 +101,14 @@ function MostrarCalendario() {
             let slotMax = '21:00:00';
 
             if (events.length > 0) {
+                const horasInicio = events.map(e => new Date(e.start).getHours());
+                const horasFin = events.map(e => new Date(e.end).getHours());
 
-                const horasInicio = events.map(e => new Date(e.start));
-                const horasFin = events.map(e => new Date(e.end));
+                let minHora = Math.max(Math.min(...horasInicio) - 1, 0);
+                let maxHora = Math.min(Math.max(...horasFin) + 1, 23);
 
-                let minHora = Math.min(...horasInicio.map(h => h.getHours()));
-                let maxHora = Math.max(...horasFin.map(h => h.getHours()));
-
-                minHora = Math.max(minHora - 1, 0);
-                maxHora = Math.min(maxHora + 1, 23);
-
-                slotMin = `${minHora.toString().padStart(2, '0')}:00:00`;
-                slotMax = `${maxHora.toString().padStart(2, '0')}:00:00`;
+                slotMin = `${String(minHora).padStart(2, '0')}:00:00`;
+                slotMax = `${String(maxHora).padStart(2, '0')}:59:59`;
             }
 
 
@@ -165,12 +161,18 @@ function MostrarCalendario() {
 
                 events: events,
 
-                windowResize() {
+
+                windowResize: function () {
                     if (window.innerWidth < 768) {
                         calendar.changeView('timeGridDay');
                     } else {
                         calendar.changeView('timeGridWeek');
                     }
+
+                    setTimeout(() => {
+                        calendar.updateSize();
+                        calendar.render();
+                    }, 50);
                 },
             });
 

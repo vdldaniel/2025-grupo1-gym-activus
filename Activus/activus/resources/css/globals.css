@@ -41,7 +41,7 @@ body {
 
 
 main {
-  margin-top: 4rem; 
+  margin-top: 4rem;
   padding: min(10px, 7%);
   overflow-x: hidden;
   flex-grow: 1;
@@ -56,7 +56,7 @@ main p {
   margin-bottom: 15px;
 }
 
-header{
+header {
   z-index: 200;
   width: 100%;
   height: 4rem;
@@ -474,14 +474,15 @@ thead {
 }
 
 /* Si no hay nav (usuario no logueado), centramos todo */
-    body:not(:has(.sidebar)) main {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      padding: 0;
-      text-align: center;
-    }
+body:not(:has(.sidebar)) main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 0;
+  text-align: center;
+}
+
 #vistaSala table tbody td,
 #vistaSala table thead th {
   vertical-align: middle;
