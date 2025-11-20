@@ -31,16 +31,15 @@ class Usuario extends Authenticatable
     ];
 
     protected $hidden = [
-        'Contrasena', // 👈 para que no se muestre en Auth::user()
+        'Contrasena', 
     ];
 
-    // Laravel usa este método internamente para validar el password
+
     public function getAuthPassword()
     {
         return $this->Contrasena;
     }
 
-    // Para que Auth reconozca el campo del email correctamente
     public function getAuthIdentifierName()
     {
         return 'Email';
@@ -48,7 +47,7 @@ class Usuario extends Authenticatable
 
     public function setContrasenaAttribute($value)
     {
-        // Si ya está hasheada, no la vuelve a hashear.
+        
         if (!empty($value) && !str_starts_with($value, '$2y$')) {
             $this->attributes['Contrasena'] = Hash::make($value);
         } else {

@@ -46,7 +46,8 @@
 .fc-col-header-cell {
     background-color: var(--componente-base-clr) !important;
     /* #1f2937;*/
-    color: var #d1d5db;
+    color: var(--line-clr);
+    /* #d1d5db;*/
     font-weight: 600;
     text-transform: capitalize;
     text-align: center;
