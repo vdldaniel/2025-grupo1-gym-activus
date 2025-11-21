@@ -11,7 +11,7 @@ use Carbon\Carbon;
 class PagoController extends Controller
 {
     /**
-     * Vista principal del módulo de pagos (administrativo)
+     * Vista principal
      */
     public function index()
     {
@@ -19,7 +19,7 @@ class PagoController extends Controller
     }
 
     /**
-     * Listar pagos para la tabla del administrativo
+     * Listar pagos del administrativo
      */
     public function listar()
     {
@@ -61,7 +61,7 @@ class PagoController extends Controller
     }
 
     /**
-     * Listar tipos de membresía (para los checkboxes)
+     * Listar tipos de membresía
      */
     public function listar_membresias()
     {
@@ -83,13 +83,13 @@ class PagoController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Error al cargar las membresías.',
+                'message' => 'Error al cargar membresías.',
             ], 500);
         }
     }
 
     /**
-     * Buscar socio por DNI o ID (solo socios)
+     * Buscar socio por DNI o ID
      */
     public function buscar_socio(Request $request)
     {
@@ -137,31 +137,52 @@ class PagoController extends Controller
     }
 
     /**
-     * Registrar pago:
-     *  - Actualiza / crea membresia_socio
-     *  - Inserta en pago (uno por cada membresía seleccionada)
+     * NUEVO: obtener membresía activa del socio
+     */
+    public function membresia_activa($idSocio)
+    {
+        try {
+            $membresia = DB::table('membresia_socio')
+                ->where('ID_Usuario_Socio', $idSocio)
+                ->where('ID_Estado_Membresia_Socio', 1) // Activa
+                ->select(
+                    'ID_Membresia_Socio',
+                    'ID_Tipo_Membresia',
+                    'Fecha_Inicio',
+                    'Fecha_Fin'
+                )
+                ->first();
+
+            return response()->json($membresia);
+        } catch (\Throwable $e) {
+            Log::error('Error al obtener membresía activa: ' . $e->getMessage());
+            return response()->json(null);
+        }
+    }
+
+    /**
+     * Registrar pago para una sola membresía
      */
     public function agregar(Request $request)
     {
-        // 🔐 Validaciones
+        // Validación para UNA sola membresía
         $request->validate([
-            'idSocio'          => 'required|integer',
-            'metodo'           => 'required|string',
-            'fechaPago'        => 'required|date',
-            'items'            => 'required|array|min:1',
-            'items.*.idTipoMembresia'   => 'required|integer',
-            'items.*.fechaVencimiento'  => 'required|date',
+            'idSocio'           => 'required|integer',
+            'metodo'            => 'required|string',
+            'fechaPago'         => 'required|date',
+            'idTipoMembresia'   => 'required|integer',
+            'fechaVencimiento'  => 'required|date',
         ]);
 
         $idSocio     = $request->idSocio;
         $fechaPago   = $request->fechaPago;
         $metodo      = $request->metodo;
         $observacion = $request->observacion ?: null;
-        $items       = $request->input('items', []);
+        $idTipo      = $request->idTipoMembresia;
+        $fechaVenc   = $request->fechaVencimiento;
 
         $fechaPagoCarbon = Carbon::parse($fechaPago);
 
-        // 💡 ESTE ES EL USUARIO LOGUEADO (SIEMPRE ID NUMÉRICO)
         $idUsuarioRegistro = Auth::user()->ID_Usuario ?? null;
 
         if (!$idUsuarioRegistro) {
@@ -174,74 +195,60 @@ class PagoController extends Controller
         try {
             DB::beginTransaction();
 
-            // ID del estado "Activa" (por si cambia el ID)
+            // Obtener ID de estado "Activa"
             $idEstadoActiva = DB::table('estado_membresia_socio')
                 ->where('Nombre_Estado_Membresia_Socio', 'Activa')
                 ->value('ID_Estado_Membresia_Socio') ?? 1;
 
-            foreach ($items as $item) {
-                $idTipoMembresia  = $item['idTipoMembresia'] ?? null;
-                $fechaVencimiento = $item['fechaVencimiento'] ?? null;
+            $fechaVencCarbon = Carbon::parse($fechaVenc);
+            if ($fechaVencCarbon->lt($fechaPagoCarbon)) {
+                throw new \Exception('La fecha de vencimiento no puede ser anterior al pago.');
+            }
 
-                if (!$idTipoMembresia || !$fechaVencimiento) {
-                    throw new \Exception('Datos de membresía incompletos.');
-                }
+            // Ver si el socio ya tiene esta membresía
+            $membresiaSocio = DB::table('membresia_socio')
+                ->where('ID_Usuario_Socio', $idSocio)
+                ->where('ID_Tipo_Membresia', $idTipo)
+                ->first();
 
-                $fechaVencCarbon = Carbon::parse($fechaVencimiento);
+            if ($membresiaSocio) {
+                // Actualizar membresía existente
+                $idMembresiaSocio = $membresiaSocio->ID_Membresia_Socio;
 
-                if ($fechaVencCarbon->lt($fechaPagoCarbon)) {
-                    throw new \Exception('La fecha de vencimiento no puede ser anterior a la fecha de pago.');
-                }
-
-                // ¿Ya existe una membresía de ese tipo para el socio?
-                $membresiaSocio = DB::table('membresia_socio')
-                    ->where('ID_Usuario_Socio', $idSocio)
-                    ->where('ID_Tipo_Membresia', $idTipoMembresia)
-                    ->first();
-
-                if ($membresiaSocio) {
-                    // Actualizar membresía existente
-                    $idMembresiaSocio = $membresiaSocio->ID_Membresia_Socio;
-
-                    DB::table('membresia_socio')
-                        ->where('ID_Membresia_Socio', $idMembresiaSocio)
-                        ->update([
-                            'ID_Estado_Membresia_Socio' => $idEstadoActiva,
-                            'Fecha_Inicio'              => $fechaPago,
-                            'Fecha_Fin'                 => $fechaVencimiento,
-                        ]);
-                } else {
-                    // Crear nueva membresía para el socio
-                    $idMembresiaSocio = DB::table('membresia_socio')->insertGetId([
-                        'ID_Usuario_Socio'          => $idSocio,
-                        'ID_Tipo_Membresia'         => $idTipoMembresia,
+                DB::table('membresia_socio')
+                    ->where('ID_Membresia_Socio', $idMembresiaSocio)
+                    ->update([
                         'ID_Estado_Membresia_Socio' => $idEstadoActiva,
                         'Fecha_Inicio'              => $fechaPago,
-                        'Fecha_Fin'                 => $fechaVencimiento,
+                        'Fecha_Fin'                 => $fechaVenc,
                     ]);
-                }
-
-                // Precio actual de ese tipo de membresía
-                $precio = DB::table('tipo_membresia')
-                    ->where('ID_Tipo_Membresia', $idTipoMembresia)
-                    ->value('Precio');
-
-                if ($precio === null) {
-                    $precio = 0;
-                }
-
-                // Registrar el pago (uno por cada membresía)
-                DB::table('pago')->insert([
-                    'ID_Membresia_Socio'  => $idMembresiaSocio,
-                    'ID_Usuario_Socio'    => $idSocio,
-                    'ID_Usuario_Registro' => $idUsuarioRegistro,
-                    'Monto'               => $precio,
-                    'Fecha_Pago'          => $fechaPago,
-                    'Fecha_Vencimiento'   => $fechaVencimiento,
-                    'Metodo_Pago'         => $metodo,
-                    'Observacion'         => $observacion,
+            } else {
+                // Crear nueva membresía
+                $idMembresiaSocio = DB::table('membresia_socio')->insertGetId([
+                    'ID_Usuario_Socio'          => $idSocio,
+                    'ID_Tipo_Membresia'         => $idTipo,
+                    'ID_Estado_Membresia_Socio' => $idEstadoActiva,
+                    'Fecha_Inicio'              => $fechaPago,
+                    'Fecha_Fin'                 => $fechaVenc,
                 ]);
             }
+
+            // Obtener precio
+            $precio = DB::table('tipo_membresia')
+                ->where('ID_Tipo_Membresia', $idTipo)
+                ->value('Precio') ?? 0;
+
+            // Registrar pago
+            DB::table('pago')->insert([
+                'ID_Membresia_Socio'  => $idMembresiaSocio,
+                'ID_Usuario_Socio'    => $idSocio,
+                'ID_Usuario_Registro' => $idUsuarioRegistro,
+                'Monto'               => $precio,
+                'Fecha_Pago'          => $fechaPago,
+                'Fecha_Vencimiento'   => $fechaVenc,
+                'Metodo_Pago'         => $metodo,
+                'Observacion'         => $observacion,
+            ]);
 
             DB::commit();
 
