@@ -10,7 +10,9 @@
 
 @import './globals.css';
 
-/* ====== Tarjeta principal ====== */
+/* =============================
+   TARJETA PRINCIPAL
+   ============================= */
 .card.bg-dark {
   background-color: var(--secondary-componente-base-clr);
   border: 1px solid var(--componente-border-clr);
@@ -18,7 +20,9 @@
   border-radius: 10px;
 }
 
-/* ====== Encabezado ====== */
+/* =============================
+   ENCABEZADO
+   ============================= */
 .container h2 {
   color: var(--text-clr);
   font-weight: 600;
@@ -28,7 +32,9 @@
   color: var(--secondary-text-clr) !important;
 }
 
-/* ====== Selects y filtros ====== */
+/* =============================
+   SELECTS & INPUTS
+   ============================= */
 .form-select,
 .form-control {
   background-color: var(--base-clr);
@@ -43,10 +49,11 @@
   box-shadow: 0 0 0 0.2rem rgba(94, 99, 255, 0.25);
   background-color: var(--secondary-componente-base-clr);
   color: var(--text-clr);
-  /* #fff;*/
 }
 
-/* ====== Botones ====== */
+/* =============================
+   BOTONES
+   ============================= */
 .btn-primary {
   background-color: var(--accent-clr);
   border-color: var(--accent-clr);
@@ -70,7 +77,26 @@
   color: #fff;
 }
 
-/* ====== Lista de pagos ====== */
+/* =============================
+   LISTA DE PAGOS (Scroll interno)
+   ============================= */
+#listaPagos {
+  max-height: 420px;        /* altura máxima en escritorio */
+  overflow-y: auto;         /* scroll vertical */
+  padding-right: 6px;
+  scroll-behavior: smooth;
+}
+
+#listaPagos::-webkit-scrollbar {
+  width: 6px;
+}
+
+#listaPagos::-webkit-scrollbar-thumb {
+  background-color: var(--accent-clr);
+  border-radius: 4px;
+}
+
+/* Ítems */
 .list-group-item {
   background-color: var(--secondary-componente-base-clr);
   border-color: var(--componente-border-clr);
@@ -82,7 +108,9 @@
   background-color: var(--hover-clr);
 }
 
-/* ====== Badges (estado del pago) ====== */
+/* =============================
+   BADGES
+   ============================= */
 .badge {
   font-size: 0.85rem;
   font-weight: 500;
@@ -104,7 +132,9 @@
   color: #fff;
 }
 
-/* ====== Totales ====== */
+/* =============================
+   TOTALES
+   ============================= */
 #totalCantidad,
 #totalMonto {
   font-weight: 600;
@@ -114,7 +144,9 @@
   color: var(--accent-clr);
 }
 
-/* ====== Modal ====== */
+/* =============================
+   MODAL
+   ============================= */
 .modal-content {
   background-color: var(--secondary-componente-base-clr);
   border: 1px solid var(--componente-border-clr);
@@ -130,7 +162,7 @@
   border-top: 1px solid var(--secondary-line-clr);
 }
 
-/* ====== Inputs dentro del modal ====== */
+/* Inputs del modal */
 #modalPago .form-control,
 #modalPago .form-select,
 #modalPago textarea {
@@ -146,24 +178,21 @@
   box-shadow: 0 0 0 0.2rem rgba(94, 99, 255, 0.25);
 }
 
-/* ====== Mensaje de éxito ====== */
-#modalExito .modal-content {
-  background-color: #16a34a;
-  border: none;
-  color: #fff;
-}
-
-/* ====== Responsividad ====== */
+/* =============================
+   RESPONSIVE
+   ============================= */
 @media (max-width: 768px) {
+
   .container h2 {
     font-size: 1.4rem;
   }
 
-  .btn {
+  #listaPagos {
+    max-height: 300px;   /* Más chico en celulares */
     font-size: 0.9rem;
   }
 
-  #listaPagos {
+  .btn {
     font-size: 0.9rem;
   }
 }

@@ -66,7 +66,7 @@
         <h6 class="card-title mb-2">Historial de Pagos</h6>
         <p class="text-secondary small">Registro completo de transacciones</p>
 
-        <div class="input-group mb-3"> <!--icon  cambiado por current color //stroke="#ffffff"-->
+        <div class="input-group mb-3">
           <span
             class="input-group-text card-input bg-transparent border-secondary d-flex align-items-center justify-content-center"
             style="width:70px; height:70px;">
@@ -80,8 +80,6 @@
           <input id="buscador" type="text" class="form-control card-input border-secondary"
             placeholder="Buscar por socio, ID o DNI...">
         </div>
-
-
 
         <div id="listaPagos" class="list-group"></div>
       </div>
@@ -119,25 +117,21 @@
               <input type="text" id="socio" name="socio" class="form-control card-input" readonly>
             </div>
 
+            <!-- FECHA DE PAGO -->
+            <div class="mb-3">
+              <label class="form-label">Fecha de Pago</label>
+              <input type="date" id="fechaPago" name="fechaPago" class="form-control card-input">
+            </div>
 
-
-            <!-- FECHAS -->
-            <div class="row g-2 mb-3">
-              <div class="col-6">
-                <label class="form-label">Fecha de Pago</label>
-                <input type="date" id="fechaPago" name="fechaPago" class="form-control card-input">
+            <!-- MEMBRESÍAS -->
+            <div class="mb-3">
+              <label class="form-label">Membresías</label>
+              <div id="membresiasContainer" class="d-grid gap-2">
+                <p class="text-secondary small mb-0">Cargando membresías disponibles...</p>
               </div>
-              <!-- MEMBRESÍAS -->
-              <div class="mb-3">
-                <label class="form-label">Membresías</label>
-                <div id="membresiasContainer" class="d-grid gap-1">
-                  <p class="text-secondary small mb-0">Cargando membresías disponibles...</p>
-                </div>
-              </div>
-              <div class="col-6">
-                <label class="form-label">Fecha de Vencimiento</label>
-                <input type="date" id="fechaVencimiento" name="fechaVencimiento" class="form-control card-input" readonly>
-              </div>
+              <small class="text-secondary">
+                Seleccioná una o varias membresías. Cada una tendrá su propia fecha de vencimiento.
+              </small>
             </div>
 
             <!-- MÉTODO -->
