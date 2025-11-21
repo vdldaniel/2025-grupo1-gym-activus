@@ -209,6 +209,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/pagos/agregar', [PagoController::class, 'agregar'])
         ->name('pagos.agregar');
+
+    Route::get('/pagos/membresia_activa/{idSocio}', [PagoController::class, 'membresia_activa']);
 });
 
 

@@ -125,12 +125,12 @@
 
             <!-- MEMBRESÍAS -->
             <div class="mb-3">
-              <label class="form-label">Membresías</label>
+              <label class="form-label">Membresía</label>
               <div id="membresiasContainer" class="d-grid gap-2">
                 <p class="text-secondary small mb-0">Cargando membresías disponibles...</p>
               </div>
               <small class="text-secondary">
-                Seleccioná una o varias membresías. Cada una tendrá su propia fecha de vencimiento.
+                Seleccioná una membresía. Tendrá su propia fecha de vencimiento.
               </small>
             </div>
 

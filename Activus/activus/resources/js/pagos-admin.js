@@ -2,7 +2,6 @@
 // PAGOS – ADMINISTRATIVO (LARAVEL)
 // ==============================
 document.addEventListener("DOMContentLoaded", async () => {
-  // Si no estamos en la vista de pagos, no hacer nada
   if (!document.getElementById("listaPagos")) return;
 
   // ==============================
@@ -13,6 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     listarMembresias: "/pagos/listar_membresias",
     buscarSocio: "/pagos/buscar_socio",
     agregar: "/pagos/agregar",
+    membresiaActiva: (id) => `/pagos/membresia_activa/${id}`,
   };
 
   const csrfToken = document
@@ -39,58 +39,39 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function limpiarBackdrop() {
-  setTimeout(() => {
-    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-    document.body.classList.remove('modal-open');
-    document.body.style.removeProperty('overflow');
-    document.body.style.removeProperty('padding-right');
-  }, 300);
-}
-
+    setTimeout(() => {
+      document.querySelectorAll(".modal-backdrop").forEach((b) => b.remove());
+      document.body.classList.remove("modal-open");
+      document.body.style.removeProperty("overflow");
+      document.body.style.removeProperty("padding-right");
+    }, 300);
+  }
 
   async function fetchSeguro(url, options = {}) {
     try {
-      const baseHeaders = {
+      const headers = {
         Accept: "application/json",
+        ...(csrfToken ? { "X-CSRF-TOKEN": csrfToken } : {}),
+        ...((options.body && !options.headers?.["Content-Type"])
+          ? { "Content-Type": "application/json" }
+          : {}),
+        ...(options.headers || {}),
       };
-
-      if (csrfToken) {
-        baseHeaders["X-CSRF-TOKEN"] = csrfToken;
-      }
-
-      if (options.body && !options.headers?.["Content-Type"]) {
-        baseHeaders["Content-Type"] = "application/json";
-      }
 
       const resp = await fetch(url, {
         ...options,
-        headers: {
-          ...baseHeaders,
-          ...(options.headers || {}),
-        },
-        credentials: "include", // para enviar la sesión
+        headers,
+        credentials: "include",
       });
 
-      // Si la respuesta no es JSON, tratamos de mostrar error genérico
       const contentType = resp.headers.get("content-type") || "";
       if (!contentType.includes("application/json")) {
-        if (!resp.ok) {
-          throw new Error(
-            `Error ${resp.status}: el servidor no devolvió JSON válido`
-          );
-        }
+        if (!resp.ok) throw new Error(`Error ${resp.status}`);
         return null;
       }
 
       const data = await resp.json();
-
-      if (!resp.ok) {
-        const msg =
-          data?.message ||
-          data?.error ||
-          `Error ${resp.status} al procesar la solicitud`;
-        throw new Error(msg);
-      }
+      if (!resp.ok) throw new Error(data?.message || data?.error);
 
       return data;
     } catch (err) {
@@ -105,21 +86,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ==============================
-  // ELEMENTOS DEL DOM
+  // ELEMENTOS DOM
   // ==============================
   const listaPagos = document.getElementById("listaPagos");
   const buscador = document.getElementById("buscador");
-
-  const filtroTipo = document.getElementById("filtroTipo");
-  const filtroRango = document.getElementById("filtroRango");
-  const fechaDesde = document.getElementById("fechaDesde");
-  const fechaHasta = document.getElementById("fechaHasta");
-  const btnFiltrar = document.getElementById("btnFiltrar");
-
   const totalCantidad = document.getElementById("totalCantidad");
   const totalMonto = document.getElementById("totalMonto");
-
   const formPago = document.getElementById("formPago");
+
   const dniInput = document.getElementById("dni");
   const idSocioInput = document.getElementById("idSocio");
   const socioInput = document.getElementById("socio");
@@ -127,71 +101,55 @@ document.addEventListener("DOMContentLoaded", async () => {
   const metodoSelect = document.getElementById("metodo");
   const montoTotalInput = document.getElementById("montoTotal");
   const observacionInput = document.getElementById("observacion");
-  const membresiasContainer = document.getElementById("membresiasContainer");
 
-  const modalPagoEl = document.getElementById("modalPago");
-  const modalPago =
-    modalPagoEl && window.bootstrap
-      ? new bootstrap.Modal(modalPagoEl)
-      : null;
+  const membresiasContainer = document.getElementById("membresiasContainer");
 
   let pagos = [];
   let membresias = [];
 
   // ==============================
-  // FORMATEOS
+  // FORMATOS
   // ==============================
-  function formatearFecha(fecha) {
-    if (!fecha) return "-";
-    const d = new Date(fecha);
-    if (isNaN(d.getTime())) return fecha;
-    return d.toLocaleDateString("es-AR");
+  function formatearFecha(f) {
+    if (!f) return "-";
+    const d = new Date(f);
+    return isNaN(d) ? f : d.toLocaleDateString("es-AR");
   }
 
-  function formatearMoneda(valor) {
-    if (valor == null) return "$0";
-    const num = Number(valor);
-    if (isNaN(num)) return `$${valor}`;
-    return num.toLocaleString("es-AR", {
-      style: "currency",
-      currency: "ARS",
-      minimumFractionDigits: 0,
-    });
+  function formatearMoneda(v) {
+    const n = Number(v);
+    return isNaN(n)
+      ? `$${v}`
+      : n.toLocaleString("es-AR", {
+          style: "currency",
+          currency: "ARS",
+          minimumFractionDigits: 0,
+        });
   }
 
-  function unidadLegible(unidad) {
-    switch (unidad) {
-      case "dias":
-        return "día(s)";
-      case "semanas":
-        return "semana(s)";
-      case "meses":
-        return "mes(es)";
-      case "años":
-        return "año(s)";
-      default:
-        return unidad || "";
-    }
+  function unidadLegible(u) {
+    return (
+      {
+        dias: "día(s)",
+        semanas: "semana(s)",
+        meses: "mes(es)",
+        años: "año(s)",
+      }[u] || u
+    );
   }
 
   // ==============================
-  // RENDER DE PAGOS
+  // RENDER PAGOS
   // ==============================
-  function renderPagos(filtroTexto = "") {
-    const texto = filtroTexto.trim().toLowerCase();
-
-    let filtrados = pagos;
-
-    if (texto) {
-      filtrados = pagos.filter((p) => {
-        return (
-          String(p.id).includes(texto) ||
-          String(p.dni || "").includes(texto) ||
-          String(p.socio || "").toLowerCase().includes(texto) ||
-          String(p.plan || "").toLowerCase().includes(texto)
-        );
-      });
-    }
+  function renderPagos(filtro = "") {
+    const texto = filtro.toLowerCase().trim();
+    const filtrados = pagos.filter(
+      (p) =>
+        String(p.id).includes(texto) ||
+        String(p.dni).includes(texto) ||
+        p.socio.toLowerCase().includes(texto) ||
+        p.plan.toLowerCase().includes(texto)
+    );
 
     listaPagos.innerHTML = "";
 
@@ -199,14 +157,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       listaPagos.innerHTML =
         '<div class="text-secondary small">No hay pagos registrados.</div>';
       totalCantidad.textContent = "0";
-      totalMonto.textContent = "$0 recaudados";
+      totalMonto.textContent = "$0";
       return;
     }
 
     let suma = 0;
 
-    filtrados.forEach((pago) => {
-      suma += Number(pago.monto || 0);
+    filtrados.forEach((p) => {
+      suma += Number(p.monto);
 
       const item = document.createElement("div");
       item.className =
@@ -214,17 +172,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       item.innerHTML = `
         <div class="d-flex flex-column">
-          <span class="fw-semibold">${pago.socio} (${pago.dni})</span>
-          <span class="text-secondary small">${pago.plan} — ${pago.metodo}</span>
-          <span class="text-secondary small">
-            Pago: ${formatearFecha(pago.fecha_pago)} · Vence: ${formatearFecha(
-        pago.fecha_vencimiento
-      )}
-          </span>
+          <span class="fw-semibold">${p.socio} (${p.dni})</span>
+          <span class="text-secondary small">${p.plan} — ${p.metodo}</span>
+          <span class="text-secondary small">Pago: ${formatearFecha(
+            p.fecha_pago
+          )} · Vence: ${formatearFecha(p.fecha_vencimiento)}</span>
         </div>
         <div class="text-end">
-          <span class="fw-bold">${formatearMoneda(pago.monto)}</span><br>
-          <span class="badge bg-secondary">${pago.estado}</span>
+          <span class="fw-bold">${formatearMoneda(p.monto)}</span><br>
+          <span class="badge bg-secondary">${p.estado}</span>
         </div>
       `;
 
@@ -236,202 +192,135 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function cargarPagos() {
-    try {
-      const data = await fetchSeguro(RUTAS.listar, {
-        method: "GET",
-      });
-
-      pagos = Array.isArray(data) ? data : [];
-      renderPagos(buscador.value);
-    } catch (e) {
-      console.error("Error cargando pagos:", e);
-    }
+    const data = await fetchSeguro(RUTAS.listar);
+    pagos = Array.isArray(data) ? data : [];
+    renderPagos(buscador.value);
   }
 
   // ==============================
-  // FECHAS POR MEMBRESÍA
+  // CÁLCULO FECHA DE VENCIMIENTO
   // ==============================
-  function calcularFechaVencimiento(fechaInicio, cantidad, unidad) {
-    if (!fechaInicio || !cantidad) return "";
+  function calcularVenc(fechaInicio, cantidad, unidad) {
     const d = new Date(fechaInicio + "T00:00:00");
-    if (isNaN(d.getTime())) return "";
+    if (isNaN(d)) return "";
 
     const n = Number(cantidad);
-    if (!n || n <= 0) return "";
+    if (!n) return "";
 
-    switch (unidad) {
-      case "dias":
-        d.setDate(d.getDate() + n);
-        break;
-      case "semanas":
-        d.setDate(d.getDate() + n * 7);
-        break;
-      case "meses":
-        d.setMonth(d.getMonth() + n);
-        break;
-      case "años":
-        d.setFullYear(d.getFullYear() + n);
-        break;
-      default:
-        d.setDate(d.getDate() + n);
-        break;
-    }
+    if (unidad === "dias") d.setDate(d.getDate() + n);
+    else if (unidad === "semanas") d.setDate(d.getDate() + n * 7);
+    else if (unidad === "meses") d.setMonth(d.getMonth() + n);
+    else if (unidad === "años") d.setFullYear(d.getFullYear() + n);
 
     return d.toISOString().slice(0, 10);
   }
 
-  function recalcularFechasVencimiento() {
-    const fechaPago = fechaPagoInput.value;
-    membresias.forEach((m) => {
-      const check = document.querySelector(
-        `input[name="membresias[]"][value="${m.id}"]`
-      );
-      const inputFecha = document.querySelector(
-        `input.fecha-vencimiento-membresia[data-id-membresia="${m.id}"]`
-      );
-      if (!check || !inputFecha) return;
-
-      if (!fechaPago || !check.checked) {
-        inputFecha.disabled = true;
-        inputFecha.value = "";
-        return;
-      }
-
-      inputFecha.disabled = false;
-
-      // Si no tiene fecha seteada manualmente, calculamos automática
-      if (!inputFecha.value) {
-        inputFecha.value = calcularFechaVencimiento(
-          fechaPago,
-          m.duracion,
-          m.unidad
-        );
-      }
-    });
-  }
-
-  // ==============================
-  // MEMBRESÍAS
-  // ==============================
-  function renderMembresias() {
-    if (!membresias.length) {
-      membresiasContainer.innerHTML =
-        '<p class="text-secondary small mb-0">No hay membresías configuradas.</p>';
+  function actualizarMontoYFecha() {
+    const radio = document.querySelector('input[name="membresia"]:checked');
+    if (!radio) {
+      montoTotalInput.value = "";
       return;
     }
 
+    const m = membresias.find((x) => Number(x.id) === Number(radio.value));
+    if (!m) return;
+
+    montoTotalInput.value = formatearMoneda(m.precio);
+
+    const inputFecha = document.querySelector(
+      `.fecha-vencimiento-membresia[data-id="${m.id}"]`
+    );
+
+    inputFecha.disabled = false;
+    inputFecha.value = calcularVenc(fechaPagoInput.value, m.duracion, m.unidad);
+  }
+
+  // ==============================
+  // RENDER MEMBRESÍAS
+  // ==============================
+  function renderMembresias() {
     membresiasContainer.innerHTML = "";
 
-    membresias.forEach((membresia, index) => {
-      const idCheck = `membresia_${membresia.id}`;
-      const idFecha = `membresia_fecha_${membresia.id}`;
-
+    membresias.forEach((m) => {
       const wrapper = document.createElement("div");
 
       wrapper.innerHTML = `
-        <div class="border rounded p-2">
-          <div class="form-check d-flex justify-content-between align-items-center">
-            <div>
-              <input class="form-check-input chk-membresia" type="checkbox"
-                     name="membresias[]" value="${membresia.id}"
-                     id="${idCheck}">
-              <label class="form-check-label" for="${idCheck}">
-                ${membresia.nombre} — ${formatearMoneda(membresia.precio)}
-              </label>
-            </div>
-            <span class="text-secondary small">
-              ${membresia.duracion} ${unidadLegible(membresia.unidad)}
-            </span>
+      <div class="border rounded p-2">
+        <div class="form-check d-flex justify-content-between">
+          <div>
+            <input type="radio" class="form-check-input" 
+                   name="membresia" value="${m.id}" id="memb_${m.id}">
+            <label class="form-check-label" for="memb_${m.id}">
+              ${m.nombre} — ${formatearMoneda(m.precio)}
+            </label>
           </div>
-          <div class="mt-2 ms-4">
-            <label class="form-label small mb-1" for="${idFecha}">Vence</label>
-            <input type="date"
-                   class="form-control form-control-sm card-input fecha-vencimiento-membresia"
-                   id="${idFecha}"
-                   data-id-membresia="${membresia.id}"
-                   disabled>
-          </div>
+          <span class="text-secondary small">${m.duracion} ${unidadLegible(
+        m.unidad
+      )}</span>
         </div>
+
+        <div class="mt-2 ms-4">
+          <label class="form-label small mb-1">Vence</label>
+          <input type="date" disabled 
+            class="form-control form-control-sm card-input fecha-vencimiento-membresia"
+            data-id="${m.id}">
+        </div>
+      </div>
       `;
 
       membresiasContainer.appendChild(wrapper);
     });
-
-    actualizarMontoYVencimiento();
-    recalcularFechasVencimiento();
   }
 
   async function cargarMembresias() {
-    try {
-      const data = await fetchSeguro(RUTAS.listarMembresias, {
-        method: "GET",
-      });
+    const data = await fetchSeguro(RUTAS.listarMembresias);
+    membresias = Array.isArray(data) ? data : [];
+    renderMembresias();
+  }
 
-      membresias = Array.isArray(data) ? data : [];
-      renderMembresias();
-    } catch (e) {
-      console.error("Error cargando membresías:", e);
+  // ==============================
+  // SOCIO + MEMBRESÍA ACTIVA
+  // ==============================
+  async function cargarMembresiaActiva(idSocio) {
+    const data = await fetchSeguro(RUTAS.membresiaActiva(idSocio));
+    if (!data) return;
+
+    const radio = document.querySelector(
+      `input[name="membresia"][value="${data.ID_Tipo_Membresia}"]`
+    );
+
+    if (radio) {
+      radio.checked = true;
+      actualizarMontoYFecha();
+
+      const hoy = new Date().toISOString().slice(0, 10);
+      if (data.Fecha_Fin >= hoy) {
+        mostrarModal(
+          "warning",
+          "Membresía activa",
+          "Este socio ya tiene una membresía activa. ¿Desea renovarla igualmente?"
+        );
+      }
     }
   }
-
-  function actualizarMontoYVencimiento() {
-    const seleccionados = Array.from(
-      document.querySelectorAll('input[name="membresias[]"]:checked')
-    );
-    let total = 0;
-
-    seleccionados.forEach((chk) => {
-      const id = Number(chk.value);
-      const m = membresias.find((mm) => Number(mm.id) === id);
-      if (!m) return;
-      total += Number(m.precio || 0);
-    });
-
-    montoTotalInput.value = total ? formatearMoneda(total) : "";
-
-    // Recalcular fechas para las seleccionadas
-    recalcularFechasVencimiento();
-  }
-
-  // ==============================
-  // BUSCAR SOCIO
-  // ==============================
-  let timeoutBusqueda = null;
 
   async function buscarSocio(params) {
-    if (!params) return;
+    const query = new URLSearchParams(params).toString();
+    const data = await fetchSeguro(`${RUTAS.buscarSocio}?${query}`);
 
-    try {
-      const query = new URLSearchParams(params).toString();
-      const data = await fetchSeguro(`${RUTAS.buscarSocio}?${query}`, {
-        method: "GET",
-      });
+    if (data.success && data.socio) {
+      idSocioInput.value = data.socio.id;
+      dniInput.value = data.socio.DNI;
+      socioInput.value = `${data.socio.Nombre} ${data.socio.Apellido}`;
 
-      if (data && data.success && data.socio) {
-        idSocioInput.value = data.socio.id;
-        socioInput.value = `${data.socio.Nombre} ${data.socio.Apellido}`;
-        dniInput.value = data.socio.DNI;
-      } else {
-        socioInput.value = "";
-      }
-    } catch (e) {
-      console.error("Error al buscar socio:", e);
+      await cargarMembresiaActiva(data.socio.id);
+    } else {
+      socioInput.value = "";
     }
   }
 
-  function programarBusquedaSocio(tipo) {
-    clearTimeout(timeoutBusqueda);
-    timeoutBusqueda = setTimeout(() => {
-      if (tipo === "dni" && dniInput.value.trim()) {
-        buscarSocio({ dni: dniInput.value.trim() });
-      } else if (tipo === "id" && idSocioInput.value.trim()) {
-        buscarSocio({ id: idSocioInput.value.trim() });
-      }
-    }, 400);
-  }
-
   // ==============================
-  // ENVÍO DE FORMULARIO
+  // SUBMIT
   // ==============================
   formPago.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -440,182 +329,65 @@ document.addEventListener("DOMContentLoaded", async () => {
     const fechaPago = fechaPagoInput.value;
     const metodo = metodoSelect.value;
     const observacion = observacionInput.value.trim();
+    const radio = document.querySelector('input[name="membresia"]:checked');
 
-    if (!idSocio) {
-      mostrarModal("warning", "Datos incompletos", "Debe seleccionar un socio.");
-      return;
-    }
+    if (!idSocio) return mostrarModal("warning", "Falta socio", "Seleccione un socio.");
+    if (!fechaPago) return mostrarModal("warning", "Falta fecha", "Ingrese la fecha de pago.");
+    if (!radio) return mostrarModal("warning", "Falta membresía", "Seleccione una membresía.");
 
-    if (!fechaPago) {
-      mostrarModal(
-        "warning",
-        "Datos incompletos",
-        "Debe ingresar la fecha de pago."
-      );
-      return;
-    }
-
-    // Construimos los ítems (membresía + fecha propia)
-    const items = [];
-    const seleccionados = Array.from(
-      document.querySelectorAll('input[name="membresias[]"]:checked')
-    );
-
-    if (!seleccionados.length) {
-      mostrarModal(
-        "warning",
-        "Datos incompletos",
-        "Debe seleccionar al menos una membresía."
-      );
-      return;
-    }
-
-    for (const chk of seleccionados) {
-      const id = Number(chk.value);
-      const inputFecha = document.querySelector(
-        `input.fecha-vencimiento-membresia[data-id-membresia="${id}"]`
-      );
-      const fechaVencimiento = inputFecha?.value;
-
-      if (!fechaVencimiento) {
-        mostrarModal(
-          "warning",
-          "Fechas incompletas",
-          "Verifique la fecha de vencimiento de cada membresía seleccionada."
-        );
-        return;
-      }
-
-      items.push({
-        idTipoMembresia: id,
-        fechaVencimiento,
-      });
-    }
+    const fechaVenc = document.querySelector(
+      `.fecha-vencimiento-membresia[data-id="${radio.value}"]`
+    ).value;
 
     const payload = {
       idSocio: Number(idSocio),
       fechaPago,
       metodo,
       observacion,
-      items,
+      idTipoMembresia: Number(radio.value),
+      fechaVencimiento: fechaVenc,
     };
 
-    try {
-      const data = await fetchSeguro(RUTAS.agregar, {
-        method: "POST",
-        body: JSON.stringify(payload),
-      });
+    const data = await fetchSeguro(RUTAS.agregar, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
 
-      if (data && data.success) {
-        mostrarModal("success", "Pago registrado", data.message || "");
-        formPago.reset();
-        socioInput.value = "";
-        montoTotalInput.value = "";
-        membresiasContainer.innerHTML =
-          '<p class="text-secondary small mb-0">Cargando membresías disponibles...</p>';
-        await Promise.all([cargarPagos(), cargarMembresias()]);
-        if (modalPago) {
-        modalPago.hide();
-        limpiarBackdrop(); // <<<<<<<<<<<<<< AGREGA ESTO
-      }
-
-      } else {
-        mostrarModal(
-          "error",
-          "Error al registrar",
-          data?.message || "No se pudo registrar el pago."
-        );
-      }
-    } catch (e) {
-      console.error("Error al registrar pago:", e);
+    if (data.success) {
+      mostrarModal("success", "Pago registrado", data.message || "");
+      formPago.reset();
+      socioInput.value = "";
+      montoTotalInput.value = "";
+      await cargarPagos();
+      await cargarMembresias();
+      limpiarBackdrop();
+      bootstrap.Modal.getInstance(document.getElementById("modalPago")).hide();
     }
   });
-
-  function limpiarBackdrop() {
-  setTimeout(() => {
-    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-    document.body.classList.remove('modal-open');
-    document.body.style.removeProperty('overflow');
-    document.body.style.removeProperty('padding-right');
-  }, 300);
-}
-
 
   // ==============================
   // EVENTOS
   // ==============================
-  buscador?.addEventListener("input", () => {
-    renderPagos(buscador.value);
-  });
+  buscador.addEventListener("input", () => renderPagos(buscador.value));
 
-  filtroTipo?.addEventListener("change", () => {
-    if (filtroTipo.value === "rango") {
-      filtroRango.classList.remove("d-none");
-    } else {
-      filtroRango.classList.add("d-none");
-      renderPagos(buscador.value);
-    }
-  });
+  dniInput.addEventListener("input", () =>
+    buscarSocio({ dni: dniInput.value.trim() })
+  );
 
-  btnFiltrar?.addEventListener("click", () => {
-    const desde = fechaDesde.value;
-    const hasta = fechaHasta.value;
+  idSocioInput.addEventListener("input", () =>
+    buscarSocio({ id: idSocioInput.value.trim() })
+  );
 
-    if (!desde || !hasta) {
-      mostrarModal(
-        "warning",
-        "Fechas incompletas",
-        "Selecciona fecha desde y hasta."
-      );
-      return;
-    }
-
-    const fd = new Date(desde);
-    const fh = new Date(hasta);
-    const filtrados = pagos.filter((p) => {
-      const fp = new Date(p.fecha_pago);
-      return fp >= fd && fp <= fh;
-    });
-
-    listaPagos.innerHTML = "";
-    if (!filtrados.length) {
-      listaPagos.innerHTML =
-        '<div class="text-secondary small">No hay pagos en ese rango.</div>';
-      totalCantidad.textContent = "0";
-      totalMonto.textContent = "$0 recaudados";
-      return;
-    }
-
-    let suma = 0;
-    filtrados.forEach((pago) => {
-      suma += Number(pago.monto || 0);
-    });
-
-    totalCantidad.textContent = filtrados.length;
-    totalMonto.textContent = `${formatearMoneda(suma)} recaudados`;
-    renderPagos(buscador.value);
-  });
-
-  dniInput.addEventListener("input", () => programarBusquedaSocio("dni"));
-  idSocioInput.addEventListener("input", () => programarBusquedaSocio("id"));
-
-  fechaPagoInput.addEventListener("change", () => {
-    recalcularFechasVencimiento();
-  });
+  fechaPagoInput.addEventListener("change", () => actualizarMontoYFecha());
 
   membresiasContainer.addEventListener("change", (e) => {
-    if (e.target.matches('input[name="membresias[]"]')) {
-      // Si tilda/destilda, actualizamos monto y fechas
-      actualizarMontoYVencimiento();
-    }
+    if (e.target.matches('input[name="membresia"]')) actualizarMontoYFecha();
   });
 
   // ==============================
   // INICIALIZACIÓN
   // ==============================
-  // Fecha de pago por defecto = hoy
-  const hoy = new Date().toISOString().slice(0, 10);
-  if (fechaPagoInput) fechaPagoInput.value = hoy;
-
-  await Promise.all([cargarPagos(), cargarMembresias()]);
+  fechaPagoInput.value = new Date().toISOString().slice(0, 10);
+  await cargarPagos();
+  await cargarMembresias();
 });
