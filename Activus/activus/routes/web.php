@@ -195,14 +195,22 @@ Route::delete('/rutinas/{id}', [RutinaController::class, 'eliminarRutina'])->nam
 Route::get('/rutinas/lista', [RutinaController::class, 'lista'])->name('rutinas.lista');
 Route::get('/rutinas/{id}', [RutinaController::class, 'verRutina'])->name('rutinas.ver');
 
+Route::middleware(['auth'])->group(function () {
 
+    Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
 
+    Route::get('/pagos/listar', [PagoController::class, 'listar'])->name('pagos.listar');
 
-Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
-Route::get('/pagos/listar', [PagoController::class, 'listar'])->name('pagos.listar');
-Route::get('/pagos/listar_membresias', [PagoController::class, 'listar_membresias'])->name('pagos.listar_membresias');
-Route::get('/pagos/buscar_socio', [PagoController::class, 'buscar_socio'])->name('pagos.buscar_socio');
-Route::post('/pagos/agregar', [PagoController::class, 'agregar'])->name('pagos.agregar');
+    Route::get('/pagos/listar_membresias', [PagoController::class, 'listar_membresias'])
+        ->name('pagos.listar_membresias');
+
+    Route::get('/pagos/buscar_socio', [PagoController::class, 'buscar_socio'])
+        ->name('pagos.buscar_socio');
+
+    Route::post('/pagos/agregar', [PagoController::class, 'agregar'])
+        ->name('pagos.agregar');
+});
+
 
 Route::get('/admin/membresias', [GestionTipoMembresiaController::class, 'index'])->name('admin.membresias');
 Route::get('/admin/membresias/listar', [GestionTipoMembresiaController::class, 'listar']);

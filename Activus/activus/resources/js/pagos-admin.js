@@ -2,338 +2,620 @@
 // PAGOS – ADMINISTRATIVO (LARAVEL)
 // ==============================
 document.addEventListener("DOMContentLoaded", async () => {
+  // Si no estamos en la vista de pagos, no hacer nada
   if (!document.getElementById("listaPagos")) return;
+
+  // ==============================
+  // CONFIG
+  // ==============================
+  const RUTAS = {
+    listar: "/pagos/listar",
+    listarMembresias: "/pagos/listar_membresias",
+    buscarSocio: "/pagos/buscar_socio",
+    agregar: "/pagos/agregar",
+  };
+
+  const csrfToken = document
+    .querySelector('meta[name="csrf-token"]')
+    ?.getAttribute("content");
 
   // ==============================
   // FUNCIONES GLOBALES
   // ==============================
 
   function mostrarModal(icon, title, text) {
-    Swal.fire({
-      icon,
-      title,
-      text,
-      confirmButtonColor: "var(--primary-element)",/*'#3085d6',*/
-      background: "var(--base-clr)",  /*'#1e1e2f'*/
-      color: "var(--text-clr)" /*'#fff'*/
-    });
-  }
-
-  function limpiarBackdrop() {
-    setTimeout(() => {
-      document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
-      document.body.classList.remove('modal-open');
-      document.body.style.removeProperty('overflow');
-      document.body.style.removeProperty('padding-right');
-    }, 400);
-  }
-
-  async function fetchSeguro(url, options = {}, mostrarCarga = false) {
-    try {
-      if (mostrarCarga) {
-        Swal.fire({
-          title: 'Procesando...',
-          allowOutsideClick: false,
-          didOpen: () => Swal.showLoading(),
-          background: "var(--base-clr)",/* '#1e1e2f',*/
-          color: "var(--text-clr)"/* '#fff'*/
-        });
-      }
-
-      const headers = options.headers || {};
-      headers['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').content;
-
-      const response = await fetch(url, { ...options, headers });
-      if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
-
-      const data = await response.json();
-      if (mostrarCarga) Swal.close();
-      return data;
-    } catch (error) {
-      if (mostrarCarga) Swal.close();
-      mostrarModal('error', 'Error de conexión', 'No se pudo completar la acción. Intenta nuevamente.');
-      console.error("fetchSeguro →", error);
-      return null;
+    if (window.Swal) {
+      Swal.fire({
+        icon,
+        title,
+        text,
+        confirmButtonColor: "var(--primary-element)",
+        background: "var(--base-clr)",
+        color: "var(--text-clr)",
+      });
+    } else {
+      alert(`${title}\n\n${text}`);
     }
   }
 
-  const API = {
-    listar: '/pagos/listar',
-    membresias: '/pagos/listar_membresias',
-    buscarSocio: (tipo, valor) => `/pagos/buscar_socio?${tipo}=${encodeURIComponent(valor)}`,
-    agregar: '/pagos/agregar',
-  };
+  function limpiarBackdrop() {
+  setTimeout(() => {
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
+  }, 300);
+}
 
-  let PLANES = [];
-  let pagos = [];
 
-  const hoyLocal = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-  };
+  async function fetchSeguro(url, options = {}) {
+    try {
+      const baseHeaders = {
+        Accept: "application/json",
+      };
 
-  // ELEMENTOS DOM
-  const lista = document.getElementById("listaPagos");
+      if (csrfToken) {
+        baseHeaders["X-CSRF-TOKEN"] = csrfToken;
+      }
+
+      if (options.body && !options.headers?.["Content-Type"]) {
+        baseHeaders["Content-Type"] = "application/json";
+      }
+
+      const resp = await fetch(url, {
+        ...options,
+        headers: {
+          ...baseHeaders,
+          ...(options.headers || {}),
+        },
+        credentials: "include", // para enviar la sesión
+      });
+
+      // Si la respuesta no es JSON, tratamos de mostrar error genérico
+      const contentType = resp.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        if (!resp.ok) {
+          throw new Error(
+            `Error ${resp.status}: el servidor no devolvió JSON válido`
+          );
+        }
+        return null;
+      }
+
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        const msg =
+          data?.message ||
+          data?.error ||
+          `Error ${resp.status} al procesar la solicitud`;
+        throw new Error(msg);
+      }
+
+      return data;
+    } catch (err) {
+      console.error("[fetchSeguro] Error:", err);
+      mostrarModal(
+        "error",
+        "Error",
+        err.message || "Ocurrió un error al comunicarse con el servidor."
+      );
+      throw err;
+    }
+  }
+
+  // ==============================
+  // ELEMENTOS DEL DOM
+  // ==============================
+  const listaPagos = document.getElementById("listaPagos");
+  const buscador = document.getElementById("buscador");
+
   const filtroTipo = document.getElementById("filtroTipo");
   const filtroRango = document.getElementById("filtroRango");
   const fechaDesde = document.getElementById("fechaDesde");
   const fechaHasta = document.getElementById("fechaHasta");
   const btnFiltrar = document.getElementById("btnFiltrar");
-  const buscador = document.getElementById("buscador");
-  const filtroEstado = document.getElementById("filtroEstado");
+
   const totalCantidad = document.getElementById("totalCantidad");
   const totalMonto = document.getElementById("totalMonto");
 
-  const dni = document.getElementById("dni");
-  const idSocio = document.getElementById("idSocio");
-  const socio = document.getElementById("socio");
+  const formPago = document.getElementById("formPago");
+  const dniInput = document.getElementById("dni");
+  const idSocioInput = document.getElementById("idSocio");
+  const socioInput = document.getElementById("socio");
+  const fechaPagoInput = document.getElementById("fechaPago");
+  const metodoSelect = document.getElementById("metodo");
+  const montoTotalInput = document.getElementById("montoTotal");
+  const observacionInput = document.getElementById("observacion");
   const membresiasContainer = document.getElementById("membresiasContainer");
-  const fechaPago = document.getElementById("fechaPago");
-  const fechaVencimiento = document.getElementById("fechaVencimiento");
-  const montoTotal = document.getElementById("montoTotal");
+
   const modalPagoEl = document.getElementById("modalPago");
+  const modalPago =
+    modalPagoEl && window.bootstrap
+      ? new bootstrap.Modal(modalPagoEl)
+      : null;
 
-  const toggleRango = () => {
-    if (!filtroTipo || !filtroRango) return;
-    filtroRango.classList.toggle("d-none", filtroTipo.value !== "rango");
-  };
+  let pagos = [];
+  let membresias = [];
 
-  // ============================
-  // BUSCAR SOCIO
-  // ============================
-  async function buscarSocio(tipo, valor) {
-    const data = await fetchSeguro(API.buscarSocio(tipo, valor));
-    if (!data) return;
-
-    if (data.success) {
-      const s = data.socio;
-      dni.value = s.DNI || '';
-      idSocio.value = s.id || '';
-      socio.value = `${s.Apellido ?? ''} ${s.Nombre ?? ''}`.trim();
-    } else {
-      mostrarModal('info', 'Socio no encontrado', 'Verifica el número de DNI o el ID ingresado.');
-    }
+  // ==============================
+  // FORMATEOS
+  // ==============================
+  function formatearFecha(fecha) {
+    if (!fecha) return "-";
+    const d = new Date(fecha);
+    if (isNaN(d.getTime())) return fecha;
+    return d.toLocaleDateString("es-AR");
   }
 
-  dni?.addEventListener("blur", () => {
-    if (dni.value.trim() !== "") buscarSocio("dni", dni.value.trim());
-  });
-
-  idSocio?.addEventListener("blur", () => {
-    if (idSocio.value.trim() !== "") buscarSocio("id", idSocio.value.trim());
-  });
-
-  // ============================
-  // CARGAR MEMBRESÍAS
-  // ============================
-  async function cargarMembresias() {
-    if (!membresiasContainer) return;
-    const data = await fetchSeguro(API.membresias);
-    if (!data) return;
-
-    PLANES = data;
-    membresiasContainer.innerHTML = "";
-    PLANES.forEach(m => {
-      membresiasContainer.insertAdjacentHTML("beforeend", `
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="${m.id}"
-                id="mem${m.id}" data-precio="${m.precio}" data-duracion="${m.duracion}">
-          <label class="form-check-label" for="mem${m.id}">
-            ${m.nombre} — $${Number(m.precio).toLocaleString()}
-          </label>
-        </div>
-      `);
+  function formatearMoneda(valor) {
+    if (valor == null) return "$0";
+    const num = Number(valor);
+    if (isNaN(num)) return `$${valor}`;
+    return num.toLocaleString("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      minimumFractionDigits: 0,
     });
   }
 
-  // ============================
-  // CALCULAR MONTO Y VENCIMIENTO
-  // ============================
-  membresiasContainer?.addEventListener("change", () => {
-    const seleccionadas = [...document.querySelectorAll("#membresiasContainer input:checked")];
-
-    const total = seleccionadas.reduce((sum, chk) => sum + Number(chk.dataset.precio || 0), 0);
-    montoTotal.value = total ? `$${total.toLocaleString()}` : "";
-
-    if (seleccionadas.length > 0) {
-      const hoy = fechaPago.value ? new Date(fechaPago.value + "T00:00:00") : new Date();
-      const diasMax = Math.max(...seleccionadas.map(chk => Number(chk.dataset.duracion || 0)));
-      const venc = new Date(hoy);
-
-      const dia = venc.getDate();
-      if (diasMax >= 28 && diasMax <= 31) {
-        venc.setMonth(venc.getMonth() + 1);
-      } else if (diasMax >= 89 && diasMax <= 92) {
-        venc.setMonth(venc.getMonth() + 3);
-      } else if (diasMax >= 180 && diasMax <= 190) {
-        venc.setMonth(venc.getMonth() + 6);
-      } else if (diasMax >= 360 && diasMax <= 370) {
-        venc.setFullYear(venc.getFullYear() + 1);
-      } else {
-        venc.setDate(venc.getDate() + diasMax);
-      }
-      if (venc.getDate() < dia) venc.setDate(0);
-      fechaVencimiento.value = venc.toISOString().split("T")[0];
-    } else {
-      fechaVencimiento.value = "";
+  function unidadLegible(unidad) {
+    switch (unidad) {
+      case "dias":
+        return "día(s)";
+      case "semanas":
+        return "semana(s)";
+      case "meses":
+        return "mes(es)";
+      case "años":
+        return "año(s)";
+      default:
+        return unidad || "";
     }
-  });
-
-  // ============================
-  // LIMPIAR MODAL AL ABRIR
-  // ============================
-  modalPagoEl?.addEventListener("show.bs.modal", () => {
-    if (fechaPago && !fechaPago.value) fechaPago.value = hoyLocal();
-    if (fechaVencimiento) fechaVencimiento.value = "";
-    if (montoTotal) montoTotal.value = "";
-    membresiasContainer?.querySelectorAll("input").forEach(i => (i.checked = false));
-  });
-
-  // ============================
-  // REGISTRO DE PAGO CON MODALES
-  // ============================
-  document.getElementById("formPago")?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    Swal.fire({
-      title: '¿Confirmar registro del pago?',
-      text: 'El pago será guardado en la base de datos.',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, registrar',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      background: "var(--base-clr)",  /* '#1e1e2f',*/
-      color: "var(--text-clr)"       /*'#fff'*/
-    }).then(async (result) => {
-      if (!result.isConfirmed) return;
-
-      const btnSubmit = document.querySelector("#formPago button[type='submit']");
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = "Registrando...";
-
-      const formData = new FormData(e.target);
-      const seleccionadas = [...document.querySelectorAll("#membresiasContainer input:checked")];
-
-      if (seleccionadas.length === 0) {
-        mostrarModal('info', 'Selecciona una membresía', 'Debes elegir al menos una antes de registrar el pago.');
-        btnSubmit.disabled = false;
-        btnSubmit.textContent = "Registrar Pago";
-        return;
-      }
-
-      seleccionadas.map(chk => chk.value).forEach(id => formData.append("membresias[]", id));
-
-      const data = await fetchSeguro(API.agregar, { method: "POST", body: formData }, true);
-
-      if (data && data.success) {
-        mostrarModal('success', '¡Pago registrado!', data.message || 'El pago se guardó correctamente.');
-        const modal = bootstrap.Modal.getInstance(modalPagoEl) || new bootstrap.Modal(modalPagoEl);
-        modal.hide();
-        limpiarBackdrop();
-        e.target.reset();
-        await cargarPagos();
-      } else if (data && !data.success) {
-        mostrarModal('error', 'Error al registrar', data.message || 'Verifica los datos del socio o la membresía.');
-      }
-
-      btnSubmit.disabled = false;
-      btnSubmit.textContent = "Registrar Pago";
-    });
-  });
-
-  // ============================
-  // CARGAR Y RENDER PAGOS
-  // ============================
-  async function cargarPagos() {
-    const data = await fetchSeguro(API.listar);
-    if (!data) return;
-    pagos = data;
-    aplicarFiltros();
   }
 
-  const basePorTipo = () => {
-    if (!filtroTipo) return pagos;
-    const tipo = filtroTipo.value;
-    if (tipo === "hoy") return pagos.filter(p => p.fecha_pago === hoyLocal());
-    if (tipo === "mes") return pagos.filter(p => (p.fecha_pago || '').startsWith(hoyLocal().slice(0, 7)));
-    if (tipo === "rango") {
-      const d = fechaDesde?.value, h = fechaHasta?.value;
-      if (d && h) return pagos.filter(p => p.fecha_pago >= d && p.fecha_pago <= h);
+  // ==============================
+  // RENDER DE PAGOS
+  // ==============================
+  function renderPagos(filtroTexto = "") {
+    const texto = filtroTexto.trim().toLowerCase();
+
+    let filtrados = pagos;
+
+    if (texto) {
+      filtrados = pagos.filter((p) => {
+        return (
+          String(p.id).includes(texto) ||
+          String(p.dni || "").includes(texto) ||
+          String(p.socio || "").toLowerCase().includes(texto) ||
+          String(p.plan || "").toLowerCase().includes(texto)
+        );
+      });
     }
-    return pagos;
-  };
 
-  function aplicarFiltros() {
-    let base = basePorTipo();
-    const q = (buscador?.value || "").toLowerCase().trim();
-    if (q) {
-      base = base.filter(p =>
-        (p.socio || '').toLowerCase().includes(q) ||
-        (p.dni || '').includes(q) ||
-        (p.plan || '').toLowerCase().includes(q)
-      );
-    }
-    const est = filtroEstado?.value || "";
-    if (est) base = base.filter(p => (p.estado || "").toLowerCase() === est.toLowerCase());
-    render(base);
-  }
+    listaPagos.innerHTML = "";
 
-  function badgeEstadoHtml(estado) {
-    const e = (estado || "").toLowerCase();
-    if (e === "activa") return `<span class="badge bg-success me-2">Activa</span>`;
-    if (e === "pendiente") return `<span class="badge bg-warning text-dark me-2">Pendiente</span>`;
-    if (e === "vencida") return `<span class="badge bg-danger me-2">Vencida</span>`;
-    return "";
-  }
-
-  function render(arr) {
-    if (!lista) return;
-    lista.innerHTML = "";
-    if (!arr.length) {
-      lista.innerHTML = `<p class="text-secondary mb-0">No se encontraron pagos.</p>`;
+    if (!filtrados.length) {
+      listaPagos.innerHTML =
+        '<div class="text-secondary small">No hay pagos registrados.</div>';
       totalCantidad.textContent = "0";
       totalMonto.textContent = "$0 recaudados";
       return;
     }
 
-    const ordenados = [...arr].sort((a, b) => String(b.fecha_pago).localeCompare(String(a.fecha_pago)));
-    ordenados.forEach(p => {
-      const badgeMetodo = `<span class="badge border text-white me-2">${p.metodo ?? ''}</span>`;
-      const badgeEstado = badgeEstadoHtml(p.estado);
-      const planTxt = p.plan ? `<p class="small text-info mb-1">${p.plan} — ${p.estado} — vence el ${p.fecha_vencimiento || 'sin fecha'}</p>` : "";
+    let suma = 0;
 
-      lista.insertAdjacentHTML("beforeend", `
-        <div class="list-group-item text-white border-secondary mb-2 rounded">
-          <div class="d-flex justify-content-between align-items-start gap-3">
-            <div class="flex-grow-1">
-              <p class="fw-bold mb-1">${p.socio ?? ''}</p>
-              ${planTxt}
-              <p class="text-secondary small mb-1">DNI: ${p.dni ?? ''} – ${p.fecha_pago ?? ''}</p>
-              ${p.observacion ? `<p class="small fst-italic mb-1">${p.observacion}</p>` : ""}
-            </div>
-            <div class="text-end">
-              <div>${badgeMetodo}${badgeEstado}<span class="fw-bold">$${Number(p.monto || 0).toLocaleString()}</span></div>
-            </div>
-          </div>
+    filtrados.forEach((pago) => {
+      suma += Number(pago.monto || 0);
+
+      const item = document.createElement("div");
+      item.className =
+        "list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2";
+
+      item.innerHTML = `
+        <div class="d-flex flex-column">
+          <span class="fw-semibold">${pago.socio} (${pago.dni})</span>
+          <span class="text-secondary small">${pago.plan} — ${pago.metodo}</span>
+          <span class="text-secondary small">
+            Pago: ${formatearFecha(pago.fecha_pago)} · Vence: ${formatearFecha(
+        pago.fecha_vencimiento
+      )}
+          </span>
         </div>
-      `);
+        <div class="text-end">
+          <span class="fw-bold">${formatearMoneda(pago.monto)}</span><br>
+          <span class="badge bg-secondary">${pago.estado}</span>
+        </div>
+      `;
+
+      listaPagos.appendChild(item);
     });
 
-    totalCantidad.textContent = ordenados.length;
-    const suma = ordenados.reduce((acc, p) => acc + Number(p.monto || 0), 0);
-    totalMonto.textContent = `$${suma.toLocaleString()} recaudados`;
+    totalCantidad.textContent = filtrados.length;
+    totalMonto.textContent = `${formatearMoneda(suma)} recaudados`;
   }
 
-  filtroTipo?.addEventListener("change", () => { toggleRango(); aplicarFiltros(); });
-  btnFiltrar?.addEventListener("click", aplicarFiltros);
-  buscador?.addEventListener("input", aplicarFiltros);
-  filtroEstado?.addEventListener("change", aplicarFiltros);
+  async function cargarPagos() {
+    try {
+      const data = await fetchSeguro(RUTAS.listar, {
+        method: "GET",
+      });
 
-  if (filtroTipo) filtroTipo.value = "mes";
-  toggleRango();
+      pagos = Array.isArray(data) ? data : [];
+      renderPagos(buscador.value);
+    } catch (e) {
+      console.error("Error cargando pagos:", e);
+    }
+  }
 
-  await cargarMembresias();
-  await cargarPagos();
+  // ==============================
+  // FECHAS POR MEMBRESÍA
+  // ==============================
+  function calcularFechaVencimiento(fechaInicio, cantidad, unidad) {
+    if (!fechaInicio || !cantidad) return "";
+    const d = new Date(fechaInicio + "T00:00:00");
+    if (isNaN(d.getTime())) return "";
+
+    const n = Number(cantidad);
+    if (!n || n <= 0) return "";
+
+    switch (unidad) {
+      case "dias":
+        d.setDate(d.getDate() + n);
+        break;
+      case "semanas":
+        d.setDate(d.getDate() + n * 7);
+        break;
+      case "meses":
+        d.setMonth(d.getMonth() + n);
+        break;
+      case "años":
+        d.setFullYear(d.getFullYear() + n);
+        break;
+      default:
+        d.setDate(d.getDate() + n);
+        break;
+    }
+
+    return d.toISOString().slice(0, 10);
+  }
+
+  function recalcularFechasVencimiento() {
+    const fechaPago = fechaPagoInput.value;
+    membresias.forEach((m) => {
+      const check = document.querySelector(
+        `input[name="membresias[]"][value="${m.id}"]`
+      );
+      const inputFecha = document.querySelector(
+        `input.fecha-vencimiento-membresia[data-id-membresia="${m.id}"]`
+      );
+      if (!check || !inputFecha) return;
+
+      if (!fechaPago || !check.checked) {
+        inputFecha.disabled = true;
+        inputFecha.value = "";
+        return;
+      }
+
+      inputFecha.disabled = false;
+
+      // Si no tiene fecha seteada manualmente, calculamos automática
+      if (!inputFecha.value) {
+        inputFecha.value = calcularFechaVencimiento(
+          fechaPago,
+          m.duracion,
+          m.unidad
+        );
+      }
+    });
+  }
+
+  // ==============================
+  // MEMBRESÍAS
+  // ==============================
+  function renderMembresias() {
+    if (!membresias.length) {
+      membresiasContainer.innerHTML =
+        '<p class="text-secondary small mb-0">No hay membresías configuradas.</p>';
+      return;
+    }
+
+    membresiasContainer.innerHTML = "";
+
+    membresias.forEach((membresia, index) => {
+      const idCheck = `membresia_${membresia.id}`;
+      const idFecha = `membresia_fecha_${membresia.id}`;
+
+      const wrapper = document.createElement("div");
+
+      wrapper.innerHTML = `
+        <div class="border rounded p-2">
+          <div class="form-check d-flex justify-content-between align-items-center">
+            <div>
+              <input class="form-check-input chk-membresia" type="checkbox"
+                     name="membresias[]" value="${membresia.id}"
+                     id="${idCheck}">
+              <label class="form-check-label" for="${idCheck}">
+                ${membresia.nombre} — ${formatearMoneda(membresia.precio)}
+              </label>
+            </div>
+            <span class="text-secondary small">
+              ${membresia.duracion} ${unidadLegible(membresia.unidad)}
+            </span>
+          </div>
+          <div class="mt-2 ms-4">
+            <label class="form-label small mb-1" for="${idFecha}">Vence</label>
+            <input type="date"
+                   class="form-control form-control-sm card-input fecha-vencimiento-membresia"
+                   id="${idFecha}"
+                   data-id-membresia="${membresia.id}"
+                   disabled>
+          </div>
+        </div>
+      `;
+
+      membresiasContainer.appendChild(wrapper);
+    });
+
+    actualizarMontoYVencimiento();
+    recalcularFechasVencimiento();
+  }
+
+  async function cargarMembresias() {
+    try {
+      const data = await fetchSeguro(RUTAS.listarMembresias, {
+        method: "GET",
+      });
+
+      membresias = Array.isArray(data) ? data : [];
+      renderMembresias();
+    } catch (e) {
+      console.error("Error cargando membresías:", e);
+    }
+  }
+
+  function actualizarMontoYVencimiento() {
+    const seleccionados = Array.from(
+      document.querySelectorAll('input[name="membresias[]"]:checked')
+    );
+    let total = 0;
+
+    seleccionados.forEach((chk) => {
+      const id = Number(chk.value);
+      const m = membresias.find((mm) => Number(mm.id) === id);
+      if (!m) return;
+      total += Number(m.precio || 0);
+    });
+
+    montoTotalInput.value = total ? formatearMoneda(total) : "";
+
+    // Recalcular fechas para las seleccionadas
+    recalcularFechasVencimiento();
+  }
+
+  // ==============================
+  // BUSCAR SOCIO
+  // ==============================
+  let timeoutBusqueda = null;
+
+  async function buscarSocio(params) {
+    if (!params) return;
+
+    try {
+      const query = new URLSearchParams(params).toString();
+      const data = await fetchSeguro(`${RUTAS.buscarSocio}?${query}`, {
+        method: "GET",
+      });
+
+      if (data && data.success && data.socio) {
+        idSocioInput.value = data.socio.id;
+        socioInput.value = `${data.socio.Nombre} ${data.socio.Apellido}`;
+        dniInput.value = data.socio.DNI;
+      } else {
+        socioInput.value = "";
+      }
+    } catch (e) {
+      console.error("Error al buscar socio:", e);
+    }
+  }
+
+  function programarBusquedaSocio(tipo) {
+    clearTimeout(timeoutBusqueda);
+    timeoutBusqueda = setTimeout(() => {
+      if (tipo === "dni" && dniInput.value.trim()) {
+        buscarSocio({ dni: dniInput.value.trim() });
+      } else if (tipo === "id" && idSocioInput.value.trim()) {
+        buscarSocio({ id: idSocioInput.value.trim() });
+      }
+    }, 400);
+  }
+
+  // ==============================
+  // ENVÍO DE FORMULARIO
+  // ==============================
+  formPago.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const idSocio = idSocioInput.value.trim();
+    const fechaPago = fechaPagoInput.value;
+    const metodo = metodoSelect.value;
+    const observacion = observacionInput.value.trim();
+
+    if (!idSocio) {
+      mostrarModal("warning", "Datos incompletos", "Debe seleccionar un socio.");
+      return;
+    }
+
+    if (!fechaPago) {
+      mostrarModal(
+        "warning",
+        "Datos incompletos",
+        "Debe ingresar la fecha de pago."
+      );
+      return;
+    }
+
+    // Construimos los ítems (membresía + fecha propia)
+    const items = [];
+    const seleccionados = Array.from(
+      document.querySelectorAll('input[name="membresias[]"]:checked')
+    );
+
+    if (!seleccionados.length) {
+      mostrarModal(
+        "warning",
+        "Datos incompletos",
+        "Debe seleccionar al menos una membresía."
+      );
+      return;
+    }
+
+    for (const chk of seleccionados) {
+      const id = Number(chk.value);
+      const inputFecha = document.querySelector(
+        `input.fecha-vencimiento-membresia[data-id-membresia="${id}"]`
+      );
+      const fechaVencimiento = inputFecha?.value;
+
+      if (!fechaVencimiento) {
+        mostrarModal(
+          "warning",
+          "Fechas incompletas",
+          "Verifique la fecha de vencimiento de cada membresía seleccionada."
+        );
+        return;
+      }
+
+      items.push({
+        idTipoMembresia: id,
+        fechaVencimiento,
+      });
+    }
+
+    const payload = {
+      idSocio: Number(idSocio),
+      fechaPago,
+      metodo,
+      observacion,
+      items,
+    };
+
+    try {
+      const data = await fetchSeguro(RUTAS.agregar, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      if (data && data.success) {
+        mostrarModal("success", "Pago registrado", data.message || "");
+        formPago.reset();
+        socioInput.value = "";
+        montoTotalInput.value = "";
+        membresiasContainer.innerHTML =
+          '<p class="text-secondary small mb-0">Cargando membresías disponibles...</p>';
+        await Promise.all([cargarPagos(), cargarMembresias()]);
+        if (modalPago) {
+        modalPago.hide();
+        limpiarBackdrop(); // <<<<<<<<<<<<<< AGREGA ESTO
+      }
+
+      } else {
+        mostrarModal(
+          "error",
+          "Error al registrar",
+          data?.message || "No se pudo registrar el pago."
+        );
+      }
+    } catch (e) {
+      console.error("Error al registrar pago:", e);
+    }
+  });
+
+  function limpiarBackdrop() {
+  setTimeout(() => {
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
+  }, 300);
+}
+
+
+  // ==============================
+  // EVENTOS
+  // ==============================
+  buscador?.addEventListener("input", () => {
+    renderPagos(buscador.value);
+  });
+
+  filtroTipo?.addEventListener("change", () => {
+    if (filtroTipo.value === "rango") {
+      filtroRango.classList.remove("d-none");
+    } else {
+      filtroRango.classList.add("d-none");
+      renderPagos(buscador.value);
+    }
+  });
+
+  btnFiltrar?.addEventListener("click", () => {
+    const desde = fechaDesde.value;
+    const hasta = fechaHasta.value;
+
+    if (!desde || !hasta) {
+      mostrarModal(
+        "warning",
+        "Fechas incompletas",
+        "Selecciona fecha desde y hasta."
+      );
+      return;
+    }
+
+    const fd = new Date(desde);
+    const fh = new Date(hasta);
+    const filtrados = pagos.filter((p) => {
+      const fp = new Date(p.fecha_pago);
+      return fp >= fd && fp <= fh;
+    });
+
+    listaPagos.innerHTML = "";
+    if (!filtrados.length) {
+      listaPagos.innerHTML =
+        '<div class="text-secondary small">No hay pagos en ese rango.</div>';
+      totalCantidad.textContent = "0";
+      totalMonto.textContent = "$0 recaudados";
+      return;
+    }
+
+    let suma = 0;
+    filtrados.forEach((pago) => {
+      suma += Number(pago.monto || 0);
+    });
+
+    totalCantidad.textContent = filtrados.length;
+    totalMonto.textContent = `${formatearMoneda(suma)} recaudados`;
+    renderPagos(buscador.value);
+  });
+
+  dniInput.addEventListener("input", () => programarBusquedaSocio("dni"));
+  idSocioInput.addEventListener("input", () => programarBusquedaSocio("id"));
+
+  fechaPagoInput.addEventListener("change", () => {
+    recalcularFechasVencimiento();
+  });
+
+  membresiasContainer.addEventListener("change", (e) => {
+    if (e.target.matches('input[name="membresias[]"]')) {
+      // Si tilda/destilda, actualizamos monto y fechas
+      actualizarMontoYVencimiento();
+    }
+  });
+
+  // ==============================
+  // INICIALIZACIÓN
+  // ==============================
+  // Fecha de pago por defecto = hoy
+  const hoy = new Date().toISOString().slice(0, 10);
+  if (fechaPagoInput) fechaPagoInput.value = hoy;
+
+  await Promise.all([cargarPagos(), cargarMembresias()]);
 });
