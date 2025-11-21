@@ -44,8 +44,9 @@ Route::get('/socios', function () {
 });
 
 Route::get('/clases', function () {
-    return view('clases.index');
+    return view('clases.socio.index');
 })->name('clases.index');
+
 
 Route::get('/clases/gestion', function () {
     return view('clases.gestion');
@@ -265,6 +266,7 @@ Route::get('/clases', [ClaseSocioController::class, 'index']);
 Route::get('/clases-socio/eventos', [ClaseSocioController::class, 'eventos']);
 Route::get('/clases-socio/disponibles', [ClaseSocioController::class, 'disponibles']);
 Route::post('/clases-socio/inscribirse/{id}', [ClaseSocioController::class, 'inscribirse']);
+Route::post('/clases-socio/cancelar/{id}', [ClaseSocioController::class, 'cancelar']);
 Route::get('/clases-socio/metricas', [ClaseSocioController::class, 'metricas']);
 
 Route::get('/clases/listar', [ClaseController::class, 'listar']);

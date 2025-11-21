@@ -81,13 +81,15 @@
 
 </div>
 
-<!-- Modal único de confirmación / notificación -->
+<!-- =====================================================
+     MODAL DE CONFIRMACIÓN UNIVERSAL (CORREGIDO)
+====================================================== -->
 <div class="modal fade" id="modalNotificacion" tabindex="-1" aria-labelledby="modalNotificacionLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-dark text-light border border-secondary rounded-3 shadow-lg">
 
       <div class="modal-header border-secondary">
-        <h5 class="modal-title fw-semibold" id="modalNotificacionLabel">Confirmar inscripción</h5>
+        <h5 class="modal-title fw-semibold" id="modalNotificacionLabel">Confirmación</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
 
@@ -96,8 +98,9 @@
       </div>
 
       <div class="modal-footer border-secondary d-flex justify-content-end">
-        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-accent" id="btnConfirmarInscripcion">Confirmar</button>
+        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cerrar</button>
+
+        <button type="button" class="btn btn-accent" id="btnModalAccion">Confirmar</button>
       </div>
 
     </div>
@@ -109,6 +112,5 @@
   'resources/js/clases-socio.js',
   'resources/css/clases-socio.css'
 ])
-
 
 @endsection

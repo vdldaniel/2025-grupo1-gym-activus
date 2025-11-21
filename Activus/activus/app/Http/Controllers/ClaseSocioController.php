@@ -5,14 +5,22 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ClaseSocioController extends Controller
 {
+    // ==========================================
+    //   VISTA PRINCIPAL
+    // ==========================================
     public function index()
     {
         return view('clases.socio.index');
     }
 
+
+    // ==========================================
+    //   EVENTOS PARA EL CALENDARIO
+    // ==========================================
     public function eventos()
     {
         $idSocio = Auth::user()->ID_Usuario;
@@ -21,7 +29,6 @@ class ClaseSocioController extends Controller
             ->join('clase_programada as cp', 'r.ID_Clase_Programada', '=', 'cp.ID_Clase_Programada')
             ->join('clase as c', 'cp.ID_Clase', '=', 'c.ID_Clase')
             ->select(
-                'r.ID_Reserva',
                 'c.Nombre_Clase',
                 'cp.Fecha',
                 'cp.Hora_Inicio',
@@ -41,6 +48,10 @@ class ClaseSocioController extends Controller
         return response()->json($eventos);
     }
 
+
+    // ==========================================
+    //   LISTAR CLASES DISPONIBLES
+    // ==========================================
     public function disponibles()
     {
         $idSocio = Auth::user()->ID_Usuario;
@@ -62,15 +73,23 @@ class ClaseSocioController extends Controller
                 'cp.Fecha',
                 'cp.Hora_Inicio',
                 'cp.Hora_Fin',
-                DB::raw('(SELECT COUNT(*) FROM reserva WHERE ID_Clase_Programada = cp.ID_Clase_Programada AND Estado_Reserva = "Confirmada") as Capacidad_Usada'),
+                DB::raw('(SELECT COUNT(*) 
+                          FROM reserva r2 
+                          WHERE r2.ID_Clase_Programada = cp.ID_Clase_Programada 
+                            AND r2.Estado_Reserva = "Confirmada") as Capacidad_Usada'),
                 'r.ID_Reserva'
             )
-            ->whereNull('r.ID_Reserva')
+            ->orderBy('cp.Fecha')
+            ->orderBy('cp.Hora_Inicio')
             ->get();
 
         return response()->json($clases);
     }
 
+
+    // ==========================================
+    //   INSCRIBIRSE A UNA CLASE
+    // ==========================================
     public function inscribirse($idClase)
     {
         $idSocio = Auth::user()->ID_Usuario;
@@ -131,6 +150,67 @@ class ClaseSocioController extends Controller
         }
     }
 
+
+    // ==========================================
+    //   CANCELAR INSCRIPCIÓN (con 24h de anticipación)
+    // ==========================================
+    public function cancelar($idClase)
+    {
+        $idSocio = Auth::user()->ID_Usuario;
+
+        // Buscar reserva
+        $reserva = DB::table('reserva')
+            ->where('ID_Clase_Programada', $idClase)
+            ->where('ID_Socio', $idSocio)
+            ->where('Estado_Reserva', 'Confirmada')
+            ->first();
+
+        if (!$reserva) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No estás inscripto en esta clase.'
+            ], 404);
+        }
+
+        // Buscar fecha real de la clase
+        $clase = DB::table('clase_programada')
+            ->where('ID_Clase_Programada', $idClase)
+            ->first();
+
+        if (!$clase) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La clase no existe.'
+            ], 404);
+        }
+
+        // Validar 24h
+        $fechaClase = Carbon::parse($clase->Fecha . ' ' . $clase->Hora_Inicio);
+        $ahora = Carbon::now();
+
+        if ($ahora->diffInHours($fechaClase, false) < 24) {
+            return response()->json([
+                'success' => false,
+                'motivo' => 'fuera_de_tiempo',
+                'message' => 'Solo puedes cancelar con 24 horas de anticipación.'
+            ]);
+        }
+
+        // Cancelar reserva
+        DB::table('reserva')
+            ->where('ID_Reserva', $reserva->ID_Reserva)
+            ->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Inscripción cancelada correctamente.'
+        ]);
+    }
+
+
+    // ==========================================
+    //   MÉTRICAS DE CLASES
+    // ==========================================
     public function metricas()
     {
         $idSocio = Auth::user()->ID_Usuario;
@@ -153,6 +233,10 @@ class ClaseSocioController extends Controller
         ]);
     }
 
+
+    // ==========================================
+    //   MIS CLASES PARA CALENDARIO
+    // ==========================================
     public function misClasesCalendario()
     {
         $idSocio = Auth::user()->ID_Usuario;
