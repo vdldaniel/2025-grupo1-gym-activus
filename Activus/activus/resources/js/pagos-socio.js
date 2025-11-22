@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Carga datos desde el backend (Laravel)
   const cargarPagos = async () => {
     try {
-      const res = await fetch("/pagos/socio/listar");
+      const res = await fetch("/pagos-socio/listar");
       const data = await res.json();
 
       if (!data.success) throw new Error(data.error);

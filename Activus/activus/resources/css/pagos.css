@@ -177,6 +177,10 @@
   border-color: var(--accent-clr);
   box-shadow: 0 0 0 0.2rem rgba(94, 99, 255, 0.25);
 }
+.list-group-item {
+    background-color: transparent !important;
+    border: none !important;
+}
 
 /* =============================
    RESPONSIVE
@@ -196,3 +200,4 @@
     font-size: 0.9rem;
   }
 }
+
