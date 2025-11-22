@@ -189,3 +189,27 @@
         min-width: 150px;
     }
 }
+
+
+
+/*para clases socio , migrado desde el css clases-socio*/
+
+.btn-accent {
+    background-color: var(--accent-clr) !important;
+    color: #fff !important;
+    border: none;
+}
+
+.btn-accent:hover {
+    opacity: 0.85;
+}
+
+.btn-danger {
+    background-color: #ff4d4d !important;
+    border: none;
+    color: #fff !important;
+}
+
+.btn-danger:hover {
+    opacity: 0.85;
+}
