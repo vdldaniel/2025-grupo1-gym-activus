@@ -45,9 +45,9 @@ Route::get('/rutinas', function () {
     return view('rutinas.index');
 });
 
-Route::get('/socios', function () {
+/*Route::get('/socios', function () {
     return view('socios.index');
-});
+});*/
 
 Route::get('/clases', function () {
     return view('clases.socio.index');
@@ -77,9 +77,20 @@ Route::get('/donde-entrenar', function () {
     return view('donde-entrenar.index');
 });
 
-Route::get('/pagos', function () {
+ /*Route::get('/pagos', function () {
     return view('pagos.index');
+});*/
+
+Route::middleware(['auth'])->group(function () {
+
+
+
+    // SOCIO — PANTALLA DE PAGOS
+    Route::get('/pagos-socio', [PagoSocioController::class, 'index'])->name('pagos.socio');
+
+    Route::get('/pagos-socio/listar', [PagoSocioController::class, 'listar']);
 });
+
 
 /*Route::get('/salas', function () {
     return view('salas.index');
