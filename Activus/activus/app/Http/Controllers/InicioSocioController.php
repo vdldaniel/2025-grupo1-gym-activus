@@ -9,23 +9,14 @@ use Carbon\Carbon;
 
 class InicioSocioController extends Controller
 {
-    /**
-     * Vista principal del socio.
-     */
     public function index()
     {
         return view('inicio.socio');
     }
 
-    /**
-     * Devuelve los datos dinámicos del socio logueado.
-     */
     public function obtenerDatos()
     {
         try {
-            // ================================
-            // VALIDAR SESIÓN
-            // ================================
             $idSocio = Auth::id();
 
             if (!$idSocio) {
@@ -40,54 +31,51 @@ class InicioSocioController extends Controller
             // ================================
             $membresia = DB::table('membresia_socio AS ms')
                 ->join('tipo_membresia AS tm', 'ms.ID_Tipo_Membresia', '=', 'tm.ID_Tipo_Membresia')
+                ->join('estado_membresia_socio AS ems', 'ms.ID_Estado_Membresia_Socio', '=', 'ems.ID_Estado_Membresia_Socio')
                 ->select(
                     'tm.Nombre_Tipo_Membresia AS tipo',
                     'tm.Precio AS precio',
-                    'ms.Estado_Membresia AS estado',
+                    'ems.Nombre_Estado_Membresia_Socio AS estado',
                     'ms.Fecha_Inicio AS inicio',
                     'ms.Fecha_Fin AS fin'
                 )
                 ->where('ms.ID_Usuario_Socio', $idSocio)
-                ->where('ms.Estado_Membresia', 'Activa')
+                ->where('ems.Nombre_Estado_Membresia_Socio', 'Activa')
                 ->orderByDesc('ms.ID_Membresia_Socio')
                 ->first();
 
             // ================================
-            // PRÓXIMO PAGO
+            // PRÓXIMO PAGO (USAR MEMBRESÍA ACTIVA)
             // ================================
-            $ultimoPago = DB::table('pago')
-                ->where('ID_Usuario_Socio', $idSocio)
-                ->orderByDesc('Fecha_Pago')
-                ->first();
-
-            if ($ultimoPago) {
-                $vencimiento = Carbon::parse($ultimoPago->Fecha_Vencimiento);
+            if ($membresia) {
+                $vencimiento = Carbon::parse($membresia->fin);
                 $diasRestantes = Carbon::now()->diffInDays($vencimiento, false);
 
                 $proximoPago = [
                     'vencimiento' => $vencimiento->format('d/m/Y'),
-                    'diasRestantes' => $diasRestantes >= 0 ? $diasRestantes : 0
+                    'diasRestantes' => max($diasRestantes, 0),
+                    'estado' => $diasRestantes >= 0 ? 'Activa' : 'Vencida'
                 ];
             } else {
                 $proximoPago = [
-                    'vencimiento' => 'Sin registros',
-                    'diasRestantes' => 0
+                    'vencimiento' => 'Sin membresía',
+                    'diasRestantes' => 0,
+                    'estado' => 'Inactiva'
                 ];
             }
+
 
             // ================================
             // CLASES RESERVADAS HOY
             // ================================
             $clasesHoy = DB::table('reserva AS r')
-                ->join('clase AS c', 'r.ID_Clase_Programada', '=', 'c.ID_Clase')
-                ->select('c.Nombre_Clase', 'r.Fecha_Reserva AS Fecha', 'r.Estado_Reserva AS Estado')
+                ->join('clase_programada AS cp', 'r.ID_Clase_Programada', '=', 'cp.ID_Clase_Programada')
+                ->join('clase AS c', 'cp.ID_Clase', '=', 'c.ID_Clase')
+                ->select('c.Nombre_Clase', 'cp.Fecha')
                 ->where('r.ID_Socio', $idSocio)
-                ->whereDate('r.Fecha_Reserva', Carbon::today())
+                ->whereDate('cp.Fecha', Carbon::today())
                 ->get();
 
-            // ================================
-            // RESPUESTA JSON
-            // ================================
             return response()->json([
                 'success'      => true,
                 'membresia'    => $membresia ?? [
@@ -100,7 +88,6 @@ class InicioSocioController extends Controller
             ]);
 
         } catch (\Throwable $e) {
-
             return response()->json([
                 'success' => false,
                 'error'   => $e->getMessage()
@@ -108,3 +95,4 @@ class InicioSocioController extends Controller
         }
     }
 }
+
