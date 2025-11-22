@@ -31,9 +31,15 @@ use App\Http\Controllers\ClaseSocioController;
 use App\Http\Controllers\ClaseController;
 use App\Http\Controllers\IngresoFisicoController;
 
-Route::get('/', function () {
-    return view('inicio');
+// xq sino trae el mail en vez del id del rol y no tiene protecion la vista
+Route::middleware(['auth'])->group(function () {
+    Route::get('/', function () {
+        $controller = app(\App\Http\Controllers\InicioAdministrativoController::class);
+        $data = $controller->index()->getData();
+        return view('inicio', $data);
+    });
 });
+ 
 
 Route::get('/rutinas', function () {
     return view('rutinas.index');
@@ -222,8 +228,11 @@ Route::put('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'up
 Route::delete('/admin/membresias/{id}', [GestionTipoMembresiaController::class, 'destroy']);
 
 
-Route::get('/pagos/socio', [PagoSocioController::class, 'index'])->name('pagos.socio');
-Route::get('/pagos/socio/listar', [PagoSocioController::class, 'listar']);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/inicio-socio', [InicioSocioController::class, 'index']);
+    Route::get('/inicio-socio/obtener-datos', [InicioSocioController::class, 'obtenerDatos']);
+});
+
 
 
 

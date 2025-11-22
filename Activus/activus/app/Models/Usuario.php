@@ -40,10 +40,10 @@ class Usuario extends Authenticatable
         return $this->Contrasena;
     }
 
-    public function getAuthIdentifierName()
+    /*public function getAuthIdentifierName()
     {
         return 'Email';
-    }
+    }*/
 
     public function setContrasenaAttribute($value)
     {
