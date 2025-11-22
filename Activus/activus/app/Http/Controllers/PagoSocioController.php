@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class PagoSocioController extends Controller
 {
@@ -31,19 +30,21 @@ class PagoSocioController extends Controller
             if (!$idSocio) {
                 return response()->json([
                     'success' => false,
-                    'error' => 'No se encontró sesión activa del socio.'
+                    'error'   => 'No se encontró sesión activa del socio.'
                 ], 401);
             }
 
-            $hoy = Carbon::now()->toDateString();
-
-            // CORREGIDO: actualizar vencidas
+            // ================================
+            // ACTUALIZAR MEMBRESÍAS VENCIDAS
+            // ================================
             DB::table('membresia_socio')
                 ->where('ID_Usuario_Socio', $idSocio)
-                ->whereDate('Fecha_Fin', '<', $hoy)
+                ->whereDate('Fecha_Fin', '<', now()->toDateString())
                 ->update(['ID_Estado_Membresia_Socio' => 2]); // 2 = Vencida
 
-            //  CORREGIDO: obtener membresía actual
+            // ================================
+            // MEMBRESÍA ACTUAL (SQL calcula días restantes)
+            // ================================
             $membresia = DB::table('membresia_socio AS ms')
                 ->join('tipo_membresia AS tm', 'tm.ID_Tipo_Membresia', '=', 'ms.ID_Tipo_Membresia')
                 ->join('estado_membresia_socio AS ems', 'ems.ID_Estado_Membresia_Socio', '=', 'ms.ID_Estado_Membresia_Socio')
@@ -53,31 +54,34 @@ class PagoSocioController extends Controller
                     'tm.Nombre_Tipo_Membresia AS tipo',
                     'tm.Precio AS precio',
                     'ems.Nombre_Estado_Membresia_Socio AS estado',
-                    'ms.Fecha_Fin AS vencimiento'
+                    'ms.Fecha_Fin AS vencimiento',
+                    DB::raw('DATEDIFF(ms.Fecha_Fin, CURDATE()) AS diasRestantes')
                 )
                 ->first();
 
+            // Si no tiene membresía
             if (!$membresia) {
                 return response()->json([
                     'success' => true,
                     'membresia' => [
-                        'tipo' => '-',
+                        'tipo'   => '-',
                         'precio' => 0,
                         'estado' => 'Inactiva'
                     ],
                     'proximoPago' => [
-                        'vencimiento' => null,
+                        'vencimiento'   => null,
                         'diasRestantes' => null
                     ],
                     'pagos' => []
                 ]);
             }
 
-            $vencimiento = new \DateTime($membresia->vencimiento);
-            $diff = (new \DateTime($hoy))->diff($vencimiento);
-            $diasRestantes = (int)$diff->format('%r%a');
+            // Asegurar nunca devolver números negativos
+            $diasRestantes = max((int)$membresia->diasRestantes, 0);
 
-            //  CORREGIDO: historial de pagos
+            // ================================
+            // HISTORIAL DE PAGOS
+            // ================================
             $pagos = DB::table('pago AS p')
                 ->join('membresia_socio AS ms', 'p.ID_Membresia_Socio', '=', 'ms.ID_Membresia_Socio')
                 ->join('tipo_membresia AS tm', 'ms.ID_Tipo_Membresia', '=', 'tm.ID_Tipo_Membresia')
@@ -96,12 +100,12 @@ class PagoSocioController extends Controller
             return response()->json([
                 'success' => true,
                 'membresia' => [
-                    'tipo' => $membresia->tipo,
+                    'tipo'   => $membresia->tipo,
                     'precio' => $membresia->precio,
                     'estado' => $membresia->estado
                 ],
                 'proximoPago' => [
-                    'vencimiento' => $membresia->vencimiento,
+                    'vencimiento'   => $membresia->vencimiento,
                     'diasRestantes' => $diasRestantes
                 ],
                 'pagos' => $pagos
@@ -110,10 +114,9 @@ class PagoSocioController extends Controller
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
-                'error' => 'Error al obtener los datos del socio.',
+                'error'   => 'Error al obtener los datos del socio.',
                 'detalle' => $e->getMessage()
             ], 500);
         }
     }
-
 }

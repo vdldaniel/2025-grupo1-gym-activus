@@ -45,25 +45,32 @@ class InicioSocioController extends Controller
                 ->first();
 
             // ================================
-            // PRÓXIMO PAGO (USAR MEMBRESÍA ACTIVA)
+            // PRÓXIMO PAGO — USAR DATEDIFF (MySQL)
             // ================================
-            if ($membresia) {
-                $vencimiento = Carbon::parse($membresia->fin);
-                $diasRestantes = Carbon::now()->diffInDays($vencimiento, false);
+            $proximoPagoDB = DB::table('membresia_socio')
+                ->select(
+                    'Fecha_Fin AS vencimiento',
+                    DB::raw('DATEDIFF(Fecha_Fin, CURDATE()) AS diasRestantes')
+                )
+                ->where('ID_Usuario_Socio', $idSocio)
+                ->orderByDesc('ID_Membresia_Socio')
+                ->first();
+
+            if ($proximoPagoDB) {
+                $diasRestantes = max((int)$proximoPagoDB->diasRestantes, 0);
 
                 $proximoPago = [
-                    'vencimiento' => $vencimiento->format('d/m/Y'),
-                    'diasRestantes' => max($diasRestantes, 0),
-                    'estado' => $diasRestantes >= 0 ? 'Activa' : 'Vencida'
+                    'vencimiento'   => date('d/m/Y', strtotime($proximoPagoDB->vencimiento)),
+                    'diasRestantes' => $diasRestantes,
+                    'estado'        => $diasRestantes > 0 ? 'Activa' : 'Vencida'
                 ];
             } else {
                 $proximoPago = [
-                    'vencimiento' => 'Sin membresía',
+                    'vencimiento'   => 'Sin membresía',
                     'diasRestantes' => 0,
-                    'estado' => 'Inactiva'
+                    'estado'        => 'Inactiva'
                 ];
             }
-
 
             // ================================
             // CLASES RESERVADAS HOY
@@ -95,4 +102,3 @@ class InicioSocioController extends Controller
         }
     }
 }
-
