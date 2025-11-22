@@ -22,13 +22,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ==============================
   // FUNCIONES GLOBALES
   // ==============================
-
   function mostrarModal(icon, title, text) {
     if (window.Swal) {
       Swal.fire({
         icon,
         title,
-        text,
+        html: text,
         confirmButtonColor: "var(--primary-element)",
         background: "var(--base-clr)",
         color: "var(--text-clr)",
@@ -38,21 +37,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  function limpiarBackdrop() {
-    setTimeout(() => {
-      document.querySelectorAll(".modal-backdrop").forEach((b) => b.remove());
-      document.body.classList.remove("modal-open");
-      document.body.style.removeProperty("overflow");
-      document.body.style.removeProperty("padding-right");
-    }, 300);
-  }
-
   async function fetchSeguro(url, options = {}) {
     try {
       const headers = {
         Accept: "application/json",
         ...(csrfToken ? { "X-CSRF-TOKEN": csrfToken } : {}),
-        ...((options.body && !options.headers?.["Content-Type"])
+        ...(options.body && !options.headers?.["Content-Type"]
           ? { "Content-Type": "application/json" }
           : {}),
         ...(options.headers || {}),
@@ -76,11 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return data;
     } catch (err) {
       console.error("[fetchSeguro] Error:", err);
-      mostrarModal(
-        "error",
-        "Error",
-        err.message || "Ocurrió un error al comunicarse con el servidor."
-      );
+      mostrarModal("error", "Error", err.message);
       throw err;
     }
   }
@@ -97,7 +83,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const dniInput = document.getElementById("dni");
   const idSocioInput = document.getElementById("idSocio");
   const socioInput = document.getElementById("socio");
+  const infoMembresiaSocio = document.getElementById("infoMembresiaSocio");
+
   const fechaPagoInput = document.getElementById("fechaPago");
+  const fechaVencimientoInput = document.getElementById("fechaVencimiento");
+
   const metodoSelect = document.getElementById("metodo");
   const montoTotalInput = document.getElementById("montoTotal");
   const observacionInput = document.getElementById("observacion");
@@ -108,7 +98,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let membresias = [];
 
   // ==============================
-  // FORMATOS
+  // FORMATEOS
   // ==============================
   function formatearFecha(f) {
     if (!f) return "-";
@@ -131,6 +121,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return (
       {
         dias: "día(s)",
+        "días": "día(s)",
         semanas: "semana(s)",
         meses: "mes(es)",
         años: "año(s)",
@@ -162,7 +153,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     let suma = 0;
-
     filtrados.forEach((p) => {
       suma += Number(p.monto);
 
@@ -183,7 +173,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           <span class="badge bg-secondary">${p.estado}</span>
         </div>
       `;
-
       listaPagos.appendChild(item);
     });
 
@@ -198,41 +187,68 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ==============================
-  // CÁLCULO FECHA DE VENCIMIENTO
+  // CÁLCULO CORRECTO DE FECHA DE VENCIMIENTO
   // ==============================
   function calcularVenc(fechaInicio, cantidad, unidad) {
-    const d = new Date(fechaInicio + "T00:00:00");
-    if (isNaN(d)) return "";
+    if (!fechaInicio) return "";
+
+    const [anio, mes, dia] = fechaInicio.split("-").map(Number);
+    const d = new Date(anio, mes - 1, dia);
 
     const n = Number(cantidad);
     if (!n) return "";
 
-    if (unidad === "dias") d.setDate(d.getDate() + n);
-    else if (unidad === "semanas") d.setDate(d.getDate() + n * 7);
-    else if (unidad === "meses") d.setMonth(d.getMonth() + n);
-    else if (unidad === "años") d.setFullYear(d.getFullYear() + n);
+    switch (unidad.toLowerCase()) {
+      case "dias":
+      case "días":
+        d.setDate(d.getDate() + n);
+        break;
+      case "semanas":
+        d.setDate(d.getDate() + n * 7);
+        break;
+      case "meses":
+        d.setMonth(d.getMonth() + n);
+        break;
+      case "años":
+        d.setFullYear(d.getFullYear() + n);
+        break;
+    }
 
-    return d.toISOString().slice(0, 10);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd}`;
   }
 
+  // ==============================
+  // ACTUALIZAR MONTO + FECHA
+  // ==============================
   function actualizarMontoYFecha() {
     const radio = document.querySelector('input[name="membresia"]:checked');
+
     if (!radio) {
       montoTotalInput.value = "";
+      fechaVencimientoInput.value = "";
       return;
     }
 
     const m = membresias.find((x) => Number(x.id) === Number(radio.value));
     if (!m) return;
 
-    montoTotalInput.value = formatearMoneda(m.precio);
+    const dur = m.duracion; // viene así del backend
+    const uni = m.unidad;
+    const prec = m.precio;
 
-    const inputFecha = document.querySelector(
-      `.fecha-vencimiento-membresia[data-id="${m.id}"]`
-    );
+    montoTotalInput.value = formatearMoneda(prec);
 
-    inputFecha.disabled = false;
-    inputFecha.value = calcularVenc(fechaPagoInput.value, m.duracion, m.unidad);
+    if (fechaPagoInput.value) {
+      fechaVencimientoInput.value = calcularVenc(
+        fechaPagoInput.value,
+        dur,
+        uni
+      );
+    }
   }
 
   // ==============================
@@ -241,31 +257,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   function renderMembresias() {
     membresiasContainer.innerHTML = "";
 
+    if (!membresias.length) {
+      membresiasContainer.innerHTML =
+        '<p class="text-secondary small mb-0">No hay tipos de membresía configurados.</p>';
+      return;
+    }
+
     membresias.forEach((m) => {
       const wrapper = document.createElement("div");
 
       wrapper.innerHTML = `
-      <div class="border rounded p-2">
-        <div class="form-check d-flex justify-content-between">
-          <div>
-            <input type="radio" class="form-check-input" 
-                   name="membresia" value="${m.id}" id="memb_${m.id}">
-            <label class="form-check-label" for="memb_${m.id}">
-              ${m.nombre} — ${formatearMoneda(m.precio)}
-            </label>
+        <div class="border rounded p-2">
+          <div class="form-check d-flex justify-content-between">
+            <div>
+              <input type="radio" class="form-check-input"
+                     name="membresia" value="${m.id}" id="memb_${m.id}">
+              <label class="form-check-label" for="memb_${m.id}">
+                ${m.nombre} — ${formatearMoneda(m.precio)}
+              </label>
+            </div>
+            <span class="text-secondary small">
+              ${m.duracion} ${unidadLegible(m.unidad)}
+            </span>
           </div>
-          <span class="text-secondary small">${m.duracion} ${unidadLegible(
-        m.unidad
-      )}</span>
         </div>
-
-        <div class="mt-2 ms-4">
-          <label class="form-label small mb-1">Vence</label>
-          <input type="date" disabled 
-            class="form-control form-control-sm card-input fecha-vencimiento-membresia"
-            data-id="${m.id}">
-        </div>
-      </div>
       `;
 
       membresiasContainer.appendChild(wrapper);
@@ -279,36 +294,69 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ==============================
-  // SOCIO + MEMBRESÍA ACTIVA
+  // MEMBRESÍA ACTIVA – INFO BAJO EL SOCIO
   // ==============================
   async function cargarMembresiaActiva(idSocio) {
-    const data = await fetchSeguro(RUTAS.membresiaActiva(idSocio));
-    if (!data) return;
+    if (!infoMembresiaSocio) return;
 
-    const radio = document.querySelector(
-      `input[name="membresia"][value="${data.ID_Tipo_Membresia}"]`
+    infoMembresiaSocio.textContent = "";
+    infoMembresiaSocio.className = "form-text small";
+
+    let data;
+    try {
+      data = await fetchSeguro(RUTAS.membresiaActiva(idSocio));
+    } catch {
+      infoMembresiaSocio.textContent =
+        "No se pudo obtener la información de membresía del socio.";
+      infoMembresiaSocio.classList.add("text-warning");
+      return;
+    }
+
+    // Sin historial
+    if (!data) {
+      infoMembresiaSocio.innerHTML =
+        "<span class='text-secondary'>Este socio aún no tiene historial de membresías.</span>";
+      return;
+    }
+
+    const hoy = new Date().toISOString().slice(0, 10);
+    const plan = membresias.find(
+      (m) => Number(m.id) === Number(data.ID_Tipo_Membresia)
     );
+    const nombrePlan = plan ? plan.nombre : `Membresía #${data.ID_Tipo_Membresia}`;
+    const fechaFinLegible = formatearFecha(data.Fecha_Fin);
 
-    if (radio) {
-      radio.checked = true;
-      actualizarMontoYFecha();
-
-      const hoy = new Date().toISOString().slice(0, 10);
-      if (data.Fecha_Fin >= hoy) {
-        mostrarModal(
-          "warning",
-          "Membresía activa",
-          "Este socio ya tiene una membresía activa. ¿Desea renovarla igualmente?"
-        );
-      }
+    // Activa o vencida
+    if (data.Fecha_Fin >= hoy) {
+      // Activa – llamativo
+      infoMembresiaSocio.innerHTML = `
+        <span class="badge bg-warning text-dark me-2">Membresía ACTIVA
+        <span><strong>${nombrePlan}</strong> – vence el <strong>${fechaFinLegible}</strong>.</span></span>
+      `;
+    } else {
+      // Última registrada (vencida)
+      infoMembresiaSocio.innerHTML = `
+        <span class="badge bg-secondary me-2">Sin membresía activa</span>
+        <span>Última membresía: <strong>${nombrePlan}</strong> – venció el <strong>${fechaFinLegible}</strong>.</span>
+      `;
     }
   }
 
+  // ==============================
+  // BUSCAR SOCIO
+  // ==============================
   async function buscarSocio(params) {
     const query = new URLSearchParams(params).toString();
     const data = await fetchSeguro(`${RUTAS.buscarSocio}?${query}`);
 
-    if (data.success && data.socio) {
+    // Reset selección
+    document
+      .querySelectorAll('input[name="membresia"]')
+      .forEach((r) => (r.checked = false));
+    montoTotalInput.value = "";
+    fechaVencimientoInput.value = "";
+
+    if (data && data.success && data.socio) {
       idSocioInput.value = data.socio.id;
       dniInput.value = data.socio.DNI;
       socioInput.value = `${data.socio.Nombre} ${data.socio.Apellido}`;
@@ -316,8 +364,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       await cargarMembresiaActiva(data.socio.id);
     } else {
       socioInput.value = "";
+      if (infoMembresiaSocio) {
+        infoMembresiaSocio.textContent = "";
+        infoMembresiaSocio.className = "form-text small text-secondary";
+      }
     }
+    
+
   }
+  // ==============================
+  // LIMPIAR BACKDROP DE BOOTSTRAP
+  // ==============================
+  function limpiarBackdrop() {
+    setTimeout(() => {
+      document.querySelectorAll(".modal-backdrop").forEach(b => b.remove());
+
+      document.body.classList.remove("modal-open");
+      document.body.style.removeProperty("overflow");
+      document.body.style.removeProperty("padding-right");
+    }, 100);
+  }
+
 
   // ==============================
   // SUBMIT
@@ -325,26 +392,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   formPago.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const idSocio = idSocioInput.value.trim();
+    const idSocio = idSocioInput.value;
     const fechaPago = fechaPagoInput.value;
     const metodo = metodoSelect.value;
     const observacion = observacionInput.value.trim();
     const radio = document.querySelector('input[name="membresia"]:checked');
 
-    if (!idSocio) return mostrarModal("warning", "Falta socio", "Seleccione un socio.");
-    if (!fechaPago) return mostrarModal("warning", "Falta fecha", "Ingrese la fecha de pago.");
-    if (!radio) return mostrarModal("warning", "Falta membresía", "Seleccione una membresía.");
+    if (!idSocio)
+      return mostrarModal("warning", "Falta socio", "Seleccione un socio.");
+    if (!fechaPago)
+      return mostrarModal("warning", "Falta fecha", "Ingrese la fecha de pago.");
+    if (!radio)
+      return mostrarModal(
+        "warning",
+        "Falta membresía",
+        "Seleccione una membresía."
+      );
 
-    const fechaVenc = document.querySelector(
-      `.fecha-vencimiento-membresia[data-id="${radio.value}"]`
-    ).value;
+    const m = membresias.find((x) => Number(x.id) === Number(radio.value));
+    const dur = m.duracion;
+    const uni = m.unidad;
+    const fechaVenc = calcularVenc(fechaPago, dur, uni);
 
     const payload = {
-      idSocio: Number(idSocio),
+      idSocio,
       fechaPago,
       metodo,
       observacion,
-      idTipoMembresia: Number(radio.value),
+      idTipoMembresia: radio.value,
       fechaVencimiento: fechaVenc,
     };
 
@@ -358,10 +433,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       formPago.reset();
       socioInput.value = "";
       montoTotalInput.value = "";
+      fechaVencimientoInput.value = "";
+      if (infoMembresiaSocio) {
+        infoMembresiaSocio.textContent = "";
+        infoMembresiaSocio.className = "form-text small text-secondary";
+      }
       await cargarPagos();
       await cargarMembresias();
+      const modal = bootstrap.Modal.getInstance(
+        document.getElementById("modalPago")
+      );
+      if (modal) modal.hide();
       limpiarBackdrop();
-      bootstrap.Modal.getInstance(document.getElementById("modalPago")).hide();
+
     }
   });
 
@@ -378,16 +462,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     buscarSocio({ id: idSocioInput.value.trim() })
   );
 
-  fechaPagoInput.addEventListener("change", () => actualizarMontoYFecha());
+  fechaPagoInput.addEventListener("change", actualizarMontoYFecha);
 
-  membresiasContainer.addEventListener("change", (e) => {
-    if (e.target.matches('input[name="membresia"]')) actualizarMontoYFecha();
+  membresiasContainer.addEventListener("click", (e) => {
+    if (e.target.matches('input[name="membresia"]')) {
+      actualizarMontoYFecha();
+    }
   });
 
   // ==============================
   // INICIALIZACIÓN
   // ==============================
   fechaPagoInput.value = new Date().toISOString().slice(0, 10);
-  await cargarPagos();
   await cargarMembresias();
+  await cargarPagos();
 });

@@ -112,9 +112,14 @@
               </div>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-1">
               <label class="form-label">Nombre del Socio</label>
               <input type="text" id="socio" name="socio" class="form-control card-input" readonly>
+            </div>
+
+            <!-- INFO MEMBRESÍA SOCIO -->
+            <div id="infoMembresiaSocio" class="form-text small text-secondary mb-3">
+              <!-- Aquí se muestra si tiene una membresía activa / última membresía -->
             </div>
 
             <!-- FECHA DE PAGO -->
@@ -130,9 +135,21 @@
                 <p class="text-secondary small mb-0">Cargando membresías disponibles...</p>
               </div>
               <small class="text-secondary">
-                Seleccioná una membresía. Tendrá su propia fecha de vencimiento.
+                Seleccioná una membresía para calcular el vencimiento.
               </small>
             </div>
+
+            <!-- FECHA DE VENCIMIENTO (calculada) -->
+            <div class="mb-3">
+                <label class="form-label">Fecha de Vencimiento</label>
+                <input type="date" id="fechaVencimiento" name="fechaVencimiento"
+                      class="form-control card-input" readonly>
+
+                <small class="text-secondary">
+                    Se calcula automáticamente según la fecha de pago y la duración de la membresía.
+                </small>
+            </div>
+
 
             <!-- MÉTODO -->
             <div class="mb-3">

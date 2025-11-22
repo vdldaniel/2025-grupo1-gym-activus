@@ -19,7 +19,7 @@ class PagoController extends Controller
     }
 
     /**
-     * Listar pagos del administrativo
+     * Listar pagos
      */
     public function listar()
     {
@@ -28,8 +28,7 @@ class PagoController extends Controller
                 ->join('membresia_socio', 'pago.ID_Membresia_Socio', '=', 'membresia_socio.ID_Membresia_Socio')
                 ->join('usuario', 'membresia_socio.ID_Usuario_Socio', '=', 'usuario.ID_Usuario')
                 ->join('tipo_membresia', 'membresia_socio.ID_Tipo_Membresia', '=', 'tipo_membresia.ID_Tipo_Membresia')
-                ->leftJoin(
-                    'estado_membresia_socio',
+                ->leftJoin('estado_membresia_socio',
                     'membresia_socio.ID_Estado_Membresia_Socio',
                     '=',
                     'estado_membresia_socio.ID_Estado_Membresia_Socio'
@@ -51,11 +50,11 @@ class PagoController extends Controller
 
             return response()->json($pagos);
         } catch (\Throwable $e) {
-            Log::error('Error al listar pagos: ' . $e->getMessage());
+            Log::error('Error al listar pagos: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,
-                'message' => 'Error al listar pagos.',
+                'message' => 'Error al listar pagos.'
             ], 500);
         }
     }
@@ -79,11 +78,11 @@ class PagoController extends Controller
 
             return response()->json($membresias);
         } catch (\Throwable $e) {
-            Log::error('Error al cargar membresías: ' . $e->getMessage());
+            Log::error('Error al cargar membresías: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,
-                'message' => 'Error al cargar membresías.',
+                'message' => 'Error al cargar membresías.'
             ], 500);
         }
     }
@@ -118,26 +117,26 @@ class PagoController extends Controller
             if (!$socio) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Socio no encontrado.',
+                    'message' => 'Socio no encontrado.'
                 ]);
             }
 
             return response()->json([
                 'success' => true,
-                'socio'   => $socio,
+                'socio' => $socio
             ]);
         } catch (\Throwable $e) {
-            Log::error('Error al buscar socio: ' . $e->getMessage());
+            Log::error('Error al buscar socio: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,
-                'message' => 'Error al buscar socio.',
+                'message' => 'Error al buscar socio.'
             ], 500);
         }
     }
 
     /**
-     * NUEVO: obtener membresía activa del socio
+     * Obtener membresía activa del socio
      */
     public function membresia_activa($idSocio)
     {
@@ -155,23 +154,22 @@ class PagoController extends Controller
 
             return response()->json($membresia);
         } catch (\Throwable $e) {
-            Log::error('Error al obtener membresía activa: ' . $e->getMessage());
+            Log::error('Error obteniendo membresía activa: '.$e->getMessage());
             return response()->json(null);
         }
     }
 
     /**
-     * Registrar pago para una sola membresía
+     * Registrar pago (UNA membresía)
      */
     public function agregar(Request $request)
     {
-        // Validación para UNA sola membresía
         $request->validate([
             'idSocio'           => 'required|integer',
             'metodo'            => 'required|string',
             'fechaPago'         => 'required|date',
             'idTipoMembresia'   => 'required|integer',
-            'fechaVencimiento'  => 'required|date',
+            'fechaVencimiento'  => 'required|date'
         ]);
 
         $idSocio     = $request->idSocio;
@@ -181,64 +179,52 @@ class PagoController extends Controller
         $idTipo      = $request->idTipoMembresia;
         $fechaVenc   = $request->fechaVencimiento;
 
-        $fechaPagoCarbon = Carbon::parse($fechaPago);
-
         $idUsuarioRegistro = Auth::user()->ID_Usuario ?? null;
 
         if (!$idUsuarioRegistro) {
             return response()->json([
                 'success' => false,
-                'message' => 'Usuario no autenticado.',
+                'message' => 'Usuario no autenticado.'
             ], 401);
         }
 
         try {
             DB::beginTransaction();
 
-            // Obtener ID de estado "Activa"
+            // ID de estado ACTIVA
             $idEstadoActiva = DB::table('estado_membresia_socio')
                 ->where('Nombre_Estado_Membresia_Socio', 'Activa')
                 ->value('ID_Estado_Membresia_Socio') ?? 1;
 
-            $fechaVencCarbon = Carbon::parse($fechaVenc);
-            if ($fechaVencCarbon->lt($fechaPagoCarbon)) {
-                throw new \Exception('La fecha de vencimiento no puede ser anterior al pago.');
-            }
-
-            // Ver si el socio ya tiene esta membresía
-            $membresiaSocio = DB::table('membresia_socio')
+            // Vencer membresía activa PREVIA sin tocar fechas
+            $membresiaActiva = DB::table('membresia_socio')
                 ->where('ID_Usuario_Socio', $idSocio)
-                ->where('ID_Tipo_Membresia', $idTipo)
+                ->where('ID_Estado_Membresia_Socio', 1)
                 ->first();
 
-            if ($membresiaSocio) {
-                // Actualizar membresía existente
-                $idMembresiaSocio = $membresiaSocio->ID_Membresia_Socio;
-
+            if ($membresiaActiva) {
                 DB::table('membresia_socio')
-                    ->where('ID_Membresia_Socio', $idMembresiaSocio)
+                    ->where('ID_Membresia_Socio', $membresiaActiva->ID_Membresia_Socio)
                     ->update([
-                        'ID_Estado_Membresia_Socio' => $idEstadoActiva,
-                        'Fecha_Inicio'              => $fechaPago,
-                        'Fecha_Fin'                 => $fechaVenc,
+                        'ID_Estado_Membresia_Socio' => 2 // vencida
                     ]);
-            } else {
-                // Crear nueva membresía
-                $idMembresiaSocio = DB::table('membresia_socio')->insertGetId([
-                    'ID_Usuario_Socio'          => $idSocio,
-                    'ID_Tipo_Membresia'         => $idTipo,
-                    'ID_Estado_Membresia_Socio' => $idEstadoActiva,
-                    'Fecha_Inicio'              => $fechaPago,
-                    'Fecha_Fin'                 => $fechaVenc,
-                ]);
             }
 
-            // Obtener precio
+            // Crear NUEVO ciclo de membresía
+            $idMembresiaSocio = DB::table('membresia_socio')->insertGetId([
+                'ID_Usuario_Socio'          => $idSocio,
+                'ID_Tipo_Membresia'         => $idTipo,
+                'ID_Estado_Membresia_Socio' => $idEstadoActiva,
+                'Fecha_Inicio'              => $fechaPago,
+                'Fecha_Fin'                 => $fechaVenc
+            ]);
+
+            // Precio desde BD
             $precio = DB::table('tipo_membresia')
                 ->where('ID_Tipo_Membresia', $idTipo)
-                ->value('Precio') ?? 0;
+                ->value('Precio');
 
-            // Registrar pago
+            // Insertar pago
             DB::table('pago')->insert([
                 'ID_Membresia_Socio'  => $idMembresiaSocio,
                 'ID_Usuario_Socio'    => $idSocio,
@@ -247,22 +233,22 @@ class PagoController extends Controller
                 'Fecha_Pago'          => $fechaPago,
                 'Fecha_Vencimiento'   => $fechaVenc,
                 'Metodo_Pago'         => $metodo,
-                'Observacion'         => $observacion,
+                'Observacion'         => $observacion
             ]);
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Pago registrado con éxito.',
+                'message' => 'Pago registrado con éxito.'
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Error al registrar pago: ' . $e->getMessage());
+            Log::error('Error al registrar pago: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,
-                'message' => 'Error al registrar el pago.',
+                'message' => 'Error al registrar el pago.'
             ], 500);
         }
     }
