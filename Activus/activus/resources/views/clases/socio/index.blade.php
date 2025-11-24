@@ -107,8 +107,8 @@
   </div>
 
   <!-- =====================================================
-             MODAL DE CONFIRMACIÓN UNIVERSAL (CORREGIDO)
-        ====================================================== -->
+               MODAL DE CONFIRMACIÓN UNIVERSAL (CORREGIDO)
+          ====================================================== -->
   <div class="modal fade" id="modalNotificacion" tabindex="-1" aria-labelledby="modalNotificacionLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

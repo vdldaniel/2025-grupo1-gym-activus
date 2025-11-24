@@ -41,7 +41,7 @@ class ClaseSocioController extends Controller
                 return [
                     'title' => $item->Nombre_Clase,
                     'start' => $item->Fecha . 'T' . $item->Hora_Inicio,
-                    'end'   => $item->Fecha . 'T' . $item->Hora_Fin,
+                    'end' => $item->Fecha . 'T' . $item->Hora_Fin,
                 ];
             });
 
@@ -52,9 +52,13 @@ class ClaseSocioController extends Controller
     // ==========================================
     //   LISTAR CLASES DISPONIBLES
     // ==========================================
+
+    //a diferencia de la funcion comentada esta trae solo las clases programadas que no ocurrieron calculando fecha-hora
     public function disponibles()
     {
         $idSocio = Auth::user()->ID_Usuario;
+
+        $ahora = now(); // fecha y hora actual
 
         $clases = DB::table('clase_programada as cp')
             ->join('clase as c', 'cp.ID_Clase', '=', 'c.ID_Clase')
@@ -74,11 +78,19 @@ class ClaseSocioController extends Controller
                 'cp.Hora_Inicio',
                 'cp.Hora_Fin',
                 DB::raw('(SELECT COUNT(*) 
-                          FROM reserva r2 
-                          WHERE r2.ID_Clase_Programada = cp.ID_Clase_Programada 
-                            AND r2.Estado_Reserva = "Confirmada") as Capacidad_Usada'),
+                  FROM reserva r2 
+                      WHERE r2.ID_Clase_Programada = cp.ID_Clase_Programada 
+                        AND r2.Estado_Reserva = "Confirmada") as Capacidad_Usada'),
                 'r.ID_Reserva'
             )
+
+            ->where(function ($q) use ($ahora) {
+                $q->where('cp.Fecha', '>', $ahora->toDateString())
+                    ->orWhere(function ($q2) use ($ahora) {
+                        $q2->where('cp.Fecha', '=', $ahora->toDateString())
+                            ->where('cp.Hora_Inicio', '>', $ahora->format('H:i:s'));
+                    });
+            })
             ->orderBy('cp.Fecha')
             ->orderBy('cp.Hora_Inicio')
             ->get();
@@ -86,6 +98,43 @@ class ClaseSocioController extends Controller
         return response()->json($clases);
     }
 
+
+
+
+    /*  public function disponibles()
+      {
+          $idSocio = Auth::user()->ID_Usuario;
+
+          $clases = DB::table('clase_programada as cp')
+              ->join('clase as c', 'cp.ID_Clase', '=', 'c.ID_Clase')
+              ->leftJoin('usuario as u', 'c.ID_Profesor', '=', 'u.ID_Usuario')
+              ->leftJoin('sala as s', 'cp.ID_Sala', '=', 's.ID_Sala')
+              ->leftJoin('reserva as r', function ($join) use ($idSocio) {
+                  $join->on('cp.ID_Clase_Programada', '=', 'r.ID_Clase_Programada')
+                      ->where('r.ID_Socio', '=', $idSocio);
+              })
+              ->select(
+                  'cp.ID_Clase_Programada',
+                  'c.Nombre_Clase',
+                  DB::raw("CONCAT(u.Nombre, ' ', u.Apellido) as Profesor"),
+                  'c.Capacidad_Maxima',
+                  's.Nombre_Sala as Sala',
+                  'cp.Fecha',
+                  'cp.Hora_Inicio',
+                  'cp.Hora_Fin',
+                  DB::raw('(SELECT COUNT(*) 
+                            FROM reserva r2 
+                            WHERE r2.ID_Clase_Programada = cp.ID_Clase_Programada 
+                              AND r2.Estado_Reserva = "Confirmada") as Capacidad_Usada'),
+                  'r.ID_Reserva'
+              )
+              ->orderBy('cp.Fecha')
+              ->orderBy('cp.Hora_Inicio')
+              ->get();
+
+          return response()->json($clases);
+      }
+  */
 
     // ==========================================
     //   INSCRIBIRSE A UNA CLASE
@@ -224,12 +273,13 @@ class ClaseSocioController extends Controller
             ->join('clase_programada as cp', 'r.ID_Clase_Programada', '=', 'cp.ID_Clase_Programada')
             ->where('r.ID_Socio', $idSocio)
             ->where('r.Estado_Reserva', 'Confirmada')
-            ->whereDate('cp.Fecha', now()->format('Y-m-d'))
+            ->whereDate('cp.Fecha', now('America/Argentina/Buenos_Aires')->toDateString())
+
             ->count();
 
         return response()->json([
             'total' => $total,
-            'hoy'   => $hoy
+            'hoy' => $hoy
         ]);
     }
 

@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let accion = null; // "inscribir" o "cancelar"
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
+    MostrarCalendario();
 
     // ======================================================
     //   CAMBIO DE PESTAÑAS
@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         seccionHorario.classList.remove("d-none");
         seccionInscripcion.classList.add("d-none");
+        MostrarCalendario();
     });
 
     btnInscripcion.addEventListener("click", () => {
@@ -56,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ======================================================
     //   CALENDARIO (clases del socio)
     // ======================================================
-    const calendarEl = document.getElementById("calendar");
+    /*const calendarEl = document.getElementById("calendar");
     let calendarInstance = null;
 
     if (calendarEl) {
@@ -68,6 +69,117 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         calendarInstance.render();
+    }*/
+
+    async function MostrarCalendario() {
+
+        const calendarEl = document.getElementById('calendar');
+        if (!calendarEl) return;
+
+
+        calendarEl.innerHTML = `
+        <div class="d-flex flex-column justify-content-center align-items-center py-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+            <p class="mt-3 mb-0">Cargando horario...</p>
+        </div>
+    `;
+
+        try {
+            // Obtener eventos
+            const response = await fetch('/clases-socio/eventos');
+            const events = await response.json();
+
+
+            let slotMin = '07:00:00';
+            let slotMax = '21:00:00';
+            if (events.length > 0) {
+                const horasInicio = events.map(e => new Date(e.start).getHours());
+                const horasFin = events.map(e => new Date(e.end).getHours());
+
+                let minHora = Math.max(Math.min(...horasInicio) - 1, 0);
+                let maxHora = Math.min(Math.max(...horasFin) + 1, 23);
+
+                slotMin = `${String(minHora).padStart(2, '0')}:00:00`;
+                slotMax = `${String(maxHora).padStart(2, '0')}:59:59`;
+            }
+
+
+
+            calendarEl.innerHTML = "";
+
+            // Crear el calendario nuevamente
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'es',
+                themeSystem: 'bootstrap5',
+                initialView: 'timeGridWeek',
+                firstDay: 1,
+                allDaySlot: false,
+                expandRows: true,
+                nowIndicator: true,
+
+                height: 'auto',
+                contentHeight: 'auto',
+
+                slotMinTime: slotMin,
+                slotMaxTime: slotMax,
+                slotDuration: '00:30:00',
+
+                headerToolbar: {
+                    left: '',
+                    center: 'title',
+                    right: 'prev,next'
+                },
+
+                titleFormat: {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                },
+                slotLabelFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                },
+                dayHeaderFormat: { weekday: 'long' },
+
+                buttonText: {
+                    today: 'Hoy'
+                },
+
+                eventDidMount: function (info) {
+                    info.el.style.whiteSpace = 'normal';
+                    info.el.style.overflow = 'visible';
+                    info.el.style.textOverflow = 'unset';
+                },
+
+                events: events,
+
+                windowResize: function () {
+                    if (window.innerWidth < 768) {
+                        calendar.changeView('timeGridDay');
+                    } else {
+                        calendar.changeView('timeGridWeek');
+                    }
+
+                    setTimeout(() => {
+                        calendar.updateSize();
+                        calendar.render();
+                    }, 50);
+                },
+            });
+
+            calendar.render();
+
+        } catch (error) {
+            console.error(error);
+
+
+            calendarEl.innerHTML = `
+            <div class="text-center text-danger py-4">
+                Error al cargar el calendario.
+            </div>
+        `;
+        }
     }
 
 
