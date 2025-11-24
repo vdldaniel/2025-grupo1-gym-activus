@@ -79,3 +79,8 @@
   background-color: var(--secondary-componente-base-clr);
   /* #111827!important;*/
 }
+
+#diasProximoPago,
+#listaClasesHoy li {
+  color: var(--text-clr) !important;
+}
