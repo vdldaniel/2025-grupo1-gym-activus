@@ -51,15 +51,22 @@ function agregarEjercicio(contenedorId) {
     const contenedor = document.getElementById(contenedorId);
     if (!contenedor) return;
 
-    const selectBase = contenedor.closest('.modal')?.querySelector("#ejercicioRutina");
+    const modal = contenedor.closest(".modal");
+    const selectBase = modal ? modal.querySelector(
+        '[name="ejercicioRutina[]"], #ejercicioRutina, [name="ejercicioRutinaEditar[]"]'
+    ) : null;
+
+
+
     if (!selectBase) {
-        console.error("No se encontró el select de ejercicios");
+        console.error("No se encontró el select de ejercicios dentro del modal");
         return;
     }
 
     const opciones = Array.from(selectBase.options)
         .map(opt => `<option value="${opt.value}">${opt.text}</option>`)
         .join("");
+
 
     const nuevoBloque = document.createElement("div");
     nuevoBloque.classList.add("row", "g-2", "mt-2", "ejercicio-bloque");

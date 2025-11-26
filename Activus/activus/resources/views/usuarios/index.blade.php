@@ -153,10 +153,28 @@
                             <tr>
                                 
                                 <td>{{ $u->ID_Usuario }}</td>
-                                <td> <a href="{{ route('usuarios.perfil', $u->ID_Usuario) }}" class="me-3 text-decoration-none">
-                                        <img src="{{ $u->Foto_Perfil ?? 'images/default/profile-default.jpg' }}" class="rounded-circle" alt="Foto de {{ $u->Nombre }}" width="28" height="28">
+                                <td>
+                                    <a href="/usuarios/{{ $u->ID_Usuario }}/perfil" 
+                                    class="text-decoration-none text-reset d-flex align-items-center gap-2">
+                                        <div class="bg-base rounded-circle d-flex justify-content-center align-items-center"
+                                            style="width:30px; height:30px; overflow:hidden;">
+                                            @if ($u->Foto_Perfil)
+                                                <img src="{{ asset('storage/' . $u->Foto_Perfil) }}" 
+                                                    class="object-fit-cover" 
+                                                    style="width:30px; height:30px;" alt="Foto">
+                                            @else
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                    stroke-linejoin="round" class="lucide lucide-user">
+                                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                                    <circle cx="12" cy="7" r="4" />
+                                                </svg>
+                                            @endif
+                                        </div>
+                                        <span>{{ $u->Nombre }} {{ $u->Apellido }}</span>
                                     </a>
-                                    {{ $u->Nombre }} {{ $u->Apellido }}</td>
+                                </td>
+
                                 <td>{{ $u->Email }}</td>
                                 <td>{{ $u->DNI }}</td>
                                 <td>{{ $u->roles->first()?->Nombre_Rol ?? 'Sin rol' }}</td>

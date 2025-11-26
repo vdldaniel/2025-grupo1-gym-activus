@@ -12,14 +12,14 @@
         </div>
         <div class="card-body">
             <div class="d-flex align-items-center gap-3 mb-3">
-                <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
+                <div class="bg-base border-base rounded-circle d-flex justify-content-center align-items-center"
                     style="width:64px; height:64px;">
                     <div class="position-relative d-inline-block">
                         @if($usuario->Foto_Perfil)
                             <img src="{{ asset('storage/' . $usuario->Foto_Perfil) }}" alt="Foto de perfil"
                                 class="rounded-circle object-fit-cover" style="width:64px; height:64px;">
                         @else
-                            <div class="bg-primary rounded-circle d-flex justify-content-center align-items-center"
+                            <div class="bg-base border-base rounded-circle d-flex justify-content-center align-items-center"
                                 style="width:64px; height:64px;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"

@@ -41,7 +41,7 @@ class PagoController extends Controller
                     DB::raw("COALESCE(estado_membresia_socio.Nombre_Estado_Membresia_Socio, 'Sin estado') as estado"),
                     'membresia_socio.Fecha_Fin as fecha_vencimiento',
                     'pago.Monto as monto',
-                    'pago.Fecha_Pago as fecha_pago',
+                    DB::raw("DATE_FORMAT(pago.Fecha_Pago, '%d/%m/%Y') as fecha_pago"),
                     'pago.Metodo_Pago as metodo',
                     'pago.Observacion as observacion'
                 )

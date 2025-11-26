@@ -3,7 +3,7 @@
 
 
 @section('content')
-    <div class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="d-flex justify-content-center align-items-center min-vh-100 ">
         @if(Auth::check())
             @php
                 $rol = Auth::user()->roles->first()->ID_Rol ?? null;
@@ -23,7 +23,11 @@
 
         @else
 
-            <div class="card bg-card  shadow-sm" style="width: 100%; max-width: 400px;">
+            <div class="card bg-card shadow-sm w-100 px-3 px-sm-4 px-md-5 py-4"
+                style="max-width: 100%;"
+                class="">
+
+
                 <!-- <div class="card-header text-center  ">
                             <h2 class="fw-bold mb-0">Bienvenido al Gym</h2>
                             <p class="text-secondary mb-0">Ingresa tus credenciales para acceder </p>

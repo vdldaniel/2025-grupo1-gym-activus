@@ -333,11 +333,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         <span class="badge bg-warning text-dark me-2">Membresía ACTIVA
         <span><strong>${nombrePlan}</strong> – vence el <strong>${fechaFinLegible}</strong>.</span></span>
       `;
-    } else {
+    } else if (data.Fecha_Fin < hoy) {
       // Última registrada (vencida)
       infoMembresiaSocio.innerHTML = `
         <span class="badge bg-secondary me-2">Sin membresía activa</span>
         <span>Última membresía: <strong>${nombrePlan}</strong> – venció el <strong>${fechaFinLegible}</strong>.</span>
+      `;
+    } else if (plan === undefined) {
+      infoMembresiaSocio.innerHTML = `
+        <span class="badge bg-secondary me-2">No se determinó una membresía para este socio.</span>
+      `;
+    } else if (data.Fecha_Fin === NULL) {
+      infoMembresiaSocio.innerHTML = `
+        <span class="badge bg-secondary me-2">Membresía PENDIENTE</span>
+      `;
+    }
+    else{
+      infoMembresiaSocio.innerHTML = `
+        <span class="badge bg-secondary me-2">No se pudo obtener la membresía y/o estado para este socio.</span>
       `;
     }
   }

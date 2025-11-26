@@ -249,7 +249,7 @@
                     </button>
                 </div>
 
-                    <div class="d-flex justify-content-end">
+                    <div class="d-flex justify-content-end modal-footer border-0">
                     <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-agregar">Guardar</button>
                     </div>

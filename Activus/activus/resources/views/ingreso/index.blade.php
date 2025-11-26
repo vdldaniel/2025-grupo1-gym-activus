@@ -22,6 +22,7 @@
 
             {{-- form --}}
             <form id="formIngreso">
+                @csrf
                 <label for="dni" class=" mb-1">DNI</label>
 
                 <div class="input-group mb-3">

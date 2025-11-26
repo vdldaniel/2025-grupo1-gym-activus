@@ -433,7 +433,7 @@ class UsuarioController extends Controller
             return back()
                 ->withErrors($validator)
                 ->withInput()
-                ->with('modal', 'modalCambiarCorreo'); // 👈 importante
+                ->with('modal', 'modalCambiarCorreo');
         }
 
         $usuario->Email = $request->input('nuevoCorreo');
@@ -532,7 +532,7 @@ class UsuarioController extends Controller
         $certificado = new Certificado();
         $certificado->ID_Usuario_Socio = $id;
         $certificado->Imagen_Certificado = $path;
-        $certificado->Aprobado = 0;
+        $certificado->Aprobado = 1;
         $certificado->Fecha_Emision = Carbon::now();
         $certificado->Fecha_Vencimiento = Carbon::now()->addYear(); // opcional, un año después
         $certificado->save();

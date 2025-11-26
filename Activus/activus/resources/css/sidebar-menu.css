@@ -158,6 +158,11 @@
   display: inline;
 }
 
+.sidebar:not(.menu-toggle) .sidebar-footer {
+  display: none !important
+}
+
+
 
 .sidebar a{
   overflow: visible;
@@ -206,23 +211,27 @@
 }
 
 
-@media (max-width:500px){
-  
-  .sidebar{
-    width: 0;
+@media (max-width: 500px) {
+
+  .sidebar {
+    transform: translateX(-100%) !important;
+    width: 16rem;
+    transition: transform 0.3s ease;
+    position: fixed;
+    left: 0;
+    top: 4rem;
+    height: calc(100vh - 4rem);
+    background: var(--base-clr);
+    z-index: 3000;
   }
 
-  .logo-container .logo-gym{
-    display: none;
+  .sidebar.menu-toggle {
+    transform: translateX(0) !important;
   }
 
-  main{
-    margin-left: 0;
-    padding: 1rem; 
-  }
-  main.menu-toggle{
+  main {
     margin-left: 0 !important;
-    padding: 0;
+    margin-right: 0 !important;
   }
 }
 

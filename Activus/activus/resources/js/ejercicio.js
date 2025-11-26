@@ -345,7 +345,7 @@ $(document).ready(function() {
             allowClear: true,
             width: '100%',
             tags: false,
-            maximumSelectionLength: 2,
+            maximumSelectionLength: 4,
             language: {
                 maximumSelected: function (e) {
                     return "Solo puedes seleccionar " + e.maximum + " equipos.";
@@ -367,7 +367,7 @@ $(document).ready(function() {
             allowClear: true,
             width: '100%',
             tags: false,
-            maximumSelectionLength: 2,
+            maximumSelectionLength: 4,
             language: {
                 maximumSelected: function (e) {
                     return "Solo puedes seleccionar " + e.maximum + " músculos.";
