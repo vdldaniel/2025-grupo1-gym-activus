@@ -305,18 +305,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!data.success) {
 
-            if (data.motivo === "fuera_de_tiempo") {
-                modalMsg.textContent = "Solo puedes cancelar con 24 horas de anticipación.";
-                modalBtn.textContent = "Aceptar";
-                accion = null;
-                return;
-            }
+        // Caso: no puede cancelar por estar fuera de tiempo
+        if (data.motivo === "fuera_de_tiempo") {
+            modalMsg.textContent = "Solo puedes cancelar con 24 horas de anticipación.";
 
-            modalMsg.textContent = data.message;
-            modalBtn.textContent = "Aceptar";
+            // OCULTAR botón
+            modalBtn.classList.add("d-none");
+
+            // Evitar acción pendiente
             accion = null;
+
+            // El modal sigue abierto para mostrar el mensaje
             return;
         }
+
+        // Caso: otro error → mostrar mensaje normal con botón
+        modalMsg.textContent = data.message;
+
+        // MOSTRAR el botón, por si antes estaba oculto
+        modalBtn.classList.remove("d-none");
+
+        modalBtn.textContent = "Aceptar";
+        accion = null;
+        return;
+    }
+
 
         modal.hide();
 

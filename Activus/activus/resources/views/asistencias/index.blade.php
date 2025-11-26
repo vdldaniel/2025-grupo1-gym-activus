@@ -59,7 +59,7 @@
     </div>
 
     <!-- TABLA -->
-    <div class="card p-3">
+    <div class="table-responsive card p-3">
         <table class="table table-striped" id="tablaAsistencias">
             <thead>
                 <tr>

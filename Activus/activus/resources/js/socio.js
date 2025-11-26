@@ -63,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btnLimpiarFiltro.addEventListener("click", limpiarFiltros);
     }
 
+    
 
 
     const formSocio = document.getElementById("formSocio");
@@ -72,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
 
 
-            const campos = ["nombreSocio", "apellidoSocio", "dniSocio", "telefonoSocio", "emailSocio", "fechaNacSocio", "membresiaSocio"];
+            const campos = ["nombreSocio", "apellidoSocio", "dniSocio", "telefonoSocio", "emailSocio", "fechaNacSocio"];
             campos.forEach(campo => {
                 const input = document.getElementById(campo);
                 const errorDiv = document.getElementById("error-" + campo);

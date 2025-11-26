@@ -101,24 +101,24 @@ class SocioController extends Controller
         $telefono = $request->input('telefonoSocio');
         $email = $request->input('emailSocio');
         $fechaNacimiento = $request->input('fechaNacSocio');
-        $membresia = $request->input('membresiaSocio');
-        $estadoMembresia = 3; // Pendiente
-        $path = 'images/default/profile-default.jpg';
+        $membresia = null /* $request->input('membresiaSocio') */;
+        $estadoMembresia = null;
+        $path = null;
         $rol = 4; // ID del rol Socio
 
 
         $validacion_socio = Validator::make($request->all(), [
             'nombreSocio' => ['required', 'string', 'max:50', 'min:2', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/'],
             'apellidoSocio' => ['required', 'string', 'max:50', 'min:2', 'regex:/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/'],
-            'dniSocio' => ['required', 'digits:8', 'unique:usuario,dni', 'regex:/^[0-9]+$/'],
-            'telefonoSocio' => ['required', 'digits:10', 'unique:usuario,telefono', 'regex:/^[0-9]+$/'],
+            'dniSocio' => ['required', 'digits:8', 'unique:usuario,DNI', 'regex:/^[0-9]+$/'],
+            'telefonoSocio' => ['required', 'digits:10', 'unique:usuario,Telefono', 'regex:/^[0-9]+$/'],
             'emailSocio' => ['required', 'email', 'unique:usuario,Email'],
             'fechaNacSocio' => [
                 'required',
                 'date',
                 'before_or_equal:' . now()->subYears(18)->format('Y-m-d')
             ],
-            'membresiaSocio' => ['required', 'exists:tipo_membresia,ID_Tipo_Membresia'],
+           /*  'membresiaSocio' => ['required', 'exists:tipo_membresia,ID_Tipo_Membresia'], */
         ], [
             'nombreSocio.required' => 'Nombre no ingresado',
             'nombreSocio.max' => 'El nombre debe tener menos de 50 carácteres',
@@ -141,8 +141,8 @@ class SocioController extends Controller
             'fechaNacSocio.required' => 'Fecha de nacimiento no ingresada',
             'fechaNacSocio.date' => 'Fecha de nacimiento no válida',
             'fechaNacSocio.before_or_equal' => 'El socio debe ser mayor de 18 años',
-            'membresiaSocio.required' => 'Membresía no seleccionada',
-            'membresiaSocio.exists' => 'La membresía seleccionada no existe',
+/*            /*  'membresiaSocio.required' => 'Membresía no seleccionada',
+            'membresiaSocio.exists' => 'La membresía seleccionada no existe', */
         ]);
 
         if ($validacion_socio->fails()) {
@@ -176,13 +176,13 @@ class SocioController extends Controller
 
 
 
-            MembresiaSocio::create([
+/*             MembresiaSocio::create([
                 "ID_Usuario_Socio" => $usuario->ID_Usuario,
                 "ID_Tipo_Membresia" => $membresia,
                 "Fecha_Inicio" => null,
                 "Fecha_Fin" => null,
                 "ID_Estado_Membresia_Socio" => $estadoMembresia,
-            ]);
+            ]); */
 
             $usuario->roles()->sync($rol);
 

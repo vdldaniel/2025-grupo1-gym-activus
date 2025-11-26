@@ -84,6 +84,22 @@ header {
 }
 
 
+@media (max-width: 576px) {
+  main {
+    padding: 0.5rem !important;
+    margin-top: 3rem !important;
+  }
+
+  .container {
+    padding: 0.5rem !important;
+  }
+
+  body {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+
 
 /* Cards */
 .card {
@@ -215,10 +231,20 @@ thead {
 .select2-selection,
 .select2-results__options,
 .select2-selection__choice {
-  background-color: var(--secondary-componente-base-clr) !important;
+  background-color: var(--componente-base-clr) !important;
   color: var(--text-clr) !important;
   border: 1px solid var(--componente-border-clr) !important;
 }
+
+.select2-results__option--selected {
+    background-color: var(--base-clr) !important;
+    color: var(--secondary-text-clr) !important;
+}
+
+/* .select2-results__option--highlighted.select2-results__option--selected {
+    background-color: var(--) !important;
+    color: var(--secondary-text-clr) !important;
+} */
 
 .dropdown-item-acciones {
   border: none !important;
@@ -228,6 +254,12 @@ thead {
 .select2-search__field {
   color: var(--text-clr) !important;
 }
+
+.select2-selection__clear,
+.select2-search__field:focus {
+  color: var(--secondary-text-clr) !important;
+}
+
 
 .dropdown-item-acciones:hover {
   background-color: var(--hover-clr) !important;
@@ -301,6 +333,26 @@ thead {
   background: var(--primary-element);
   color: var(--base-clr);
 }*/
+
+
+.bg-base {
+  background-color: var(--base-clr) !important;
+  color: var(--text-clr) !important;
+}
+
+.border-base {
+  border: 1px solid var(--componente-border-clr) !important;
+}
+
+.bg-primario {
+  background-color: var(--primary-element) !important;
+  color: var(--text-clr) !important;
+}
+
+.bg-secundario {
+  background-color: var(--secondary-element) !important;
+  color: var(--text-clr) !important;
+}
 
 .btn-secundario {
   background: var(--secondary-element);

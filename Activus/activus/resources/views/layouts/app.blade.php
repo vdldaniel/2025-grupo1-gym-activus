@@ -65,7 +65,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  
+  <link rel="icon" type="image/png" href="{{ $logo }}">
+
   <title>Activus</title>
   {{-- jQuery --}}
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -101,9 +102,7 @@
 
 
   {{-- Resources --}}
-  @vite(['resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/css/configuraciones.css', 'resources/js/usuario.js', 'resources/js/socio.js', 'resources/js/validarPerfil.js'])
-  {{-- Resources --}}
-  @vite(['resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/css/configuraciones.css', 'resources/js/usuario.js', 'resources/js/asistencia.js', 'resources/js/profesores-socio.js', 'resources/js/profesores-administrativo.js', 'resources/js/membresias-socio.js', 'resources/js/membresias-administrativo.js', 'resources/js/socio.js', 'resources/js/ejercicio.js', 'resources/js/rutina.js'])
+  @vite(['resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/css/configuraciones.css', 'resources/js/usuario.js', 'resources/js/validarPerfil.js', 'resources/js/asistencia.js', 'resources/js/profesores-socio.js', 'resources/js/profesores-administrativo.js', 'resources/js/membresias-socio.js', 'resources/js/membresias-administrativo.js', 'resources/js/ejercicio.js', 'resources/js/rutina.js'])
 
 </head>
 
@@ -124,11 +123,16 @@
             </div>
           </div>
           <div class="logo-container">
-            {{-- <span class="logo" id="nombreLogo">Gym</span>
-            <img class="imgLogo" src="images/default/dumbbell.png" alt="" id="imgLogo"> --}}
+
             <div class="logo d-flex align-items-center gap-2" style="padding: 10px 0;">
+              
               @if ($logo)
-                <img src="{{ $logo }}" alt="Logo del gimnasio" class="logo-gym">
+                <img src="{{ $logo }}" alt="Logo del gimnasio" class="logo-gym py-2">
+              @else
+                <div class="bg-base border-base rounded-circle d-flex justify-content-center align-items-center"
+                    style="width:40px; height:40px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dumbbell-icon lucide-dumbbell"><path d="M17.596 12.768a2 2 0 1 0 2.829-2.829l-1.768-1.767a2 2 0 0 0 2.828-2.829l-2.828-2.828a2 2 0 0 0-2.829 2.828l-1.767-1.768a2 2 0 1 0-2.829 2.829z"/><path d="m2.5 21.5 1.4-1.4"/><path d="m20.1 3.9 1.4-1.4"/><path d="M5.343 21.485a2 2 0 1 0 2.829-2.828l1.767 1.768a2 2 0 1 0 2.829-2.829l-6.364-6.364a2 2 0 1 0-2.829 2.829l1.768 1.767a2 2 0 0 0-2.828 2.829z"/><path d="m9.6 14.4 4.8-4.8"/></svg>
+                </div>
               @endif
 
               <span>{{ $config->Nombre_Gym ?? 'Gym' }}</span>
@@ -137,12 +141,26 @@
         </div>
         <div class="topnav">
           @if(PermisoHelper::tienePermiso('Ver Perfil', $idUsuario))
-            <a href="/usuarios/{{ $idUsuario }}/perfil">
-              <img
-                src="{{ $usuarioAuth->Foto_Perfil ? asset($usuarioAuth->Foto_Perfil) : asset('images/default/profile-default.jpg') }}"
-                class="user" width="28" height="28">
-            </a>
-
+            <a href="/usuarios/{{ $idUsuario }}/perfil" class="text-decoration-none text-reset">
+              <div class="bg-base border-base rounded-circle d-flex justify-content-center align-items-center"
+                      style="width:40px; height:40px;">
+                      <div class="position-relative d-inline-block">
+                          @if($usuarioAuth->Foto_Perfil)
+                              <img src="{{ asset('storage/' . $usuarioAuth->Foto_Perfil) }}" alt="Foto de perfil"
+                                  class="rounded-circle object-fit-cover" style="width:40px; height:40px;">
+                          @else
+                              <div class="bg-base border-base rounded-circle d-flex justify-content-center align-items-center"
+                                  style="width:40px; height:40px;">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                      stroke-linejoin="round" class="lucide lucide-user-icon lucide-user">
+                                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                      <circle cx="12" cy="7" r="4" />
+                                  </svg>
+                              </div>
+                          @endif
+                </div>
+              </a>
           @endif
         </div>
       </header>
@@ -397,7 +415,7 @@
             @endif
 
             {{-- PAGOS – SOCIO --}}
-            @if(PermisoHelper::tienePermiso('Pagos_Socio', $idUsuario))
+            @if(PermisoHelper::tienePermiso('Pagos Socio', $idUsuario))
               <li>
                 <a href="/pagos-socio">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -455,14 +473,14 @@
             @endif
           </ul>
         </nav>
-        <div class="sidebar-footer d-flex align-items-center gap-2 px-3 py-2 justify-content-end">
+        <div class="sidebar-footer d-flex align-items-center gap-2 px-3 py-2 justify-content-end " id="footer-sidebar">
           <span class="text-secondary small">{{ $usuarioAuth->Nombre }}</span>
           @php
             $rol = $usuarioAuth->roles->first()->Nombre_Rol ?? null;
           @endphp
 
           @if($rol)
-            <span class="badge bg-danger bg-opacity-25 text-danger border border-danger">
+            <span class="badge bg-base bg-opacity-25 border">
               {{ $rol }}
             </span>
           @endif
@@ -478,7 +496,7 @@
 
   <main id="main">
     @yield('content')
-
+    
   </main>
 
   @yield('modales')

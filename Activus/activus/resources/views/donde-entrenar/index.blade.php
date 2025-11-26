@@ -1,11 +1,8 @@
 @extends('layouts.app')
 @section('content')
     <div class="container py-4">
-        <div
-            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 gap-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5 gap-3">
 
-
-            <main class="flex-grow-1 p-4">
                 <div class="d-flex align-items-center gap-3">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -19,8 +16,9 @@
                         <span class="text-secondary small">Ubicaciones y horarios</span>
                     </div>
                 </div>
-                <div class="container">
+        </div>
 
+                <div class="container">
                     <div class="card card-body">
                         <h2 class="mb-0"><i data-lucide="map-pin"></i> Ubicación</h2>
                         <div class="row g-3">
@@ -67,7 +65,7 @@
                     </div>
                 </div>
 
-            </main>
-        </div>
+            </div>
+        
     </div>
 @endsection

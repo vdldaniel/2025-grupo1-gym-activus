@@ -188,11 +188,28 @@
                             @foreach($socios as $s)
                             <tr>
                                 <td>{{ $s->usuario->ID_Usuario }}</td>
-                                <td> <a href="{{ route('usuarios.perfil', $s->usuario->ID_Usuario) }}" class="me-3 text-decoration-none">
-                                        <img src="{{ $s->usuario->Foto_Perfil ?? 'images/default/profile-default.jpg' }}" class="rounded-circle" alt="Foto de {{ $s->usuario->Nombre }}" width="28" height="28">
+                                <td>
+                                    <a href="/usuarios/{{ $s->usuario->ID_Usuario }}/perfil" 
+                                    class="text-decoration-none text-reset d-flex align-items-center gap-2">
+                                        <div class="bg-base rounded-circle d-flex justify-content-center align-items-center"
+                                            style="width:30px; height:30px; overflow:hidden;">
+                                            @if ($s->usuario->Foto_Perfil)
+                                                <img src="{{ asset('storage/' . $s->usuario->Foto_Perfil) }}" 
+                                                    class="object-fit-cover" 
+                                                    style="width:30px; height:30px;" alt="Foto">
+                                            @else
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
+                                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                    stroke-linejoin="round" class="lucide lucide-user">
+                                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                                    <circle cx="12" cy="7" r="4" />
+                                                </svg>
+                                            @endif
+                                        </div>
+                                        <span>{{ $s->usuario->Nombre }} {{ $s->usuario->Apellido }}</span>
                                     </a>
-                                    {{ $s->usuario->Nombre }} {{ $s->usuario->Apellido }}
                                 </td>
+
                                 <td>
                                     <div class="d-flex align-items-center gap-2 ">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-id-card-icon lucide-id-card">
@@ -223,20 +240,27 @@
 
                                 <td>
                                     @php
-                                    $membresia = $s->membresias->first();
+                                        $membresia = $s->membresiaSocio()
+                                                        ->whereNotNull('ID_Tipo_Membresia')
+                                                        ->latest('ID_Membresia_Socio')
+                                                        ->first();
                                     @endphp
-                                    @if ($membresia)
-                                    <span class="badge bg-primary-subtle text-primary">
-                                        {{ $membresia->Nombre_Tipo_Membresia }}
-                                    </span>
+                                    @if ($membresia && $membresia->tipoMembresia)
+                                        <span class="badge bg-primary-subtle text-primary">
+                                            {{ $membresia->tipoMembresia->Nombre_Tipo_Membresia }}
+                                        </span>
                                     @else
-                                    <span class="badge bg-secondary">Sin membresía</span>
+                                        <span class="badge bg-secondary">Sin membresía</span>
                                     @endif
+
                                 </td>
 
                                 <td>
                                     @php
-                                    $membresia = $s->membresiaSocio->first();
+                                    $membresia = $s->membresiaSocio()
+                                                        ->whereNotNull('ID_Tipo_Membresia')
+                                                        ->latest('ID_Membresia_Socio')
+                                                        ->first();
                                     $estado = $membresia?->estadoMembresiaSocio?->Nombre_Estado_Membresia_Socio;
                                     $color = match($estado ?? '') {
                                     'Activa' => 'success',
@@ -250,7 +274,10 @@
 
                                 <td>
                                     @php
-                                    $membresia = $s->membresiaSocio->first();
+                                    $membresia = $s->membresiaSocio()
+                                                        ->whereNotNull('ID_Tipo_Membresia')
+                                                        ->latest('ID_Membresia_Socio')
+                                                        ->first();
                                     @endphp
                                     @if($membresia === null || $membresia->Fecha_Fin === null)
                                     <span class="text-danger">
@@ -364,7 +391,7 @@
                                         <div class="invalid-feedback" id="error-emailSocio"></div>
                                     </div>
                                 </div>
-                                <div class="mb-3">
+{{--                                 <div class="mb-3">
                                     <label class="form-label">Membresía</label>
                                     <select id="membresiaSocio" class="form-select card-input" name="membresiaSocio">
                                         <option selected value="" disabled>Selecciona una membresía</option>
@@ -373,7 +400,7 @@
                                         @endforeach
                                     </select>
                                     <div class="invalid-feedback" id="error-membresiaSocio"></div>
-                                </div>
+                                </div> --}}
                                 <div class="d-flex justify-content-end">
                                     <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
                                     <button type="submit" class="btn btn-agregar">Guardar</button>
@@ -525,6 +552,7 @@
     </div>
 </div>
 
+@vite(['resources/js/socio.js'])
 
 @include('componentes.modal_exito')
 

@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="row g-4 mb-4">
-      <div class="col-md-4">
+      <div class="col-md-6">
         <div class="card p-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <h6>Total de clases</h6>
@@ -41,7 +41,7 @@
           <h4 id="metricTotalClases" class="display-6 fw-bold mt-4 mb-0">-</h4>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-6">
         <div class="card p-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <h6>Mis clases de hoy</h6>
