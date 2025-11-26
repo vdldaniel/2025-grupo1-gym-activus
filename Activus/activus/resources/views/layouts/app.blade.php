@@ -65,7 +65,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  
+
   <title>Activus</title>
   {{-- jQuery --}}
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -124,13 +124,8 @@
             </div>
           </div>
           <div class="logo-container">
-            {{-- <span class="logo" id="nombreLogo">Gym</span>
-            <img class="imgLogo" src="images/default/dumbbell.png" alt="" id="imgLogo"> --}}
             <div class="logo d-flex align-items-center gap-2" style="padding: 10px 0;">
-              @if ($logo)
-                <img src="{{ $logo }}" alt="Logo del gimnasio" class="logo-gym">
-              @endif
-
+              <img src="{{ $logo ?? '' }}" alt="Logo del gimnasio" class="logo-gym" onerror="this.style.display='none';">
               <span>{{ $config->Nombre_Gym ?? 'Gym' }}</span>
             </div>
           </div>
