@@ -17,7 +17,7 @@ use Carbon\Carbon;
 
 
 class UsuarioController extends Controller
-{ 
+{
     public function __construct()
     {
         $this->middleware('auth');
@@ -248,21 +248,24 @@ class UsuarioController extends Controller
         // Cargar el usuario con sus relaciones
         $usuario = Usuario::with(['roles'])->findOrFail($id);
         $usuario = Usuario::findOrFail($id);
-        $membresia = MembresiaSocio::with('tipoMembresia')
+        $membresia = MembresiaSocio::with('tipoMembresia', 'estadoMembresiaSocio') 
             ->where('ID_Usuario_Socio', $id)
-            ->latest('ID_Membresia_Socio')
+            ->latest('Fecha_Fin')
+            ->select(
+                'membresia_socio.*',
+                DB::raw('DATEDIFF(Fecha_Fin, CURDATE()) AS diasRestantes')
+            )
             ->first();
 
         $diasRestantes = null;
         $vencimiento = null;
 
         if ($membresia) {
-            $fechaFin = Carbon::parse($membresia->Fecha_Fin);
-            $hoy = Carbon::now();
 
-            // Calculamos la diferencia y redondeamos a entero
-            $diasRestantes = $hoy->diffInDays($fechaFin, false);
-            $vencimiento = $fechaFin->format('d/m/Y');
+            $diasRestantes = $membresia->diasRestantes;
+
+
+            $vencimiento = Carbon::parse($membresia->Fecha_Fin)->format('d/m/Y');
         }
 
 
