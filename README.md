@@ -29,13 +29,9 @@ Reemplazar procesos manuales (planillas, papel, Excel) por un sistema web que br
 ---
 
 ## Autores
-- Esmilce Mendoza  
-- Miqueas Chavez  
+- Esmilce Mendoza   
 - Daniel Vidal  
 - Sasha Medina  
 - Camila Villasboa  
 
 ---
-
-📅 **Estado del proyecto:** En desarrollo (MVP 1)  
-📄 Documentación completa disponible en `docs/SRS_Activus_v1.2.pdf`
