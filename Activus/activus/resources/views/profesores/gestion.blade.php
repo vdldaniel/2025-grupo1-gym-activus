@@ -82,5 +82,5 @@
             </div>
         </div>
     </div>
-    @vite(['resources\js\profesores-administrativo.js'])
+    @vite(['resources/js/profesores-administrativo.js'])
 @endsection

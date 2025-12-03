@@ -222,5 +222,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    const modalEliminarSocio = document.getElementById('modalEliminarSocio');
+
+    modalEliminarSocio.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+
+        const form = modalEliminarSocio.querySelector('#formEliminarSocio');
+        form.action = `/socios/${id}`;
+    });
+
 });
 

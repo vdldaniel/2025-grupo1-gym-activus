@@ -43,5 +43,5 @@
             <div id="resultado" class="mt-3"></div>
         </div>
     </div>
-    @vite(['resources\js\ingresoGym.js'])
+    @vite(['resources/js/ingresoGym.js'])
 @endsection

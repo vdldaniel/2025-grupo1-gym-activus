@@ -7,6 +7,8 @@
 @section('content')
   <div class="container py-4 text-light">
 
+    <p class="text-center">TEST</p>
+
     <!-- Encabezado -->
     <div
       class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">

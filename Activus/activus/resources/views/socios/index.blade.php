@@ -194,7 +194,7 @@
                                         <div class="bg-base rounded-circle d-flex justify-content-center align-items-center"
                                             style="width:30px; height:30px; overflow:hidden;">
                                             @if ($s->usuario->Foto_Perfil)
-                                                <img src="{{ asset('storage/' . $s->usuario->Foto_Perfil) }}" 
+                                                <img src="{{ asset('storage/app/public/' . $s->usuario->Foto_Perfil) }}" 
                                                     class="object-fit-cover" 
                                                     style="width:30px; height:30px;" alt="Foto">
                                             @else
@@ -319,7 +319,7 @@
                                             </li>
 
                                             <li>
-                                                <button type="button" class="dropdown-item text-danger dropdown-item-acciones" data-bs-target="#modalEliminarSocio" data-bs-toggle="modal" data-id="{{ $s->usuario->ID_Usuario }}">
+                                                <button type="button" class="dropdown-item text-danger dropdown-item-acciones" data-bs-target="#modalEliminarSocio" data-bs-toggle="modal" data-id="{{ $s->usuario->ID_Usuario}}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2 me-2">
                                                         <path d="M10 11v6" />
                                                         <path d="M14 11v6" />

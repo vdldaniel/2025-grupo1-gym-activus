@@ -14,7 +14,7 @@
             </svg>
 
             <div>
-                <h2 class="fw-bold mb-0">Gestión de Usuarios</h2>
+                <h1 class="fw-bold mb-0">Gestión de Usuarios</h1>
                 <span class="text-secondary small">Administra los usuarios del sistema</span>
             </div>
         </div>
@@ -159,7 +159,7 @@
                                         <div class="bg-base rounded-circle d-flex justify-content-center align-items-center"
                                             style="width:30px; height:30px; overflow:hidden;">
                                             @if ($u->Foto_Perfil)
-                                                <img src="{{ asset('storage/' . $u->Foto_Perfil) }}" 
+                                                <img src="{{ asset('storage/app/public/' . $u->Foto_Perfil) }}" 
                                                     class="object-fit-cover" 
                                                     style="width:30px; height:30px;" alt="Foto">
                                             @else
@@ -406,7 +406,7 @@
     </div>
 </div>
 
-
+@vite(['resources/js/usuario.js'])
 
 @include('componentes.modal_exito')
 

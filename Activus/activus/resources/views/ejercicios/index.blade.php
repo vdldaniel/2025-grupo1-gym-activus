@@ -293,6 +293,7 @@
     </div>
 </div>
 
+@vite(['resources/js/ejercicio.js'])
 
 @include('componentes.modal_exito')
 

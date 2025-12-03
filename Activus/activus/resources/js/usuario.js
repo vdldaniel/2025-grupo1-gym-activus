@@ -59,7 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     inputEstado.addEventListener("change", aplicarFiltros);
     inputRol.addEventListener("change", aplicarFiltros);
-    btnLimpiarFiltro.addEventListener("click", limpiarFiltros);
+    if (btnLimpiarFiltro) {
+        btnLimpiarFiltro.addEventListener("click", limpiarFiltros);
+    }
 
 
 

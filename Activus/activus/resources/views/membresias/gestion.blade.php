@@ -172,5 +172,5 @@
     </div>
     @include('componentes.modal_exito')
     @include('componentes.modal_error')
-    @vite(['resources\js\membresias-administrativo.js'])
+    @vite(['resources/js/membresias-administrativo.js'])
 @endsection

@@ -48,5 +48,5 @@
 
     </div>
 
-    @vite(['resources\js\profesores-socio.js'])
+    @vite(['resources/js/profesores-socio.js'])
 @endsection

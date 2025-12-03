@@ -5,7 +5,7 @@
 @endphp
 @php
   $config = configuracion_activa();
-  $logo = $config?->Logo_PNG ? asset('storage/' . $config->Logo_PNG) : null;
+  $logo = $config?->Logo_PNG ? asset('storage/app/public/' . $config->Logo_PNG) : null;
 
   $fondo = $config->colorFondo->Codigo_Hex ?? '#020817';
   $elemento = $config->Color_Elemento ?? '#3198ff';
@@ -82,7 +82,7 @@
     crossorigin="anonymous"></script>
 
   {{-- calendario --}}
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
   <!-- Select2 -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -102,7 +102,9 @@
 
 
   {{-- Resources --}}
-  @vite(['resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/css/configuraciones.css', 'resources/js/usuario.js', 'resources/js/validarPerfil.js', 'resources/js/asistencia.js', 'resources/js/profesores-socio.js', 'resources/js/profesores-administrativo.js', 'resources/js/membresias-socio.js', 'resources/js/membresias-administrativo.js', 'resources/js/ejercicio.js', 'resources/js/rutina.js'])
+{{--   @vite(['resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/css/configuraciones.css', 'resources/js/usuario.js', 'resources/js/validarPerfil.js', 'resources/js/asistencia.js', 'resources/js/profesores-socio.js', 'resources/js/profesores-administrativo.js', 'resources/js/membresias-socio.js', 'resources/js/membresias-administrativo.js', 'resources/js/ejercicio.js', 'resources/js/rutina.js'])
+ --}}
+@vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/globals.css', 'resources/css/sidebar-menu.css', 'resources/js/sidebar-menu.js', 'resources/css/configuraciones.css', 'resources/js/validarPerfil.js' ])
 
 </head>
 
@@ -146,7 +148,7 @@
                       style="width:40px; height:40px;">
                       <div class="position-relative d-inline-block">
                           @if($usuarioAuth->Foto_Perfil)
-                              <img src="{{ asset('storage/' . $usuarioAuth->Foto_Perfil) }}" alt="Foto de perfil"
+                              <img src="{{ asset('storage/app/public/' . $usuarioAuth->Foto_Perfil) }}" alt="Foto de perfil"
                                   class="rounded-circle object-fit-cover" style="width:40px; height:40px;">
                           @else
                               <div class="bg-base border-base rounded-circle d-flex justify-content-center align-items-center"
@@ -174,7 +176,7 @@
 
             </li>
             @if(PermisoHelper::tienePermiso('Ingresar Inicio', $idUsuario))
-              <li class="active">
+              <li class="{{ request()->is('/') ? 'active' : '' }}">
                 <a href="/">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -188,7 +190,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Gestionar Socios', $idUsuario))
-              <li>
+              <li class="{{ request()->is('socios*') ? 'active' : '' }}">
                 <a href="/socios">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -203,7 +205,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Gestionar Usuarios', $idUsuario))
-              <li>
+              <li class="{{ request()->is('usuarios*') ? 'active' : '' }}">
                 <a href="/usuarios">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -218,7 +220,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Clases', $idUsuario))
-              <li>
+              <li class="{{ request()->is('clases*') ? 'active' : '' }}">
                 <a href="/clases">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -234,7 +236,7 @@
             @endif
             {{-- CLASES – SOCIO --}}
             @if(PermisoHelper::tienePermiso('Clases Socio', $idUsuario))
-              <li>
+              <li class="{{ request()->is('clases-socio*') ? 'active' : '' }}">
                 <a href="/clases-socio">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -250,7 +252,7 @@
             @endif
             @if(PermisoHelper::tienePermiso('Gestionar Clases', $idUsuario))
 
-              <li>
+              <li class="{{ request()->is('clases/gestion*') ? 'active' : '' }}">
                 <a href="/clases/gestion">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -265,7 +267,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Impartir Clases', $idUsuario))
-              <li>
+              <li class="{{ request()->is('clases/mis-clases*') ? 'active' : '' }}">
                 <a href="/clases/mis-clases">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -280,7 +282,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Gestionar Salas', $idUsuario))
-              <li>
+              <li class="{{ request()->is('salas*') ? 'active' : '' }}">
                 <a href="/salas">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -295,7 +297,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Rutinas', $idUsuario))
-              <li>
+              <li class="{{ request()->is('rutinas*') ? 'active' : '' }}">
                 <a href="/rutinas">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -313,7 +315,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Ejercicios', $idUsuario))
-              <li>
+              <li class="{{ request()->is('ejercicios*') ? 'active' : '' }}">
                 <a href="/ejercicios">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -326,7 +328,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Profesores', $idUsuario))
-              <li>
+              <li class="{{ request()->is('profesores*') ? 'active' : '' }}">
                 <a href="/profesores">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -341,7 +343,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Gestion Profesores', $idUsuario))
-              <li>
+              <li class="{{ request()->is('profesores/gestion*') ? 'active' : '' }}">
                 <a href="/profesores/gestion">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -356,7 +358,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Membresias', $idUsuario))
-              <li>
+              <li class="{{ request()->is('membresias*') ? 'active' : '' }}">
                 <a href="/membresias">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -370,7 +372,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Gestionar Membresias', $idUsuario))
-              <li>
+              <li class="{{ request()->is('membresias/gestion*') ? 'active' : '' }}">
                 <a href="/membresias/gestion">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -384,7 +386,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Asistencias', $idUsuario))
-              <li>
+              <li class="{{ request()->is('asistencias*') ? 'active' : '' }}">
                 <a href="/asistencias">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -401,7 +403,7 @@
             @endif
             {{-- PAGOS – ADMINISTRATIVO / ADMIN --}}
             @if(PermisoHelper::tienePermiso('Pagos', $idUsuario))
-              <li>
+              <li class="{{ request()->is('pagos*') ? 'active' : '' }}">
                 <a href="/pagos">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -416,7 +418,7 @@
 
             {{-- PAGOS – SOCIO --}}
             @if(PermisoHelper::tienePermiso('Pagos Socio', $idUsuario))
-              <li>
+              <li class="{{ request()->is('pagos-socio*') ? 'active' : '' }}">
                 <a href="/pagos-socio">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -431,7 +433,7 @@
 
 
             @if(PermisoHelper::tienePermiso('Donde Entrenar', $idUsuario))
-              <li>
+              <li class="{{ request()->is('donde-entrenar*') ? 'active' : '' }}">
                 <a href="/donde-entrenar">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -445,7 +447,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Configuracion', $idUsuario))
-              <li>
+              <li class="{{ request()->is('configuraciones*') ? 'active' : '' }}">
                 <a href="/configuraciones">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -459,7 +461,7 @@
               </li>
             @endif
             @if(PermisoHelper::tienePermiso('Ver Perfil', $idUsuario))
-              <li>
+              <li class="{{ request()->is('usuarios/' . $idUsuario . '/perfil') ? 'active' : '' }}">
                 <a href="/usuarios/{{ $idUsuario }}/perfil">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"

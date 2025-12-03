@@ -62,21 +62,22 @@ Tener instalado:
 
 2. Node.js
 - npm install
-- npm run dev
+- npm run dev   //npm run build 
 
-3. Generar la clave de aplicación
+3. php artisan config:clear
+>> php artisan cache:clear
+>> php artisan route:clear
+>> php artisan view:clear
+
+4. Generar la clave de aplicación
 - php artisan key:generate
 
-4. Copiar el .env
-- copy .env.example .env
 
 5. Configurar la base de datos en .env
 - DB_DATABASE= activus_db
   DB_USERNAME=root
   DB_PASSWORD=
 
-6. Ejecutar migraciones
-- php artisan migrate
 
-7. Iniciar Servidor **http://127.0.0.1:8000**
+6. Iniciar Servidor **http://127.0.0.1:8000**
 - php artisan serve 

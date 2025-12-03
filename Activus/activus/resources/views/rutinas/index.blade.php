@@ -140,12 +140,12 @@
                         </div>
                         <div class="mb-3 col-6 col-md-6">
                             <label class="form-label">Series</label>
-                            <input type="number" id="seriesRutina" name="seriesRutina[]" class="form-control card-input" placeholder="45" required>
+                            <input type="number" id="seriesRutina" name="seriesRutina[]" class="form-control card-input" placeholder="4" required>
                             <div class="invalid-feedback" id="error-seriesRutina"></div>
                         </div>
                         <div class="mb-3 col-6 col-md-6">
                             <label class="form-label">Repeticiones</label>
-                            <input type="number" id="repeticionesRutina" name="repeticionesRutina[]" class="form-control card-input" placeholder="1" required>
+                            <input type="number" id="repeticionesRutina" name="repeticionesRutina[]" class="form-control card-input" placeholder="30" required>
                             <div class="invalid-feedback" id="error-repeticionesRutina"></div>
                         </div>
                         </div>
@@ -230,12 +230,12 @@
                         </div>
                         <div class="mb-3 col-6 col-md-6">
                             <label class="form-label">Series</label>
-                            <input type="number" id="seriesRutinaEditar" name="seriesRutinaEditar[]" class="form-control card-input" placeholder="45" required>
+                            <input type="number" id="seriesRutinaEditar" name="seriesRutinaEditar[]" class="form-control card-input" placeholder="4" required>
                             <div class="invalid-feedback" id="error-seriesRutinaEditar"></div>
                         </div>
                         <div class="mb-3 col-6 col-md-6">
                             <label class="form-label">Repeticiones</label>
-                            <input type="number" id="repeticionesRutinaEditar" name="repeticionesRutinaEditar[]" class="form-control card-input" placeholder="1" required>
+                            <input type="number" id="repeticionesRutinaEditar" name="repeticionesRutinaEditar[]" class="form-control card-input" placeholder="30" required>
                             <div class="invalid-feedback" id="error-repeticionesRutinaEditar"></div>
                         </div>
                         </div>
@@ -281,6 +281,9 @@
         </div>
     </div>
 </div>
+
+@vite(['resources/js/rutina.js'])
+
 
 @include('componentes.modal_exito')
 

@@ -17,7 +17,7 @@
                     style="width:64px; height:64px;">
                     <div class="position-relative d-inline-block">
                         @if($usuario->Foto_Perfil)
-                            <img src="{{ asset('storage/' . $usuario->Foto_Perfil) }}" alt="Foto de perfil"
+                            <img src="{{ asset('storage/app/public/' . $usuario->Foto_Perfil) }}" alt="Foto de perfil"
                                 class="rounded-circle object-fit-cover" style="width:64px; height:64px;">
                         @else
                             <div class="bg-base border-base rounded-circle d-flex justify-content-center align-items-center"

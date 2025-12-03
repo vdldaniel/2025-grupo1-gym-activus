@@ -297,19 +297,23 @@ class UsuarioController extends Controller
 
     public function editarPerfil($id)
     {
-
         $usuario = Usuario::with(['roles', 'certificados'])->findOrFail($id);
-
 
         $membresia = MembresiaSocio::with('tipoMembresia')
             ->where('ID_Usuario_Socio', $id)
             ->latest('Fecha_Fin')
             ->first();
 
+        $diasRestantes = null;
+        $vencimiento = null;
+
+        if ($membresia && $membresia->Fecha_Fin) {
+            $diasRestantes = Carbon::now()->diffInDays($membresia->Fecha_Fin, false);
+            $vencimiento = Carbon::parse($membresia->Fecha_Fin)->format('d/m/Y');
+        }
 
         $rolId = $usuario->roles->first()->ID_Rol ?? null;
 
-        // Si el usuario es un socio (rol 4), traer sus datos de socio
         $socio = null;
         if ($rolId === 4) {
             $socio = \App\Models\Socio::where('ID_Usuario', $usuario->ID_Usuario)
@@ -317,24 +321,20 @@ class UsuarioController extends Controller
                 ->first();
         }
 
-        // Usar los certificados ya cargados por la relación
         $certificados = $usuario->certificados;
-
-        // Obtener el año actual
         $anioActual = now()->year;
-
 
         $certificadoEsteAnio = $certificados->first(function ($c) use ($anioActual) {
             return \Carbon\Carbon::parse($c->Fecha_Emision)->year == $anioActual;
         });
 
-        // Verificar si tiene al menos un certificado aprobado
         $tieneCertificado = $certificados->contains('Aprobado', 1);
 
-        // Retornar la vista con todas las variables
         return view('usuarios.editar_perfil', compact(
             'usuario',
             'membresia',
+            'diasRestantes',   
+            'vencimiento',
             'rolId',
             'socio',
             'certificados',
@@ -343,6 +343,7 @@ class UsuarioController extends Controller
             'anioActual'
         ));
     }
+
 
 
     public function update(Request $request, $id)

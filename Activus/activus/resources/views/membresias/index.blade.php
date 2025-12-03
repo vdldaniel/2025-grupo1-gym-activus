@@ -37,6 +37,6 @@
         </div>
 
 
-    </div>
-    @vite(['resources\js\membresias-socio.js'])
+    </div> 
+    @vite(['resources/js/membresias-socio.js'])
 @endsection

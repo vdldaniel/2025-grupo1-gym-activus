@@ -109,5 +109,5 @@
     </div>
     @include('componentes.modal_exito')
     @include('componentes.modal_error')
-    @vite(['resources\js\salas.js'])
+    @vite(['resources/js/salas.js'])
 @endsection

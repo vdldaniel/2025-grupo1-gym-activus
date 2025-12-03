@@ -152,18 +152,21 @@
 
 <div class="modal fade" id="modalLogoActual" tabindex="-1" aria-hidden="true">
    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content bg-dark text-center p-3">
-         <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 m-2" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-         @if(!empty($configuracion?->Logo_PNG))
-                <img src="{{ asset('storage/' . $configuracion->Logo_PNG) }}" 
-                    alt="Logo actual" 
-                    class="img-fluid rounded">
+        <div class="modal-content bg-dark p-3">
+            <div class="text-center">
+
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 top-0 m-2" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                @if(!empty($configuracion?->Logo_PNG))
+                <img src="{{ asset('storage/app/public/' . $configuracion->Logo_PNG) }}" 
+                alt="Logo actual" 
+                class="img-fluid rounded">
                 @else
-                     <p class="text-muted">No hay logo cargado actualmente.</p>
-              @endif
+                <p class="text-muted">No hay logo cargado actualmente.</p>
+                @endif
             </div>
+        </div>
      </div>
 </div>
      @include('componentes.modal_exito')
-     @vite(['resources\js\configuraciones.js'])
+     @vite(['resources/js/configuraciones.js'])
 @endsection 
